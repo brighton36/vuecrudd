@@ -1,0 +1,10 @@
+log_level: info
+port: 8000
+address: "0.0.0.0"
+threads: 8
+static_resource_path: "../public/" 
+views_path: "../views/" 
+config_path: "../config/" 
+dsn: "sqlite3://vuecrud_database.sqlite"
+#dsn: "mysql://db=vuecrud_database host=127.0.0.1 user=vuecrud_database password='database-password-here'"
+cors_allow: "http://localhost:8080"

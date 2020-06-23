@@ -1,0 +1,10 @@
+port: 8081
+address: "127.0.0.1"
+threads: 1
+static_resource_path: "../public/" 
+views_path: "../views/" 
+config_path: "../config/" 
+dsn: "sqlite3://:memory:"
+#dsn: "mysql://db=vuecrud_test host=127.0.0.1 user=vuecrud_database password='database-password-here'"
+#dsn: "mysql://db=vuecrud_database host=127.0.0.1 user=vuecrud_database password='database-password-here'"
+log_level: off

@@ -44,7 +44,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 ##############################################################################
 # Project Components
 include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/models)
-add_subdirectory(${PROJECT_SOURCE_DIR}/controllers ${PROJECT_SOURCE_DIR}/models)
+add_subdirectory(${PROJECT_SOURCE_DIR}/controllers)
 
 # TODO: Move this into a function in the project?
 set(CONTROLLERS pages_controller auth_controller )

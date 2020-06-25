@@ -1,35 +1,80 @@
 cmake_minimum_required (VERSION 3.1.3)
 project (vuecrudd VERSION 0.1)
 
-include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
+##############################################################################
+# Dependencies:
+include(${CMAKE_ROOT}/Modules/FetchContent.cmake)
+
+FetchContent_Declare(
+  prails
+	GIT_REPOSITORY "https://github.com/brighton36/prails.git"
+)
+FetchContent_MakeAvailable(prails)
+FetchContent_GetProperties(prails)
+if(NOT prails_POPULATED)
+  FetchContent_Populate(prails)
+  add_subdirectory(${prails_SOURCE_DIR} ${prails_BINARY_DIR})
+endif()
+
+include_directories(
+	${prails_SOURCE_DIR}/include
+	${prails_SOURCE_DIR}/thirdparty/include
+	${prails_BINARY_DIR}/external/pistache-prefix/src/pistache/include
+	${prails_BINARY_DIR}/external/spdlog-prefix/src/spdlog/include)
 
 ##############################################################################
 # Dependencies:
-configure_file(CMakeLists.txt.in external/CMakeLists.txt)
-execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-  RESULT_VARIABLE result
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/external )
-if(result)
-  message(FATAL_ERROR "CMake step for external dependency failed: ${result}")
-endif()
-execute_process(COMMAND ${CMAKE_COMMAND} --build .
-  RESULT_VARIABLE result
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/external )
-if(result)
-  message(FATAL_ERROR "Build step for external dependency failed: ${result}")
-endif()
+# include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
+#configure_file(CMakeLists.txt.in external/CMakeLists.txt)
+#execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+  #RESULT_VARIABLE result
+  #WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/external )
+#if(result)
+  #message(FATAL_ERROR "CMake step for external dependency failed: ${result}")
+#endif()
+#execute_process(COMMAND ${CMAKE_COMMAND} --build .
+  #RESULT_VARIABLE result
+  #WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/external )
+#if(result)
+  #message(FATAL_ERROR "Build step for external dependency failed: ${result}")
+#endif()
 
 # TODO : Can we add_subdirectory... instead of these include/links
-set(PRAILS_SRC ${CMAKE_BINARY_DIR}/external/prails/src)
-include_directories(
-  ${PRAILS_SRC}/prails/include
-  ${PRAILS_SRC}/prails/thirdparty/include
-  ${PRAILS_SRC}/prails-build/external/pistache-prefix/src/pistache/include
-  ${PRAILS_SRC}/prails-build/external/spdlog-prefix/src/spdlog/include)
+#add_subdirectory(${CMAKE_BINARY_DIR}/external/prails/src/prails)
+#set(PRAILS_SRC ${CMAKE_BINARY_DIR}/external/prails/src)
+#include_directories(
+  #${PRAILS_SRC}/prails/include
+  #${PRAILS_SRC}/prails/thirdparty/include
+  #${PRAILS_SRC}/prails-build/external/pistache-prefix/src/pistache/include
+  #${PRAILS_SRC}/prails-build/external/spdlog-prefix/src/spdlog/include)
 
-link_directories(
-  ${PRAILS_SRC}/prails-build
-  ${PRAILS_SRC}/prails-build/external/pistache-prefix/src/pistache-build/src)
+#link_directories(
+  #${PRAILS_SRC}/prails-build
+  #${PRAILS_SRC}/prails-build/external/pistache-prefix/src/pistache-build/src)
+##############################################################################
+if (CMAKE_CXX_CPPCHECK)
+	# TODO: can we put a / after the first colon here...
+	# TODO: Do we need the unmatche suppression? probably in the prails build. 
+	# TODO: Maybe we can remove the deps and external here, once it's in the prails
+  list(
+    APPEND CMAKE_CXX_CPPCHECK
+    "--enable=all"
+    "-DCPPCHECK"
+    "-I${PROJECT_SOURCE_DIR}/include"
+    "-I${PROJECT_SOURCE_DIR}/controllers"
+    "-I${PROJECT_SOURCE_DIR}/models"
+		"--suppress=unmatchedSuppression"
+    "--suppress=*:build/*"
+    "--suppress=*:_deps/*"
+    "--suppress=*:external/*"
+  )
+else()
+  message("-- Cppcheck not found")
+  set(CMAKE_CXX_CPPCHECK "")
+endif()
+
+
+##############################################################################
 
 include_directories(/usr/include/soci /usr/include/mysql)
 

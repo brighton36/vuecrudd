@@ -27,6 +27,7 @@ link_directories(
 	${prails_BINARY_DIR}/external/pistache-prefix/src/pistache-build/src)
 
 ##############################################################################
+# Lint detection:
 if (CMAKE_CXX_CPPCHECK)
 	# TODO: can we put a / after the first colon here...
 	# TODO: Do we need the unmatche suppression? probably in the prails build. 
@@ -48,11 +49,6 @@ else()
   set(CMAKE_CXX_CPPCHECK "")
 endif()
 
-
-##############################################################################
-
-include_directories(/usr/include/soci /usr/include/mysql)
-
 ##############################################################################
 # Compiler Options
 include(CheckCXXCompilerFlag)
@@ -63,6 +59,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 ##############################################################################
 # Project Components
+include_directories(/usr/include/soci /usr/include/mysql)
 include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/models)
 add_subdirectory(${PROJECT_SOURCE_DIR}/controllers)
 

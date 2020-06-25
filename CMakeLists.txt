@@ -22,35 +22,10 @@ include_directories(
 	${prails_BINARY_DIR}/external/pistache-prefix/src/pistache/include
 	${prails_BINARY_DIR}/external/spdlog-prefix/src/spdlog/include)
 
-##############################################################################
-# Dependencies:
-# include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
-#configure_file(CMakeLists.txt.in external/CMakeLists.txt)
-#execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-  #RESULT_VARIABLE result
-  #WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/external )
-#if(result)
-  #message(FATAL_ERROR "CMake step for external dependency failed: ${result}")
-#endif()
-#execute_process(COMMAND ${CMAKE_COMMAND} --build .
-  #RESULT_VARIABLE result
-  #WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/external )
-#if(result)
-  #message(FATAL_ERROR "Build step for external dependency failed: ${result}")
-#endif()
+link_directories(
+	${prails_BINARY_DIR}
+	${prails_BINARY_DIR}/external/pistache-prefix/src/pistache-build/src)
 
-# TODO : Can we add_subdirectory... instead of these include/links
-#add_subdirectory(${CMAKE_BINARY_DIR}/external/prails/src/prails)
-#set(PRAILS_SRC ${CMAKE_BINARY_DIR}/external/prails/src)
-#include_directories(
-  #${PRAILS_SRC}/prails/include
-  #${PRAILS_SRC}/prails/thirdparty/include
-  #${PRAILS_SRC}/prails-build/external/pistache-prefix/src/pistache/include
-  #${PRAILS_SRC}/prails-build/external/spdlog-prefix/src/spdlog/include)
-
-#link_directories(
-  #${PRAILS_SRC}/prails-build
-  #${PRAILS_SRC}/prails-build/external/pistache-prefix/src/pistache-build/src)
 ##############################################################################
 if (CMAKE_CXX_CPPCHECK)
 	# TODO: can we put a / after the first colon here...
@@ -58,14 +33,14 @@ if (CMAKE_CXX_CPPCHECK)
 	# TODO: Maybe we can remove the deps and external here, once it's in the prails
   list(
     APPEND CMAKE_CXX_CPPCHECK
-    "--enable=all"
+    "--enable=warning,style,performance,portability,unusedFunction"
     "-DCPPCHECK"
     "-I${PROJECT_SOURCE_DIR}/include"
     "-I${PROJECT_SOURCE_DIR}/controllers"
     "-I${PROJECT_SOURCE_DIR}/models"
 		"--suppress=unmatchedSuppression"
-    "--suppress=*:build/*"
-    "--suppress=*:_deps/*"
+    "--suppress=*:*build/*"
+    "--suppress=*:*_deps/*"
     "--suppress=*:external/*"
   )
 else()

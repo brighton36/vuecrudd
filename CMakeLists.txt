@@ -17,14 +17,14 @@ if(NOT prails_POPULATED)
 endif()
 
 include_directories(
-	${prails_SOURCE_DIR}/include
-	${prails_SOURCE_DIR}/thirdparty/include
-	${prails_BINARY_DIR}/external/pistache-prefix/src/pistache/include
-	${prails_BINARY_DIR}/external/spdlog-prefix/src/spdlog/include)
+	${CMAKE_BINARY_DIR}/_deps/prails-src/include
+	${CMAKE_BINARY_DIR}/_deps/prails-src/thirdparty/include
+	${CMAKE_BINARY_DIR}/_deps/pistache-src/include
+	${CMAKE_BINARY_DIR}/_deps/spdlog-src/include)
 
 link_directories(
-	${prails_BINARY_DIR}
-	${prails_BINARY_DIR}/external/pistache-prefix/src/pistache-build/src)
+	${CMAKE_BINARY_DIR}/_deps/prails-build
+	${CMAKE_BINARY_DIR}/_deps/pistache-build/src)
 
 ##############################################################################
 # Lint detection:
@@ -41,7 +41,7 @@ if (CMAKE_CXX_CPPCHECK)
     "-I${PROJECT_SOURCE_DIR}/models"
 		"--suppress=unmatchedSuppression"
     "--suppress=*:*build/*"
-    "--suppress=*:*_deps/*"
+    "--suppress=*:_deps/*"
     "--suppress=*:external/*"
   )
 else()

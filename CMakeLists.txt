@@ -29,9 +29,6 @@ link_directories(
 ##############################################################################
 # Lint detection:
 if (CMAKE_CXX_CPPCHECK)
-	# TODO: can we put a / after the first colon here...
-	# TODO: Do we need the unmatche suppression? probably in the prails build. 
-	# TODO: Maybe we can remove the deps and external here, once it's in the prails
   list(
     APPEND CMAKE_CXX_CPPCHECK
     "--enable=warning,style,performance,portability,unusedFunction"
@@ -39,10 +36,7 @@ if (CMAKE_CXX_CPPCHECK)
     "-I${PROJECT_SOURCE_DIR}/include"
     "-I${PROJECT_SOURCE_DIR}/controllers"
     "-I${PROJECT_SOURCE_DIR}/models"
-		"--suppress=unmatchedSuppression"
-    "--suppress=*:*build/*"
     "--suppress=*:_deps/*"
-    "--suppress=*:external/*"
   )
 else()
   message("-- Cppcheck not found")
@@ -69,8 +63,6 @@ set(CONTROLLERS pages_controller auth_controller )
 ##############################################################################
 # The web server executable:
 add_executable(${CMAKE_PROJECT_NAME} "${CMAKE_PROJECT_NAME}.cpp")
-#add_dependencies(${CMAKE_PROJECT_NAME} prails_external-build)
-# TODO: Maybe we should make this more automatic... 
 target_link_libraries(${CMAKE_PROJECT_NAME} -lprails -lpistache -lpthread 
   -lsoci_core -lsoci_sqlite3 -lsqlite3 -lsoci_mysql -lmysqlclient)
 target_link_libraries(${CMAKE_PROJECT_NAME} 

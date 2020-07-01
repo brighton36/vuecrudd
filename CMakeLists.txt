@@ -57,12 +57,10 @@ include_directories(/usr/include/soci /usr/include/mysql)
 include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/models)
 add_subdirectory(${PROJECT_SOURCE_DIR}/controllers)
 
-# TODO: Move this into a function in the project?
-set(CONTROLLERS pages_controller auth_controller )
-
 ##############################################################################
 # The web server executable:
 add_executable(${CMAKE_PROJECT_NAME} "${CMAKE_PROJECT_NAME}.cpp")
+# TODO: set these libs in the project comonents
 target_link_libraries(${CMAKE_PROJECT_NAME} -lprails -lpistache -lpthread 
   -lsoci_core -lsoci_sqlite3 -lsqlite3 -lsoci_mysql -lmysqlclient)
 target_link_libraries(${CMAKE_PROJECT_NAME} 

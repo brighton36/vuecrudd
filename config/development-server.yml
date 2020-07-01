@@ -1,4 +1,4 @@
-log_level: info
+log_level: debug
 port: 8000
 address: "0.0.0.0"
 threads: 8

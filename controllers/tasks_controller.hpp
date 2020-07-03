@@ -11,6 +11,6 @@ class TasksController : public Controller::RestInstance<TasksController, Task> {
   private:
     Task modelDefault(std::tm tm_time);
     void modelUpdate(Task &, Controller::PostBody &, std::tm);
-    static ServiceRegister<TasksController> reg;
+    static ControllerRegister<TasksController> reg;
 };
 

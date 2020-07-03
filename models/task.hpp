@@ -1,5 +1,6 @@
 #pragma once
 #include "model.hpp"
+#include "model_factory.hpp"
 
 class Task : public Model::Instance<Task> { 
   public:
@@ -33,13 +34,8 @@ class Task : public Model::Instance<Task> {
       })
     };
 
-    static void Migrate() {
-      CreateTable({
-        {"name", "varchar(100)"},
-        {"active", "integer"},
-        {"description", "varchar(300)"},
-        {"created_at", "datetime"},
-        {"updated_at", "datetime"},
-      });
-    };
+    static void Migrate();
+
+  private:
+    static ModelRegister<Task> reg;
 };

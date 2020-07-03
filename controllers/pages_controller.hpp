@@ -12,6 +12,6 @@ class PagesController : public Controller::Instance {
     Controller::Response sweet(const Pistache::Rest::Request&);
     Controller::Response app(const Pistache::Rest::Request&);
   private:
-    static ServiceRegister<PagesController> reg;
+    static ControllerRegister<PagesController> reg;
 };
 

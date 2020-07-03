@@ -4,7 +4,7 @@
 using namespace std;
 using namespace Pistache;
 
-ServiceRegister<AuthController> AuthController::reg("auth");
+ControllerRegister<AuthController> AuthController::reg("auth");
 
 void AuthController::Routes(Rest::Router& r, shared_ptr<Controller::Instance> controller) {
   using namespace Rest;

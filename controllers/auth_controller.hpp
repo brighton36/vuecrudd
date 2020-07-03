@@ -15,6 +15,6 @@ class AuthController : public Controller::Instance {
     Controller::Response logout(const Pistache::Rest::Request&);
 
   private:
-    static ServiceRegister<AuthController> reg;
+    static ControllerRegister<AuthController> reg;
 };
 

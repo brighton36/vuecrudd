@@ -59,13 +59,21 @@ include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/models)
 set(SHARED_OBJ_DEP -lsoci_core -lsoci_sqlite3 -lsqlite3 -lsoci_mysql 
   -lmysqlclient -lpistache -lprails)
 
+add_subdirectory(${PROJECT_SOURCE_DIR}/models)
 add_subdirectory(${PROJECT_SOURCE_DIR}/controllers)
 
+#######################################################################
+# Test targets
+option(BUILD_TESTS "build tests alongside the project" ON)
+
+if (BUILD_TESTS)
+  add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
+endif()
 
 ##############################################################################
 # The web server executable:
 add_executable(${CMAKE_PROJECT_NAME} "${CMAKE_PROJECT_NAME}.cpp")
-# TODO: set these libs in the project comonents
 target_link_libraries(${CMAKE_PROJECT_NAME} ${SHARED_OBJ_DEP})
 target_link_libraries(${CMAKE_PROJECT_NAME} 
-  "-Wl,--whole-archive" ${CONTROLLERS} "-Wl,--no-whole-archive")
+  "-Wl,--whole-archive" ${CONTROLLERS} ${MODELS} "-Wl,--no-whole-archive")
+

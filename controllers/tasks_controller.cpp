@@ -1,8 +1,8 @@
 #include "tasks_controller.hpp"
 
-const std::string TasksController::route_prefix = "/api/modeland/tasks";
+const std::string TasksController::route_prefix = "/api/demo/tasks";
 
-ServiceRegister<TasksController> TasksController::reg("tasks");
+ControllerRegister<TasksController> TasksController::reg("tasks");
 
 Task TasksController::modelDefault(std::tm tm_time) {
   return Task({ {"created_at", tm_time}, {"active", (int) 1} });

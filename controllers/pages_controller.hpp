@@ -1,6 +1,6 @@
 #pragma once
-#include "main.hpp"
 #include "controller.hpp"
+#include "controller_factory.hpp"
 
 class PagesController : public Controller::Instance { 
   public:

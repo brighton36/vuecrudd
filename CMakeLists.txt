@@ -57,7 +57,7 @@ include_directories(/usr/include/soci /usr/include/mysql)
 include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/models)
 
 set(SHARED_OBJ_DEP -lsoci_core -lsoci_sqlite3 -lsqlite3 -lsoci_mysql 
-  -lmysqlclient -lpistache -lprails)
+  -lmysqlclient -lprails)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/models)
 add_subdirectory(${PROJECT_SOURCE_DIR}/controllers)
@@ -67,6 +67,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/controllers)
 option(BUILD_TESTS "build tests alongside the project" ON)
 
 if (BUILD_TESTS)
+  enable_testing()
   add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
 endif()
 

@@ -59,6 +59,11 @@ include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/models)
 set(SHARED_OBJ_DEP -lsoci_core -lsoci_sqlite3 -lsqlite3 -lsoci_mysql 
   -lmysqlclient -lprails)
 
+# This is kind of a kludge to keep things DRY. We're using the task model and
+# controller from the libprails test folder, here in our task module. This allows
+# us to include that definition from the libprails test directory:
+include_directories(${CMAKE_BINARY_DIR}/_deps/prails-src/tests)
+
 add_subdirectory(${PROJECT_SOURCE_DIR}/models)
 add_subdirectory(${PROJECT_SOURCE_DIR}/controllers)
 

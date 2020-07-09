@@ -1,17 +1,7 @@
-#include "tasks_controller.hpp"
+// NOTE: This is kinda a cheat, but since I used the vue crud model for the rest tester
+// in the libprails source, might as well reuse that here
+#include "rest_controller_test.hpp"
 
 const std::string TasksController::route_prefix = "/api/demo/tasks";
 
 ControllerRegister<TasksController> TasksController::reg("tasks");
-
-Task TasksController::modelDefault(std::tm tm_time) {
-  return Task({ {"created_at", tm_time}, {"active", (int) 1} });
-}
-
-void TasksController::modelUpdate(Task &task, Controller::PostBody &post, std::tm tm_time) {
-  task.updated_at(tm_time);
-
-  if (post["name"]) task.name(*post["name"]);
-  if (post["description"]) task.description(*post["description"]);
-  if (post["active"]) task.active(stoi(*post["active"]));
-}

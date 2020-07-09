@@ -39,7 +39,8 @@ class Account : public Model::Instance<Account> {
         Model::Validates::NotNull("last_name"),
         Model::Validates::NotNull("email"),
         Model::Validates::IsUnique("email"),
-        Model::Validates::Matches("email", regex_from_string("/.+@.+/")), // TODO
+        Model::Validates::Matches("email", 
+          prails::utilities::regex_from_string("/.+@.+/")), // TODO
         Model::Validates::NotNull("password"),
         Model::Validates::IsBoolean("send_offers"),
         Model::Validates::IsBoolean("send_service_updates"),

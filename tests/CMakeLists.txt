@@ -10,22 +10,10 @@ function(declare_test test_name)
   add_test(${test_name} ${TEST_EXECUTABLE})
 endfunction()
 
-include_directories(${CMAKE_BINARY_DIR}/_deps/pistache-src/tests)
-include_directories(${CMAKE_BINARY_DIR}/_deps/pistache-src/third-party/rapidjson/include)
+# Do we need these...
+#include_directories(${CMAKE_BINARY_DIR}/_deps/pistache-src/tests)
+#include_directories(${CMAKE_BINARY_DIR}/_deps/pistache-src/third-party/rapidjson/include)
 
 add_definitions(-DPROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}")
 
-declare_test(tasks_controller)
-
-# TODO: we should glob this and set it throughout the project
-target_precompile_headers(run_tasks_controller PRIVATE 
-  ${CMAKE_BINARY_DIR}/_deps/prails-src/include/model.hpp)
-target_precompile_headers(run_tasks_controller PRIVATE 
-  ${CMAKE_BINARY_DIR}/_deps/pistache-src/tests/httplib.h)
-target_precompile_headers(run_tasks_controller PRIVATE 
-  ${PROJECT_SOURCE_DIR}/models/task.hpp)
-target_precompile_headers(run_tasks_controller PRIVATE 
-  ${CMAKE_BINARY_DIR}/_deps/prails-src/include/server.hpp)
-target_precompile_headers(run_tasks_controller PRIVATE 
-  ${CMAKE_BINARY_DIR}/_deps/googletest-src/googletest/include/gtest/gtest.h)
 

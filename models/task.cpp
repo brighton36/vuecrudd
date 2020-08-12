@@ -2,4 +2,4 @@
 // in the libprails source, might as well reuse that here
 #include "rest_controller_test.hpp"
 
-ModelRegister<Task> Task::reg("task");
+REGISTER_MODEL(Task)

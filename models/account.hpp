@@ -11,8 +11,6 @@ class Account : public Model::Instance<Account> {
     MODEL_ACCESSOR(email, std::string)
     MODEL_ACCESSOR(auth_token, std::string)
     MODEL_ACCESSOR(auth_token_issued_at, std::tm)
-    MODEL_ACCESSOR(send_offers, int)
-    MODEL_ACCESSOR(send_service_updates, int)
     MODEL_ACCESSOR(created_at, std::tm)
     MODEL_ACCESSOR(updated_at, std::tm)
 
@@ -29,10 +27,8 @@ class Account : public Model::Instance<Account> {
         {"password",             COL_TYPE(std::string)},
         {"auth_token",           COL_TYPE(std::string)},
         {"auth_token_issued_at", COL_TYPE(std::tm)},
-        {"send_offers",          COL_TYPE(int)},
-        {"send_service_updates", COL_TYPE(int)},
-        {"created_at", COL_TYPE(std::tm)},
-        {"updated_at", COL_TYPE(std::tm)}
+        {"created_at",           COL_TYPE(std::tm)},
+        {"updated_at",           COL_TYPE(std::tm)}
       }),
       Model::Validations( {
         Model::Validates::NotNull("first_name"),
@@ -42,8 +38,6 @@ class Account : public Model::Instance<Account> {
         Model::Validates::Matches("email", 
           prails::utilities::regex_from_string("/.+@.+/")), // TODO
         Model::Validates::NotNull("password"),
-        Model::Validates::IsBoolean("send_offers"),
-        Model::Validates::IsBoolean("send_service_updates"),
         Model::Validates::NotNull("created_at"),
         Model::Validates::NotNull("updated_at")
       })

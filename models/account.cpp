@@ -7,7 +7,7 @@
 
 using namespace std;
 
-ModelRegister<Account> Account::reg("account");
+REGISTER_MODEL(Account)
 
 void Account::Migrate() {
   CreateTable({
@@ -19,8 +19,6 @@ void Account::Migrate() {
     // roughly, 128 characters of randomness is 172 characters of base64
     {"auth_token", fmt::format("varchar({})",auth_token_size*2)},
     {"auth_token_issued_at", "datetime"},
-    {"send_offers", "integer"},
-    {"send_service_updates", "integer"},
     {"created_at", "datetime"},
     {"updated_at", "datetime"}
   });
@@ -33,7 +31,7 @@ void Account::Migrate() {
     {"created_at",  tm_time},
     {"updated_at",  tm_time}
   });
-  first_account.password("guest_password");
+  first_account.password("demopassword123");
   first_account.save();
 };
 

@@ -4,4 +4,4 @@
 
 const std::string TasksController::route_prefix = "/api/demo/tasks";
 
-ControllerRegister<TasksController> TasksController::reg("tasks");
+REGISTER_CONTROLLER(TasksController)

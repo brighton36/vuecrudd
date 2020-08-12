@@ -11,9 +11,9 @@ function(declare_test test_name)
 endfunction()
 
 # Do we need these...
-#include_directories(${CMAKE_BINARY_DIR}/_deps/pistache-src/tests)
-#include_directories(${CMAKE_BINARY_DIR}/_deps/pistache-src/third-party/rapidjson/include)
+include_directories(${CMAKE_BINARY_DIR}/_deps/pistache-src/tests)
 
 add_definitions(-DPROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}")
+add_definitions(-DTESTS_CONFIG_FILE="${PROJECT_SOURCE_DIR}/config/test-server.yml")
 
-
+declare_test(auth_controller_test)

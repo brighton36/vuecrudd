@@ -3,8 +3,8 @@ function(declare_test test_name)
   set(TEST_SOURCE ${test_name}.cpp)
 
   add_executable(${TEST_EXECUTABLE} ${TEST_SOURCE})
-  target_link_libraries(${TEST_EXECUTABLE} ${SHARED_OBJ_DEP})
   target_link_libraries(${TEST_EXECUTABLE} gtest gtest_main)
+  target_link_libraries(${TEST_EXECUTABLE} ${SHARED_OBJ_DEP})
   target_link_libraries(${TEST_EXECUTABLE} 
     "-Wl,--whole-archive" ${CONTROLLERS} ${MODELS} "-Wl,--no-whole-archive")
   add_test(${test_name} ${TEST_EXECUTABLE})

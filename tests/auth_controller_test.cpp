@@ -5,6 +5,12 @@
 using namespace std;
 
 class AuthControllerTest : public PrailsControllerTest {
+  public:
+    // TODO: We probably don't need this
+    void SetUp() override {
+      PrailsControllerTest::SetUp();
+    }
+
   protected:
     Model::Record jsmith_record = {
       {"first_name", "John"},
@@ -24,6 +30,8 @@ class AuthControllerTest : public PrailsControllerTest {
     }
 };
 
+INIT_MODEL_REGISTRY();
+INIT_CONTROLLER_REGISTRY();
 INIT_PRAILS_TEST_ENVIRONMENT()
 
 TEST_F(AuthControllerTest, fail_post_parse) {

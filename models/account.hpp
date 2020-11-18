@@ -1,18 +1,28 @@
+#pragma once
 #include "model.hpp"
 #include "model_factory.hpp"
+
+// The auth_token is a bit sloppy, I should probably calculate the exact size. 
+// But, roughly, 128 characters of randomness is 172 characters of base64
+// Note that we omit password, since the accessor logic isn't as simple as the
+// other columns
+#define ACCOUNT_COLUMNS                                     \
+  COLUMN(first_name,           std::string, "varchar(100)") \
+  COLUMN(last_name,            std::string, "varchar(100)") \
+  COLUMN(email,                std::string, "varchar(100)") \
+  COLUMN(auth_token,           std::string, fmt::format("varchar({})",auth_token_size*2)) \
+  COLUMN(auth_token_issued_at, std::tm,     "datetime") \
+  COLUMN(created_at,           std::tm,     "datetime") \
+  COLUMN(updated_at,           std::tm,     "datetime")
 
 class Account : public Model::Instance<Account> { 
   public:
     MODEL_CONSTRUCTOR(Account)
 
     MODEL_ACCESSOR(id, long)
-    MODEL_ACCESSOR(first_name, std::string)
-    MODEL_ACCESSOR(last_name, std::string)
-    MODEL_ACCESSOR(email, std::string)
-    MODEL_ACCESSOR(auth_token, std::string)
-    MODEL_ACCESSOR(auth_token_issued_at, std::tm)
-    MODEL_ACCESSOR(created_at, std::tm)
-    MODEL_ACCESSOR(updated_at, std::tm)
+    #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)
+      ACCOUNT_COLUMNS
+    #undef COLUMN
 
     inline static const unsigned int auth_token_size = 128;
 
@@ -21,14 +31,10 @@ class Account : public Model::Instance<Account> {
       "accounts", 
       Model::ColumnTypes({
         {"id",                   COL_TYPE(long)},
-        {"first_name",           COL_TYPE(std::string)},
-        {"last_name",            COL_TYPE(std::string)},
-        {"email",                COL_TYPE(std::string)},
         {"password",             COL_TYPE(std::string)},
-        {"auth_token",           COL_TYPE(std::string)},
-        {"auth_token_issued_at", COL_TYPE(std::tm)},
-        {"created_at",           COL_TYPE(std::tm)},
-        {"updated_at",           COL_TYPE(std::tm)}
+        #define COLUMN(a, t, _) {#a, COL_TYPE(t)},
+          ACCOUNT_COLUMNS
+        #undef COLUMN
       }),
       Model::Validations( {
         Model::Validates::NotNull("first_name"),
@@ -44,12 +50,12 @@ class Account : public Model::Instance<Account> {
     };
 
     static void Migrate();
-    static std::optional<Account> FromLogin(const std::string &email, const std::string &password);
-    static std::optional<Account> FromToken(const std::string &token);
-    static std::string Hash(const std::string &unsalted_phrase);
+    static std::optional<Account> FromLogin(const std::string &, const std::string &);
+    static std::optional<Account> FromToken(const std::string &);
+    static std::string Hash(const std::string &);
 
     std::optional<std::string> full_name();
-    void password(const std::optional<Model::RecordValue> &val);
+    void password(const std::optional<Model::RecordValue> &);
     std::optional<std::string> password();
     void generate_new_auth_token();
     void clear_auth_token();

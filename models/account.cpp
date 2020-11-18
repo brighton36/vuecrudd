@@ -1,4 +1,5 @@
 #include <random>
+#include <climits>
 
 #include "picosha2.h"
 #include "base64.hpp"
@@ -11,16 +12,10 @@ REGISTER_MODEL(Account)
 
 void Account::Migrate() {
   CreateTable({
-    {"first_name", "varchar(100)"},
-    {"last_name", "varchar(100)"},
-    {"email", "varchar(100)"},
+    #define COLUMN(a, _, t) {#a, t},
+    ACCOUNT_COLUMNS
+    #undef COLUMN
     {"password", "varchar(100)"},
-    // This is a bit sloppy, I should probably calculate the exact size. But, 
-    // roughly, 128 characters of randomness is 172 characters of base64
-    {"auth_token", fmt::format("varchar({})",auth_token_size*2)},
-    {"auth_token_issued_at", "datetime"},
-    {"created_at", "datetime"},
-    {"updated_at", "datetime"}
   });
 
   tm tm_time = Model::NowUTC();

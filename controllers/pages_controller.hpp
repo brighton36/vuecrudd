@@ -9,7 +9,6 @@ class PagesController : public Controller::Instance {
 
     Controller::Response index(const Pistache::Rest::Request&);
     Controller::Response login(const Pistache::Rest::Request&);
-    Controller::Response sweet(const Pistache::Rest::Request&);
     Controller::Response app(const Pistache::Rest::Request&);
   private:
     static ControllerRegister<PagesController> reg;

@@ -63,7 +63,7 @@ if(CMAKE_BUILD_TYPE MATCHES "Release")
   # Count queries?) on gcc-8. Newer gcc's are not affected. In any case, we disable 
   # them, since Release is built -O3: 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-tree-forwprop -fno-tree-phiprop \
-    -fno-tree-fre")
+    -fno-tree-fre -fPIC")
 endif()
 
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -77,7 +77,7 @@ include_directories(${PROJECT_SOURCE_DIR}/thirdparty/include)
 include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/models)
 
 set(SHARED_OBJ_DEP -lsoci_core -lsoci_sqlite3 -lsqlite3 -lsoci_mysql 
-  -lmysqlclient prails pistache_static)
+  -lmysqlclient prails pistache_static faker)
 
 # This is kind of a kludge to keep things DRY. We're using the task model and
 # controller from the libprails test folder, here in our task module. This allows
@@ -88,6 +88,7 @@ add_definitions(-DPROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}")
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/models)
 add_subdirectory(${PROJECT_SOURCE_DIR}/controllers)
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib)
 
 #######################################################################
 # Test targets

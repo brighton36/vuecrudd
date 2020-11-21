@@ -40,7 +40,7 @@ class Account : public Model::Instance<Account> {
         Model::Validates::NotNull("first_name"),
         Model::Validates::NotNull("last_name"),
         Model::Validates::NotNull("email"),
-        Model::Validates::IsUnique("email"),
+        // TODO : Why does this crash: Model::Validates::IsUnique("email"),
         Model::Validates::Matches("email", 
           prails::utilities::regex_from_string("/.+@.+/")), // TODO
         Model::Validates::NotNull("password"),

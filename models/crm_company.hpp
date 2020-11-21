@@ -6,11 +6,11 @@
   COLUMN(first_name,                      std::string, "varchar(512)") \
   COLUMN(common_name,                     std::string, "varchar(150)") \
   COLUMN(company_type_id,                 int,         "int")          \
-  COLUMN(nip,									            std::string, "varchar(10)")  \
-  COLUMN(regon,								            std::string, "varchar(9)")   \
-  COLUMN(krs,									            std::string, "varchar(10)")  \
+  COLUMN(nip,                             std::string, "varchar(10)")  \
+  COLUMN(regon,                           std::string, "varchar(9)")   \
+  COLUMN(krs,                             std::string, "varchar(10)")  \
   COLUMN(street_prefix_id,                int,         "int")          \
-  COLUMN(street,							            std::string, "varchar(255)") \
+  COLUMN(street,                          std::string, "varchar(255)") \
   COLUMN(house_number,                    std::string, "varchar(50)")  \
   COLUMN(apartment_number,                std::string, "varchar(50)")  \
   COLUMN(zip_code,                        std::string, "varchar(6)")   \
@@ -60,7 +60,7 @@ class CrmCompany : public Model::Instance<CrmCompany> {
         #undef COLUMN
       }),
       Model::Validations( {
-				// TODO: 
+        // TODO: 
         Model::Validates::NotNull("created_at"),
         Model::Validates::NotNull("updated_at")
       })

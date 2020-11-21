@@ -1,6 +1,5 @@
 #include "crm_company.hpp"
-#include "faker.hpp"
-#include <iostream> // TODO
+//#include "faker.hpp"
 
 using namespace std;
 
@@ -13,9 +12,10 @@ void CrmCompany::Migrate() {
     #undef COLUMN
   });
 
-  auto faker = Faker();
   tm tm_time = Model::NowUTC();
 
+  /*
+  auto faker = Faker();
   for (unsigned int i = 0; i<10000; i++) {
     string company_name = faker.company();
 
@@ -24,12 +24,12 @@ void CrmCompany::Migrate() {
       {"common_name",     company_name},
       {"company_type_id", (rand() % 3)+1},
       {"street_prefix_id", 1},
-      {"city",             faker.city()},
-      {"street",           faker.street_address()},
-      {"email",            faker.email()},
+      {"city",             string(faker.city())},
+      {"street",           string(faker.street_address())},
+      {"email",            string(faker.email())},
       {"created_at",       tm_time},
       {"updated_at",       tm_time}
     });
     company.save();
-  }
+  }*/
 };

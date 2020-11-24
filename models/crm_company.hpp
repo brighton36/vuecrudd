@@ -60,7 +60,11 @@ class CrmCompany : public Model::Instance<CrmCompany> {
         #undef COLUMN
       }),
       Model::Validations( {
-        // TODO: 
+        /*
+        // TODO
+        'common_name' => 'max:1000',
+        'company_type_id' => 'exists:company_types,id',
+         */
         Model::Validates::Matches("email", 
           prails::utilities::regex_from_string("/.+@.+/")),
         Model::Validates::NotNull("name"),
@@ -70,6 +74,7 @@ class CrmCompany : public Model::Instance<CrmCompany> {
         Model::Validates::NotNull("city"),
         Model::Validates::NotNull("street"),
         Model::Validates::NotNull("email"),
+        Model::Validates::IsBoolean("active"),
         Model::Validates::NotNull("created_at"),
         Model::Validates::NotNull("updated_at")
       })

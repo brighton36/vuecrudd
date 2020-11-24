@@ -13,8 +13,8 @@ void CrmCompany::Migrate() {
   });
 
   tm tm_time = Model::NowUTC();
-
   auto faker = Faker();
+
   for (unsigned int i = 0; i<10000; i++) {
     string company_name = faker.company();
 

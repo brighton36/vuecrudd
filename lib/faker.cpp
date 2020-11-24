@@ -4,33 +4,28 @@
 
 #include "faker.en_us.hpp"
 
+#define FUNC_RANDOM_STRING(m) \
+  string Faker::m() { static vector<string> p = split(_##m, ":"); return rand_el(p); }
+
 using namespace std;
 using namespace prails::utilities;
 
-string Faker::locale() { 
-  return {_locale->data(), _locale->size()};
-}
+string Faker::locale() { return {_locale->data(), _locale->size()}; }
+
+FUNC_RANDOM_STRING(last_name)
+FUNC_RANDOM_STRING(suffix)
+FUNC_RANDOM_STRING(company_suffixes)
+FUNC_RANDOM_STRING(city_prefix)
+FUNC_RANDOM_STRING(city_suffix)
+FUNC_RANDOM_STRING(street_suffix)
+FUNC_RANDOM_STRING(free_email_domain)
+FUNC_RANDOM_STRING(job_title)
 
 string Faker::company() { 
   static vector<string> company_formats = split(_company_formats, ":");
   return fmt::format(rand_el(company_formats),
     fmt::arg("last_name", last_name()), 
     fmt::arg("company_suffix", company_suffixes()) );
-}
-
-string Faker::company_suffixes() { 
-  static vector<string> company_suffixes = split(_company_suffixes, ":");
-  return rand_el(company_suffixes);
-}
-
-string Faker::city_prefix() { 
-  static vector<string> city_prefixes = split(_city_prefix, ":");
-  return rand_el(city_prefixes);
-}
-
-string Faker::city_suffix() { 
-  static vector<string> city_suffixes = split(_city_suffix, ":");
-  return rand_el(city_suffixes);
 }
 
 string Faker::city() { 
@@ -48,11 +43,6 @@ string Faker::street_name() {
     fmt::arg("last_name", last_name()), 
     fmt::arg("first_name", first_name()), 
     fmt::arg("street_suffix", street_suffix()) );
-}
-
-string Faker::street_suffix() { 
-  static vector<string> street_suffixes = split(_street_suffixes, ":");
-  return rand_el(street_suffixes);
 }
 
 string Faker::building_number() { 
@@ -74,29 +64,21 @@ string Faker::street_address() {
     fmt::arg("secondary_address", secondary_address()) );
 };
 
-string Faker::free_email_domain() { 
-  static vector<string> free_email_domains = split(_free_email_domains, ":");
-  return rand_el(free_email_domains);
-}
-
 string Faker::domain_name() { 
   static vector<string> tlds = split(_tlds, ":");
-	const string legal_chars = "abcdefghijklmnopqrstuvwxyz0123456789-";
+  const string legal_chars = "abcdefghijklmnopqrstuvwxyz0123456789-";
 
   string domain = last_name();
-
-  // Lowercase it:
   transform(domain.begin(), domain.end(), domain.begin(), ::tolower); 
 
   // Remove any weird chars:
-	remove_if(domain.begin(), domain.end(), [legal_chars](char ch) -> bool {
+  remove_if(domain.begin(), domain.end(), [legal_chars](char ch) -> bool {
     for (int i = 0; i < legal_chars.length(); ++i) 
-      if (ch == legal_chars[i]) 
-        return false;
+      if (ch == legal_chars[i]) return false;
     return true;
   } );
 
-  return domain+"."+rand_el(tlds);
+  return fmt::format("{}.{}", domain, rand_el(tlds));
 }
 
 string Faker::user_name() { 
@@ -127,15 +109,25 @@ string Faker::email() {
     fmt::arg("free_email_domain", free_email_domain()) );
 };
 
-
 string Faker::first_name() { 
-  static vector<string> female_names = split(_first_name_female, ":");
-  static vector<string> male_names = split(_first_name_male, ":");
+  static vector<string> female_names = split(_firstname_female, ":");
+  static vector<string> male_names = split(_firstname_male, ":");
   return rand_el((rand() % 2) ? female_names : male_names);
 }
 
-string Faker::last_name() { 
-  static vector<string> last_names = split(_last_names, ":");
-  return rand_el(last_names);
-}
+string Faker::phone_number() {
+  static vector<string> phone_number_formats = split(_phone_number_formats, ":");
 
+  char area_code[5];
+  char exchange_code[5];
+  char four_digits[6];
+
+  snprintf((char*) &area_code, 5, "%3d", (rand() % 999)+1);
+  snprintf((char*) &exchange_code, 5, "%3d", (rand() % 999)+1);
+  snprintf((char*) &four_digits, 6, "%4d", (rand() % 9999)+1);
+
+  return fmt::format( rand_el(phone_number_formats),
+    fmt::arg("four_digits", string(four_digits)), 
+    fmt::arg("area_code", string(area_code)), 
+    fmt::arg("exchange_code", string(exchange_code)) );
+}

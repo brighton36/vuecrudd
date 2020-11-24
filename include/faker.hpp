@@ -25,6 +25,9 @@ class Faker {
     std::string email();
     std::string first_name();
     std::string last_name();
+    std::string suffix();
+    std::string phone_number();
+    std::string job_title();
 
   private: 
     template <typename T>

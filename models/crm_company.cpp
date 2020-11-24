@@ -1,5 +1,5 @@
 #include "crm_company.hpp"
-//#include "faker.hpp"
+#include "faker.hpp"
 
 using namespace std;
 
@@ -14,7 +14,6 @@ void CrmCompany::Migrate() {
 
   tm tm_time = Model::NowUTC();
 
-  /*
   auto faker = Faker();
   for (unsigned int i = 0; i<10000; i++) {
     string company_name = faker.company();
@@ -30,6 +29,7 @@ void CrmCompany::Migrate() {
       {"created_at",       tm_time},
       {"updated_at",       tm_time}
     });
+
     company.save();
-  }*/
+  }
 };

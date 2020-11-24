@@ -61,6 +61,15 @@ class CrmCompany : public Model::Instance<CrmCompany> {
       }),
       Model::Validations( {
         // TODO: 
+        Model::Validates::Matches("email", 
+          prails::utilities::regex_from_string("/.+@.+/")),
+        Model::Validates::NotNull("name"),
+        Model::Validates::NotNull("common_name"),
+        Model::Validates::NotNull("company_type_id"),
+        Model::Validates::NotNull("street_prefix_id"),
+        Model::Validates::NotNull("city"),
+        Model::Validates::NotNull("street"),
+        Model::Validates::NotNull("email"),
         Model::Validates::NotNull("created_at"),
         Model::Validates::NotNull("updated_at")
       })

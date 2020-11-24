@@ -1,63 +1,41 @@
-#include <faker.hpp>
-#include <string_view>
+#include "faker.hpp"
 #include "fmt/fmt.h"
+#include "utilities.hpp"
+
+#include "faker.en_us.hpp"
 
 using namespace std;
+using namespace prails::utilities;
 
-vector<string> split(const string_view *str, const string &delim) {
-  vector<string> ret;
-
-	size_t prev = 0, pos = 0;
-	do {
-    pos = str->find(delim, prev);
-    if (pos == string::npos) pos = str->length();
-    string token = string(str->substr(prev, pos-prev));
-    if (!token.empty()) ret.push_back(token);
-    prev = pos + delim.length();
-	} while (pos < str->length() && prev < str->length());
-
-	return ret;
+string Faker::locale() { 
+  return {_locale->data(), _locale->size()};
 }
 
 string Faker::company() { 
-  const LangStrings formats = { "{last_name} {company_suffix}",
-    "{last_name}-{last_name}", 
-    "{last_name}, {last_name} and {last_name}"};
-
-  return fmt::format(rand_string(formats),
+  static vector<string> company_formats = split(_company_formats, ":");
+  return fmt::format(rand_el(company_formats),
     fmt::arg("last_name", last_name()), 
     fmt::arg("company_suffix", company_suffixes()) );
 }
 
-constexpr string_view _company_suffixes[] { "Inc,and Sons,LLC,Group,PLC,Ltd" };
-
 string Faker::company_suffixes() { 
-  vector<string> suffixes = split(_company_suffixes, ",");
-  return suffixes[rand() % suffixes.size()];
+  static vector<string> company_suffixes = split(_company_suffixes, ":");
+  return rand_el(company_suffixes);
 }
-
-constexpr string_view _city_prefix[] { "North,East,West,South,New,Lake,Port" };
 
 string Faker::city_prefix() { 
-  vector<string> prefixes = split(_city_prefix, ",");
-  return prefixes[rand() % prefixes.size()];
+  static vector<string> city_prefixes = split(_city_prefix, ":");
+  return rand_el(city_prefixes);
 }
 
-constexpr string_view _city_suffix[] { 
-  "town,ton,land,ville,berg,burgh,borough,bury,view,port,mouth,stad,furt,"
-  "chester,mouth,fort,haven,side,shire" };
-
 string Faker::city_suffix() { 
-  vector<string> suffixes = split(_city_suffix, ",");
-  return suffixes[rand() % suffixes.size()];
+  static vector<string> city_suffixes = split(_city_suffix, ":");
+  return rand_el(city_suffixes);
 }
 
 string Faker::city() { 
-  const LangStrings formats = { "{city_prefix} {first_name}{city_suffix}",
-    "{city_prefix} {first_name}", "{first_name}{city_suffix}",
-    "{last_name}{city_suffix}" };
-
-  return fmt::format(rand_string(formats),
+  static vector<string> city_formats = split(_city_formats, ":");
+  return fmt::format(rand_el(city_formats),
     fmt::arg("last_name", last_name()), 
     fmt::arg("first_name", first_name()), 
     fmt::arg("city_prefix", city_prefix()),
@@ -65,75 +43,44 @@ string Faker::city() {
 }
 
 string Faker::street_name() { 
-  const LangStrings formats = { "{first_name} {street_suffix}",
-    "{last_name} {street_suffix}" };
-
-  return fmt::format(rand_string(formats),
+  static vector<string> street_formats = split(_street_formats, ":");
+  return fmt::format(rand_el(street_formats),
     fmt::arg("last_name", last_name()), 
     fmt::arg("first_name", first_name()), 
     fmt::arg("street_suffix", street_suffix()) );
 }
 
-constexpr string_view _street_suffixes[] { 
-  "Alley,Avenue,Branch,Bridge,Brook,Brooks,Burg,Burgs,Bypass,Camp,Canyon,Cape,"
-  "Causeway,Center,Centers,Circle,Circles,Cliff,Cliffs,Club,Common,Corner,"
-  "Corners,Course,Court,Courts,Cove,Coves,Creek,Crescent,Crest,Crossing,"
-  "Crossroad,Curve,Dale,Dam,Divide,Drive,Drive,Drives,Estate,Estates,Expressway,"
-  "Extension,Extensions,Fall,Falls,Ferry,Field,Fields,Flat,Flats,Ford,Fords,"
-  "Forest,Forge,Forges,Fork,Forks,Fort,Freeway,Garden,Gardens,Gateway,Glen,Glens,"
-  "Green,Greens,Grove,Groves,Harbor,Harbors,Haven,Heights,Highway,Hill,Hills,"
-  "Hollow,Inlet,Inlet,Island,Island,Islands,Islands,Isle,Isle,Junction,Junctions,"
-  "Key,Keys,Knoll,Knolls,Lake,Lakes,Land,Landing,Lane,Light,Lights,Loaf,Lock,"
-  "Locks,Locks,Lodge,Lodge,Loop,Mall,Manor,Manors,Meadow,Meadows,Mews,Mill,Mills,"
-  "Mission,Mission,Motorway,Mount,Mountain,Mountain,Mountains,Mountains,Neck,"
-  "Orchard,Oval,Overpass,Park,Parks,Parkway,Parkways,Pass,Passage,Path,Pike,Pine,"
-  "Pines,Place,Plain,Plains,Plains,Plaza,Plaza,Point,Points,Port,Port,Ports,"
-  "Ports,Prairie,Prairie,Radial,Ramp,Ranch,Rapid,Rapids,Rest,Ridge,Ridges,River,"
-  "Road,Road,Roads,Roads,Route,Row,Rue,Run,Shoal,Shoals,Shore,Shores,Skyway,"
-  "Spring,Springs,Springs,Spur,Spurs,Square,Square,Squares,Squares,Station,"
-  "Station,Stravenue,Stravenue,Stream,Stream,Street,Street,Streets,Summit,Summit,"
-  "Terrace,Throughway,Trace,Track,Trafficway,Trail,Trail,Tunnel,Tunnel,Turnpike,"
-  "Turnpike,Underpass,Union,Unions,Valley,Valleys,Via,Viaduct,View,Views,Village,"
-  "Village,Villages,Ville,Vista,Vista,Walk,Walks,Wall,Way,Ways,Well,Wells" 
-};
-
 string Faker::street_suffix() { 
-  vector<string> suffixes = split(_street_suffixes, ",");
-  return suffixes[rand() % suffixes.size()];
+  static vector<string> street_suffixes = split(_street_suffixes, ":");
+  return rand_el(street_suffixes);
 }
 
 string Faker::building_number() { 
   int num_digits = (rand() % 3)+1;
-
   return to_string(rand() % (int) pow(10, num_digits));
 }
 
 string Faker::secondary_address() { 
-  const LangStrings formats = { "Apt. {num}", "Suite {num}" };
-
-  return fmt::format(rand_string(formats),
+  static vector<string> secondary_address_formats = split(_secondary_address_formats, ":");
+  return fmt::format(rand_el(secondary_address_formats),
     fmt::arg("num", building_number()) );
 }
 
 string Faker::street_address() { 
-  const LangStrings formats = { "{building_number} {street_name}",
-    "{building_number} {street_name} {secondary_address}"};
-
-  return fmt::format(rand_string(formats),
+  static vector<string> street_address_formats = split(_street_address_formats, ":");
+  return fmt::format(rand_el(street_address_formats),
     fmt::arg("building_number", building_number()), 
     fmt::arg("street_name", street_name()), 
     fmt::arg("secondary_address", secondary_address()) );
 };
 
 string Faker::free_email_domain() { 
-  const LangStrings domains = { "gmail.com", "yahoo.com", "hotmail.com" };
-
-  return rand_string(domains);
+  static vector<string> free_email_domains = split(_free_email_domains, ":");
+  return rand_el(free_email_domains);
 }
 
 string Faker::domain_name() { 
-  const LangStrings tlds = { "com", "com", "com", "com", "com", "com", "biz", 
-    "info", "net", "org" };
+  static vector<string> tlds = split(_tlds, ":");
 	const string legal_chars = "abcdefghijklmnopqrstuvwxyz0123456789-";
 
   string domain = last_name();
@@ -149,389 +96,46 @@ string Faker::domain_name() {
     return true;
   } );
 
-  return domain+"."+rand_string(tlds);
+  return domain+"."+rand_el(tlds);
 }
 
 string Faker::user_name() { 
-  const LangStrings formats = { "{last_name}.{first_name}", 
-    "{first_name}.{last_name}", "{first_name}{num}", "{letter}{last_name}" };
+  static vector<string> user_name_formats = split(_user_name_formats, ":");
 
   char letter = 'a';
   letter = char((int)letter + rand() % 26);
+  
+  // Lowercase it:
+  string fn = first_name();
+  transform(fn.begin(), fn.end(), fn.begin(), ::tolower); 
 
-  return fmt::format(rand_string(formats),
-    fmt::arg("first_name", first_name()), 
-    fmt::arg("last_name", last_name()), 
+  string ln = last_name();
+  transform(ln.begin(), ln.end(), ln.begin(), ::tolower); 
+
+  return fmt::format(rand_el(user_name_formats),
+    fmt::arg("first_name", fn), 
+    fmt::arg("last_name", ln), 
     fmt::arg("num", rand() % 100), 
     fmt::arg("letter", letter) );
 }
 
 string Faker::email() { 
-  const LangStrings formats = { "{user_name}@{domain_name}", 
-    "{user_name}@{free_email_domain}" };
-
-  return fmt::format(rand_string(formats),
+  static vector<string> email_formats = split(_email_formats, ":");
+  return fmt::format(rand_el(email_formats),
     fmt::arg("user_name", user_name()), 
     fmt::arg("domain_name", domain_name()), 
     fmt::arg("free_email_domain", free_email_domain()) );
 };
 
-constexpr string_view _first_name_male[] { 
-  "Aaron,Abdiel,Abdul,Abdullah,Abe,Abel,Abelardo,Abner,Abraham,Adalberto,Adam,"
-  "Adan,Adelbert,Adolf,Adolfo,Adolph,Adolphus,Adonis,Adrain,Adrian,Adriel,"
-  "Adrien,Afton,Agustin,Ahmad,Ahmed,Aidan,Aiden,Akeem,Al,Alan,Albert,Alberto,"
-  "Albin,Alden,Alec,Alejandrin,Alek,Alessandro,Alex,Alexander,Alexandre,"
-  "Alexandro,Alexie,Alexis,Alexys,Alexzander,Alf,Alfonso,Alfonzo,Alford,Alfred,"
-  "Alfredo,Ali,Allan,Allen,Alphonso,Alvah,Alvis,Amani,Amari,Ambrose,Americo,"
-  "Amir,Amos,Amparo,Anastacio,Anderson,Andre,Andres,Andrew,Andy,Angel,Angelo,"
-  "Angus,Anibal,Ansel,Ansley,Anthony,Antone,Antonio,Antwan,Antwon,Arch,"
-  "Archibald,Arden,Arely,Ari,Aric,Ariel,Arjun,Arlo,Armand,Armando,Armani,"
-  "Arnaldo,Arne,Arno,Arnold,Arnoldo,Arnulfo,Aron,Art,Arthur,Arturo,Arvel,Arvid,"
-  "Ashton,August,Augustus,Aurelio,Austen,Austin,Austyn,Avery,Axel,Ayden,Bailey,"
-  "Barney,Baron,Barrett,Barry,Bart,Bartholome,Barton,Baylee,Beau,Bell,Ben,"
-  "Benedict,Benjamin,Bennett,Bennie,Benny,Benton,Bernard,Bernardo,Bernhard,"
-  "Bernie,Berry,Berta,Bertha,Bertram,Bertrand,Bill,Billy,Blair,Blaise,Blake,"
-  "Blaze,Bo,Bobbie,Bobby,Boris,Boyd,Brad,Braden,Bradford,Bradley,Bradly,Brady,"
-  "Braeden,Brain,Brando,Brandon,Brandt,Brannon,Branson,Brant,Braulio,Braxton,"
-  "Brayan,Brendan,Brenden,Brendon,Brennan,Brennon,Brent,Bret,Brett,Brian,Brice,"
-  "Brock,Broderick,Brody,Brook,Brooks,Brown,Bruce,Bryce,Brycen,Bryon,Buck,Bud,"
-  "Buddy,Buford,Burley,Buster,Cade,Caden,Caesar,Cale,Caleb,Camden,Cameron,"
-  "Camren,Camron,Camryn,Candelario,Candido,Carey,Carleton,Carlo,Carlos,Carmel,"
-  "Carmelo,Carmine,Carol,Carroll,Carson,Carter,Cary,Casey,Casimer,Casimir,"
-  "Casper,Ceasar,Cecil,Cedrick,Celestino,Cesar,Chad,Chadd,Chadrick,Chaim,Chance"
-  ",Chandler,Charles,Charley,Charlie,Chase,Chauncey,Chaz,Chelsey,Chesley,"
-  "Chester,Chet,Chris,Christ,Christian,Christop,Christophe,Christopher,Cicero,"
-  "Cielo,Clair,Clark,Claud,Claude,Clay,Clemens,Clement,Cleo,Cletus,Cleve,"
-  "Cleveland,Clifford,Clifton,Clint,Clinton,Clovis,Cloyd,Clyde,Coby,Cody,Colby,"
-  "Cole,Coleman,Colin,Collin,Colt,Colten,Colton,Columbus,Conner,Connor,Conor,"
-  "Conrad,Constantin,Consuelo,Cooper,Corbin,Cordelia,Cordell,Cornelius,Cornell,"
-  "Cortez,Cory,Coty,Coy,Craig,Crawford,Cristian,Cristina,Cristobal,Cristopher,"
-  "Cruz,Cullen,Curt,Curtis,Cyril,Cyrus,Dagmar,Dale,Dallas,Dallin,Dalton,Dameon,"
-  "Damian,Damien,Damion,Damon,Dan,Dane,D\'angelo,Dangelo,Danial,Danny,Dante,"
-  "Daren,Darian,Darien,Dario,Darion,Darius,Daron,Darrel,Darrell,Darren,Darrick,"
-  "Darrin,Darrion,Darron,Darryl,Darwin,Daryl,Dashawn,Dave,David,Davin,Davion,"
-  "Davon,Davonte,Dawson,Dax,Dayne,Dayton,Dean,Deangelo,Declan,Dedric,Dedrick,"
-  "Dee,Deion,Dejon,Dejuan,Delaney,Delbert,Dell,Delmer,Demarco,Demarcus,Demario,"
-  "Demetrius,Demond,Denis,Dennis,Deon,Deondre,Deontae,Deonte,Dereck,Derek,"
-  "Derick,Deron,Derrick,Deshaun,Deshawn,Desmond,Destin,Devan,Devante,Deven,"
-  "Devin,Devon,Devonte,Devyn,Dewayne,Dewitt,Dexter,Diamond,Diego,Dillan,Dillon,"
-  "Dimitri,Dino,Dion,Dock,Domenic,Domenick,Domenico,Domingo,Dominic,Don,Donald,"
-  "Donato,Donavon,Donnell,Donnie,Donny,Dorcas,Dorian,Doris,Dorthy,Doug,Douglas,"
-  "Doyle,Drake,Dudley,Duncan,Durward,Dustin,Dusty,Dwight,Dylan,Earl,Earnest,"
-  "Easter,Easton,Ed,Edd,Eddie,Edgar,Edgardo,Edison,Edmond,Edmund,Eduardo,Edward"
-  ",Edwardo,Edwin,Efrain,Efren,Einar,Eino,Eladio,Elbert,Eldon,Eldred,Eleazar,"
-  "Eli,Elian,Elias,Eliezer,Elijah,Eliseo,Elliot,Elliott,Ellis,Ellsworth,Elmer,"
-  "Elmo,Elmore,Eloy,Elroy,Elton,Elvis,Elwin,Elwyn,Emanuel,Emerald,Emerson,Emery"
-  ",Emil,Emile,Emiliano,Emilio,Emmanuel,Emmet,Emmett,Emmitt,Emory,Enid,Enoch,"
-  "Enos,Enrico,Enrique,Ephraim,Eriberto,Eric,Erich,Erick,Erik,Erin,Erling,"
-  "Ernest,Ernesto,Ernie,Ervin,Erwin,Esteban,Estevan,Ethan,Ethel,Eugene,Eusebio,"
-  "Evan,Evans,Everardo,Everett,Evert,Ewald,Ewell,Ezekiel,Ezequiel,Ezra,Fabian,"
-  "Faustino,Fausto,Favian,Federico,Felipe,Felix,Felton,Fermin,Fern,Fernando,"
-  "Ferne,Fidel,Filiberto,Finn,Flavio,Fletcher,Florencio,Florian,Floy,Floyd,Ford"
-  ",Forest,Forrest,Foster,Francesco,Francis,Francisco,Franco,Frank,Frankie,"
-  "Franz,Fred,Freddie,Freddy,Frederic,Frederick,Frederik,Fredrick,Fredy,Freeman"
-  ",Friedrich,Fritz,Furman,Gabe,Gabriel,Gaetano,Gage,Gardner,Garett,Garfield,"
-  "Garland,Garnet,Garnett,Garret,Garrett,Garrick,Garrison,Garry,Garth,Gaston,"
-  "Gavin,Gay,Gayle,Gaylord,Gene,General,Gennaro,Geo,Geoffrey,George,Geovanni,"
-  "Geovanny,Geovany,Gerald,Gerard,Gerardo,Gerhard,German,Gerson,Gianni,Gideon,"
-  "Gilbert,Gilberto,Giles,Gillian,Gino,Giovani,Giovanni,Giovanny,Giuseppe,Glen,"
-  "Glennie,Godfrey,Golden,Gonzalo,Gordon,Grady,Graham,Grant,Granville,Grayce,"
-  "Grayson,Green,Greg,Gregg,Gregorio,Gregory,Greyson,Griffin,Grover,Guido,"
-  "Guillermo,Guiseppe,Gunnar,Gunner,Gus,Gussie,Gust,Gustave,Guy,Hadley,Hailey,"
-  "Hal,Haleigh,Haley,Halle,Hank,Hans,Hardy,Harley,Harmon,Harold,Harrison,Harry,"
-  "Harvey,Haskell,Hassan,Hayden,Hayley,Hazel,Hazle,Heber,Hector,Helmer,"
-  "Henderson,Henri,Henry,Herbert,Herman,Hermann,Herminio,Hershel,Hester,Hilario"
-  ",Hilbert,Hillard,Hilton,Hipolito,Hiram,Hobart,Holden,Hollis,Horace,Horacio,"
-  "Houston,Howard,Howell,Hoyt,Hubert,Hudson,Hugh,Humberto,Hunter,Hyman,Ian,"
-  "Ibrahim,Ignacio,Ignatius,Ike,Imani,Immanuel,Irving,Irwin,Isaac,Isac,Isadore,"
-  "Isai,Isaiah,Isaias,Isidro,Ismael,Isom,Israel,Issac,Izaiah,Jabari,Jace,Jacey,"
-  "Jacinto,Jack,Jackson,Jacques,Jaden,Jadon,Jaeden,Jaiden,Jaime,Jairo,Jake,"
-  "Jakob,Jaleel,Jalen,Jalon,Jamaal,Jamal,Jamar,Jamarcus,Jamel,Jameson,Jamey,"
-  "Jamie,Jamil,Jamir,Jamison,Jan,Janick,Jaquan,Jared,Jaren,Jarod,Jaron,Jarred,"
-  "Jarrell,Jarret,Jarrett,Jarrod,Jarvis,Jasen,Jasmin,Jason,Jasper,Javier,Javon,"
-  "Javonte,Jay,Jayce,Jaycee,Jayde,Jayden,Jaydon,Jaylan,Jaylen,Jaylin,Jaylon,"
-  "Jayme,Jayson,Jean,Jed,Jedediah,Jedidiah,Jeff,Jefferey,Jeffery,Jeffrey,Jeffry"
-  ",Jennings,Jensen,Jerad,Jerald,Jeramie,Jeramy,Jerel,Jeremie,Jeremy,Jermain,"
-  "Jermey,Jerod,Jerome,Jeromy,Jerrell,Jerrod,Jerrold,Jerry,Jess,Jesse,Jessie,"
-  "Jessy,Jesus,Jett,Jettie,Jevon,Jillian,Jimmie,Jimmy,Jo,Joan,Joany,Joaquin,"
-  "Jocelyn,Joe,Joel,Joesph,Joey,Johan,Johann,Johathan,John,Johnathan,Johnathon,"
-  "Johnnie,Johnny,Johnpaul,Johnson,Jon,Jonas,Jonatan,Jonathan,Jonathon,Jordan,"
-  "Jordi,Jordon,Jordy,Jordyn,Jorge,Jose,Joseph,Josh,Joshua,Joshuah,Josiah,Josue"
-  ",Jovan,Jovani,Jovanny,Jovany,Judah,Judd,Judge,Judson,Jules,Julian,Julien,"
-  "Julio,Julius,Junior,Junius,Justen,Justice,Juston,Justus,Justyn,Juvenal,Juwan"
-  ",Kacey,Kade,Kaden,Kadin,Kale,Kaleb,Kaleigh,Kaley,Kameron,Kamren,Kamron,"
-  "Kamryn,Kane,Kareem,Karl,Karley,Karson,Kay,Kayden,Kayleigh,Kayley,Keagan,"
-  "Keanu,Keaton,Keegan,Keeley,Keenan,Keith,Kellen,Kelley,Kelton,Kelvin,Ken,"
-  "Kendall,Kendrick,Kennedi,Kennedy,Kenneth,Kennith,Kenny,Kenton,Kenyon,Keon,"
-  "Keshaun,Keshawn,Keven,Kevin,Kevon,Keyon,Keyshawn,Khalid,Khalil,Kian,Kiel,"
-  "Kieran,Kiley,Kim,King,Kip,Kirk,Kobe,Koby,Kody,Kolby,Kole,Korbin,Korey,Kory,"
-  "Kraig,Kris,Kristian,Kristofer,Kristoffer,Kristopher,Kurt,Kurtis,Kyle,Kyleigh"
-  ",Kyler,Ladarius,Lafayette,Lamar,Lambert,Lamont,Lance,Landen,Lane,Laron,Larry"
-  ",Larue,Laurel,Lavern,Laverna,Laverne,Lavon,Lawrence,Lawson,Layne,Lazaro,Lee,"
-  "Leif,Leland,Lemuel,Lennie,Lenny,Leo,Leon,Leonard,Leonardo,Leone,Leonel,"
-  "Leopold,Leopoldo,Lesley,Lester,Levi,Lew,Lewis,Lexus,Liam,Lincoln,Lindsey,"
-  "Linwood,Lionel,Lisandro,Llewellyn,Lloyd,Logan,Lon,London,Lonnie,Lonny,Lonzo,"
-  "Lorenz,Lorenza,Lorenzo,Louie,Louisa,Lourdes,Louvenia,Lowell,Loy,Loyal,Lucas,"
-  "Luciano,Lucio,Lucious,Lucius,Ludwig,Luigi,Luis,Lukas,Lula,Luther,Lyric,Mac,"
-  "Macey,Mack,Mackenzie,Madisen,Madison,Madyson,Magnus,Major,Makenna,Malachi,"
-  "Malcolm,Mallory,Manley,Manuel,Manuela,Marc,Marcel,Marcelino,Marcellus,"
-  "Marcelo,Marco,Marcos,Marcus,Mariano,Mario,Mark,Markus,Marley,Marlin,Marlon,"
-  "Marques,Marquis,Marshall,Martin,Marty,Marvin,Mason,Mateo,Mathew,Mathias,Matt"
-  ",Matteo,Maurice,Mauricio,Maverick,Mavis,Max,Maxime,Maximilian,Maximillian,"
-  "Maximo,Maximus,Maxine,Maxwell,Maynard,Mckenna,Mckenzie,Mekhi,Melany,Melvin,"
-  "Melvina,Merl,Merle,Merlin,Merritt,Mervin,Micah,Michael,Michale,Micheal,"
-  "Michel,Miguel,Mike,Mikel,Milan,Miles,Milford,Miller,Milo,Milton,Misael,"
-  "Mitchel,Mitchell,Modesto,Mohamed,Mohammad,Mohammed,Moises,Monroe,Monserrat,"
-  "Monserrate,Montana,Monte,Monty,Morgan,Moriah,Morris,Mortimer,Morton,Mose,"
-  "Moses,Moshe,Muhammad,Murl,Murphy,Murray,Mustafa,Myles,Myrl,Myron,Napoleon,"
-  "Narciso,Nash,Nasir,Nat,Nathan,Nathanael,Nathanial,Nathaniel,Nathen,Neal,Ned,"
-  "Neil,Nels,Nelson,Nestor,Newell,Newton,Nicholas,Nicholaus,Nick,Nicklaus,"
-  "Nickolas,Nico,Nicola,Nicolas,Nigel,Nikko,Niko,Nikolas,Nils,Noah,Noble,Noe,"
-  "Noel,Nolan,Norbert,Norberto,Norris,Norval,Norwood,Obie,Oda,Odell,Okey,Ola,"
-  "Olaf,Ole,Olen,Olin,Oliver,Omari,Omer,Oral,Oran,Oren,Orin,Orion,Orland,"
-  "Orlando,Orlo,Orrin,Orval,Orville,Osbaldo,Osborne,Oscar,Osvaldo,Oswald,"
-  "Oswaldo,Otho,Otis,Ottis,Otto,Owen,Pablo,Paolo,Paris,Parker,Patrick,Paul,"
-  "Paxton,Payton,Pedro,Percival,Percy,Perry,Pete,Peter,Peyton,Philip,Pierce,"
-  "Pierre,Pietro,Porter,Presley,Preston,Price,Prince,Quentin,Quincy,Quinn,"
-  "Quinten,Quinton,Rafael,Raheem,Rahul,Raleigh,Ralph,Ramiro,Ramon,Randal,"
-  "Randall,Randi,Randy,Ransom,Raoul,Raphael,Rashad,Rashawn,Rasheed,Raul,Raven,"
-  "Ray,Raymond,Raymundo,Reagan,Reece,Reed,Reese,Regan,Reggie,Reginald,Reid,"
-  "Reilly,Reinhold,Remington,Rene,Reuben,Rex,Rey,Reyes,Reymundo,Reynold,Rhett,"
-  "Rhiannon,Ricardo,Richard,Richie,Richmond,Rick,Rickey,Rickie,Ricky,Rico,"
-  "Rigoberto,Riley,Robb,Robbie,Robert,Roberto,Robin,Rocio,Rocky,Rod,Roderick,"
-  "Rodger,Rodolfo,Rodrick,Rodrigo,Roel,Rogelio,Roger,Rogers,Rolando,Rollin,"
-  "Roman,Ron,Ronaldo,Ronny,Roosevelt,Rory,Rosario,Roscoe,Rosendo,Ross,Rowan,"
-  "Rowland,Roy,Royal,Royce,Ruben,Rudolph,Rudy,Rupert,Russ,Russel,Russell,Rusty,"
-  "Ryan,Ryann,Ryder,Rylan,Ryleigh,Ryley,Sage,Saige,Salvador,Salvatore,Sam,Samir"
-  ",Sammie,Sammy,Samson,Sanford,Santa,Santiago,Santino,Santos,Saul,Savion,"
-  "Schuyler,Scot,Scottie,Scotty,Seamus,Sean,Sebastian,Sedrick,Selmer,Seth,Shad,"
-  "Shane,Shaun,Shawn,Shayne,Sheldon,Sheridan,Sherman,Sherwood,Sid,Sidney,"
-  "Sigmund,Sigrid,Sigurd,Silas,Sim,Simeon,Skye,Skylar,Sofia,Soledad,Solon,Sonny"
-  ",Spencer,Stan,Stanford,Stanley,Stanton,Stefan,Stephan,Stephen,Stephon,"
-  "Sterling,Steve,Stevie,Stewart,Stone,Stuart,Sven,Sydney,Sylvan,Sylvester,Tad,"
-  "Talon,Tanner,Tate,Tatum,Taurean,Tavares,Taylor,Ted,Terence,Terrance,Terrell,"
-  "Terrence,Terrill,Terry,Tevin,Thad,Thaddeus,Theo,Theodore,Theron,Thomas,"
-  "Thurman,Tillman,Timmothy,Timmy,Timothy,Tito,Titus,Tobin,Toby,Tod,Tom,Tomas,"
-  "Tommie,Toney,Toni,Tony,Torey,Torrance,Torrey,Toy,Trace,Tracey,Travis,Travon,"
-  "Tre,Tremaine,Tremayne,Trent,Trenton,Trever,Trevion,Trevor,Trey,Tristian,"
-  "Tristin,Triston,Troy,Trystan,Turner,Tyler,Tyree,Tyreek,Tyrel,Tyrell,Tyrese,"
-  "Tyrique,Tyshawn,Tyson,Ubaldo,Ulices,Ulises,Unique,Urban,Uriah,Uriel,Valentin"
-  ",Van,Vance,Vaughn,Vern,Verner,Vernon,Vicente,Victor,Vidal,Vince,Vincent,"
-  "Vincenzo,Vinnie,Virgil,Vito,Vladimir,Wade,Waino,Waldo,Walker,Wallace,Walter,"
-  "Walton,Ward,Warren,Watson,Waylon,Wayne,Webster,Weldon,Wellington,Wendell,"
-  "Werner,Westley,Weston,Wilber,Wilbert,Wilburn,Wiley,Wilford,Wilfred,Wilfredo,"
-  "Wilfrid,Wilhelm,Will,Willard,William,Willis,Willy,Wilmer,Wilson,Wilton,"
-  "Winfield,Winston,Woodrow,Wyatt,Wyman,Xavier,Xzavier,Xander,Zachariah,Zachary"
-  ",Zachery,Zack,Zackary,Zackery,Zakary,Zander,Zane,Zechariah,Zion" };
-
-constexpr string_view _first_name_female[] { 
-  "Aaliyah,Abagail,Abbey,Abbie,Abbigail,Abby,Abigail,Abigale,Abigayle,Ada,Adah,"
-  "Adaline,Addie,Addison,Adela,Adele,Adelia,Adeline,Adell,Adella,Adelle,"
-  "Aditya,Adriana,Adrianna,Adrienne,Aglae,Agnes,Agustina,Aida,Aileen,Aimee,"
-  "Aisha,Aiyana,Alaina,Alana,Alanis,Alanna,Alayna,Alba,Alberta,Albertha,"
-  "Albina,Alda,Aleen,Alejandra,Alena,Alene,Alessandra,Alessia,Aletha,Alexa,"
-  "Alexandra,Alexandrea,Alexandria,Alexandrine,Alexane,Alexanne,Alfreda,Alia,"
-  "Alice,Alicia,Alisa,Alisha,Alison,Alivia,Aliya,Aliyah,Aliza,Alize,Allene,"
-  "Allie,Allison,Ally,Alta,Althea,Alva,Alvena,Alvera,Alverta,Alvina,Alyce,"
-  "Alycia,Alysa,Alysha,Alyson,Alysson,Amalia,Amanda,Amara,Amaya,Amber,Amelia,"
-  "Amelie,Amely,America,Amie,Amina,Amira,Amiya,Amy,Amya,Ana,Anabel,Anabelle,"
-  "Anahi,Anais,Anastasia,Andreane,Andreanne,Angela,Angelica,Angelina,Angeline"
-  ",Angelita,Angie,Anika,Anissa,Anita,Aniya,Aniyah,Anjali,Anna,Annabel,"
-  "Annabell,Annabelle,Annalise,Annamae,Annamarie,Anne,Annetta,Annette,Annie,"
-  "Antoinette,Antonetta,Antonette,Antonia,Antonietta,Antonina,Anya,April,Ara,"
-  "Araceli,Aracely,Ardella,Ardith,Ariane,Arianna,Arielle,Arlene,Arlie,Arvilla"
-  ",Aryanna,Asa,Asha,Ashlee,Ashleigh,Ashley,Ashly,Ashlynn,Ashtyn,Asia,Assunta"
-  ",Astrid,Athena,Aubree,Aubrey,Audie,Audra,Audreanne,Audrey,Augusta,"
-  "Augustine,Aurelia,Aurelie,Aurore,Autumn,Ava,Avis,Ayana,Ayla,Aylin,Baby,"
-  "Bailee,Barbara,Beatrice,Beaulah,Bella,Belle,Berenice,Bernadette,Bernadine,"
-  "Berneice,Bernice,Berniece,Bernita,Bert,Beryl,Bessie,Beth,Bethany,Bethel,"
-  "Betsy,Bette,Bettie,Betty,Bettye,Beulah,Beverly,Bianka,Billie,Birdie,Blanca"
-  ",Blanche,Bonita,Bonnie,Brandi,Brandy,Brandyn,Breana,Breanna,Breanne,Brenda"
-  ",Brenna,Bria,Briana,Brianne,Bridget,Bridgette,Bridie,Brielle,Brigitte,"
-  "Brionna,Brisa,Britney,Brittany,Brooke,Brooklyn,Bryana,Bulah,Burdette,"
-  "Burnice,Caitlyn,Caleigh,Cali,Calista,Callie,Camila,Camilla,Camille,Camylle"
-  ",Candace,Candice,Candida,Cara,Carissa,Carlee,Carley,Carli,Carlie,Carlotta,"
-  "Carmela,Carmella,Carmen,Carolanne,Carole,Carolina,Caroline,Carolyn,"
-  "Carolyne,Carrie,Casandra,Cassandra,Cassandre,Cassidy,Cassie,Catalina,"
-  "Caterina,Catharine,Catherine,Cathrine,Cathryn,Cathy,Cayla,Cecelia,Cecile,"
-  "Cecilia,Celestine,Celia,Celine,Chanel,Chanelle,Charity,Charlene,Charlotte,"
-  "Chasity,Chaya,Chelsea,Chelsie,Cheyanne,Cheyenne,Chloe,Christa,Christelle,"
-  "Christiana,Christina,Christine,Christy,Chyna,Ciara,Cierra,Cindy,Citlalli,"
-  "Claire,Clara,Clarabelle,Clare,Clarissa,Claudia,Claudie,Claudine,Clementina"
-  ",Clementine,Clemmie,Cleora,Cleta,Clotilde,Colleen,Concepcion,Connie,"
-  "Constance,Cora,Coralie,Cordia,Cordie,Corene,Corine,Corrine,Cortney,"
-  "Courtney,Creola,Cristal,Crystal,Crystel,Cydney,Cynthia,Dahlia,Daija,Daisha"
-  ",Daisy,Dakota,Damaris,Dana,Dandre,Daniela,Daniella,Danielle,Danika,Dannie,"
-  "Danyka,Daphne,Daphnee,Daphney,Darby,Dariana,Darlene,Dasia,Dawn,Dayana,"
-  "Dayna,Deanna,Deborah,Deja,Dejah,Delfina,Delia,Delilah,Della,Delores,Delpha"
-  ",Delphia,Delphine,Delta,Demetris,Dena,Desiree,Dessie,Destany,Destinee,"
-  "Destiney,Destini,Destiny,Diana,Dianna,Dina,Dixie,Dolly,Dolores,Domenica,"
-  "Dominique,Donna,Dora,Dorothea,Dorothy,Dorris,Dortha,Dovie,Drew,Duane,Dulce"
-  ",Earlene,Earline,Earnestine,Ebba,Ebony,Eda,Eden,Edna,Edwina,Edyth,Edythe,"
-  "Effie,Eileen,Elaina,Elda,Eldora,Eldridge,Eleanora,Eleanore,Electa,Elena,"
-  "Elenor,Elenora,Eleonore,Elfrieda,Eliane,Elinor,Elinore,Elisa,Elisabeth,"
-  "Elise,Elisha,Elissa,Eliza,Elizabeth,Ella,Ellen,Ellie,Elmira,Elna,Elnora,"
-  "Elody,Eloisa,Eloise,Elouise,Elsa,Else,Elsie,Elta,Elva,Elvera,Elvie,Elyse,"
-  "Elyssa,Elza,Emelia,Emelie,Emely,Emie,Emilia,Emilie,Emily,Emma,Emmalee,"
-  "Emmanuelle,Emmie,Emmy,Ena,Enola,Era,Erica,Ericka,Erika,Erna,Ernestina,"
-  "Ernestine,Eryn,Esmeralda,Esperanza,Esta,Estefania,Estel,Estell,Estella,"
-  "Estelle,Esther,Estrella,Etha,Ethelyn,Ethyl,Ettie,Eudora,Eugenia,Eula,Eulah"
-  ",Eulalia,Euna,Eunice,Eva,Evalyn,Evangeline,Eve,Eveline,Evelyn,Everette,"
-  "Evie,Fabiola,Fae,Fannie,Fanny,Fatima,Fay,Faye,Felicia,Felicita,Felicity,"
-  "Felipa,Filomena,Fiona,Flavie,Fleta,Flo,Florence,Florida,Florine,Flossie,"
-  "Frances,Francesca,Francisca,Freda,Frederique,Freeda,Freida,Frida,Frieda,"
-  "Gabriella,Gabrielle,Gail,Genesis,Genevieve,Genoveva,Georgette,Georgiana,"
-  "Georgianna,Geraldine,Gerda,Germaine,Gerry,Gertrude,Gia,Gilda,Gina,Giovanna"
-  ",Gisselle,Gladyce,Gladys,Glenda,Glenna,Gloria,Golda,Grace,Gracie,Graciela,"
-  "Gregoria,Greta,Gretchen,Guadalupe,Gudrun,Gwen,Gwendolyn,Hailee,Hailie,"
-  "Halie,Hallie,Hanna,Hannah,Harmony,Hassie,Hattie,Haven,Haylee,Haylie,Heath,"
-  "Heather,Heaven,Heidi,Helen,Helena,Helene,Helga,Hellen,Heloise,Henriette,"
-  "Hermina,Herminia,Herta,Hertha,Hettie,Hilda,Hildegard,Hillary,Hilma,Hollie,"
-  "Holly,Hope,Hortense,Hosea,Hulda,Icie,Ida,Idell,Idella,Ila,Ilene,Iliana,Ima"
-  ",Imelda,Imogene,Ines,Irma,Isabel,Isabell,Isabella,Isabelle,Isobel,Itzel,"
-  "Iva,Ivah,Ivory,Ivy,Izabella,Jacinthe,Jackeline,Jackie,Jacklyn,Jacky,Jaclyn"
-  ",Jacquelyn,Jacynthe,Jada,Jade,Jadyn,Jaida,Jailyn,Jakayla,Jalyn,Jammie,Jana"
-  ",Janae,Jane,Janelle,Janessa,Janet,Janice,Janie,Janis,Janiya,Jannie,Jany,"
-  "Jaquelin,Jaqueline,Jaunita,Jayda,Jayne,Jazlyn,Jazmin,Jazmyn,Jazmyne,"
-  "Jeanette,Jeanie,Jeanne,Jena,Jenifer,Jennie,Jennifer,Jennyfer,Jermaine,"
-  "Jessica,Jessika,Jessyca,Jewel,Jewell,Joana,Joanie,Joanne,Joannie,Joanny,"
-  "Jodie,Jody,Joelle,Johanna,Jolie,Jordane,Josefa,Josefina,Josephine,Josiane,"
-  "Josianne,Josie,Joy,Joyce,Juana,Juanita,Jude,Judy,Julia,Juliana,Julianne,"
-  "Julie,Juliet,June,Justina,Justine,Kaci,Kacie,Kaela,Kaelyn,Kaia,Kailee,"
-  "Kailey,Kailyn,Kaitlin,Kaitlyn,Kali,Kallie,Kamille,Kara,Karelle,Karen,Kari,"
-  "Kariane,Karianne,Karina,Karine,Karlee,Karli,Karlie,Karolann,Kasandra,Kasey"
-  ",Kassandra,Katarina,Katelin,Katelyn,Katelynn,Katharina,Katherine,Katheryn,"
-  "Kathleen,Kathlyn,Kathryn,Kathryne,Katlyn,Katlynn,Katrina,Katrine,Kattie,"
-  "Kavon,Kaya,Kaycee,Kayla,Kaylah,Kaylee,Kayli,Kaylie,Kaylin,Keara,Keely,"
-  "Keira,Kelli,Kellie,Kelly,Kelsi,Kelsie,Kendra,Kenna,Kenya,Kenyatta,Kiana,"
-  "Kianna,Kiara,Kiarra,Kiera,Kimberly,Kira,Kirsten,Kirstin,Kitty,Krista,"
-  "Kristin,Kristina,Kristy,Krystal,Krystel,Krystina,Kyla,Kylee,Kylie,Kyra,"
-  "Lacey,Lacy,Laila,Laisha,Laney,Larissa,Laura,Lauren,Laurence,Lauretta,"
-  "Lauriane,Laurianne,Laurie,Laurine,Laury,Lauryn,Lavada,Lavina,Lavinia,"
-  "Lavonne,Layla,Lea,Leann,Leanna,Leanne,Leatha,Leda,Leila,Leilani,Lela,Lelah,"
-  "Lelia,Lempi,Lenna,Lenora,Lenore,Leola,Leonie,Leonor,Leonora,Leora,Lera,"
-  "Leslie,Lesly,Lessie,Leta,Letha,Letitia,Lexi,Lexie,Lia,Liana,Libbie,Libby,"
-  "Lila,Lilian,Liliana,Liliane,Lilla,Lillian,Lilliana,Lillie,Lilly,Lily,"
-  "Lilyan,Lina,Linda,Lindsay,Linnea,Linnie,Lisa,Lisette,Litzy,Liza,Lizeth,"
-  "Lizzie,Lois,Lola,Lolita,Loma,Lonie,Lora,Loraine,Loren,Lorena,Lori,Lorine,"
-  "Lorna,Lottie,Lou,Loyce,Lucie,Lucienne,Lucile,Lucinda,Lucy,Ludie,Lue,Luella,"
-  "Luisa,Lulu,Luna,Lupe,Lura,Lurline,Luz,Lyda,Lydia,Lyla,Lynn,Lysanne,Mabel,"
-  "Mabelle,Mable,Maci,Macie,Macy,Madaline,Madalyn,Maddison,Madeline,Madelyn,"
-  "Madelynn,Madge,Madie,Madilyn,Madisyn,Madonna,Mae,Maegan,Maeve,Mafalda,"
-  "Magali,Magdalen,Magdalena,Maggie,Magnolia,Maia,Maida,Maiya,Makayla,"
-  "Makenzie,Malika,Malinda,Mallie,Malvina,Mandy,Mara,Marcelina,Marcella,"
-  "Marcelle,Marcia,Margaret,Margarete,Margarett,Margaretta,Margarette,"
-  "Margarita,Marge,Margie,Margot,Margret,Marguerite,Maria,Mariah,Mariam,"
-  "Marian,Mariana,Mariane,Marianna,Marianne,Maribel,Marie,Mariela,Marielle,"
-  "Marietta,Marilie,Marilou,Marilyne,Marina,Marion,Marisa,Marisol,Maritza,"
-  "Marjolaine,Marjorie,Marjory,Marlee,Marlen,Marlene,Marquise,Marta,Martina,"
-  "Martine,Mary,Maryam,Maryjane,Maryse,Mathilde,Matilda,Matilde,Mattie,Maud,"
-  "Maude,Maudie,Maureen,Maurine,Maxie,Maximillia,May,Maya,Maybell,Maybelle,"
-  "Maye,Maymie,Mayra,Mazie,Mckayla,Meagan,Meaghan,Meda,Megane,Meggie,Meghan,"
-  "Melba,Melisa,Melissa,Mellie,Melody,Melyna,Melyssa,Mercedes,Meredith,Mertie"
-  ",Meta,Mia,Micaela,Michaela,Michele,Michelle,Mikayla,Millie,Mina,Minerva,"
-  "Minnie,Miracle,Mireille,Mireya,Missouri,Misty,Mittie,Modesta,Mollie,Molly,"
-  "Mona,Monica,Monique,Mossie,Mozell,Mozelle,Muriel,Mya,Myah,Mylene,Myra,"
-  "Myriam,Myrna,Myrtice,Myrtie,Myrtis,Myrtle,Nadia,Nakia,Name,Nannie,Naomi,"
-  "Naomie,Natalia,Natalie,Natasha,Nayeli,Nedra,Neha,Nelda,Nella,Nelle,Nellie,"
-  "Neoma,Nettie,Neva,Nia,Nichole,Nicole,Nicolette,Nikita,Nikki,Nina,Noelia,"
-  "Noemi,Noemie,Noemy,Nola,Nona,Nora,Norene,Norma,Nova,Novella,Nya,Nyah,"
-  "Nyasia,Oceane,Ocie,Octavia,Odessa,Odie,Ofelia,Oleta,Olga,Ollie,Oma,Ona,"
-  "Onie,Opal,Ophelia,Ora,Orie,Orpha,Otha,Otilia,Ottilie,Ova,Ozella,Paige,"
-  "Palma,Pamela,Pansy,Pascale,Pasquale,Pat,Patience,Patricia,Patsy,Pattie,"
-  "Paula,Pauline,Pearl,Pearlie,Pearline,Peggie,Penelope,Petra,Phoebe,Phyllis,"
-  "Pink,Pinkie,Piper,Polly,Precious,Princess,Priscilla,Providenci,Prudence,"
-  "Queen,Queenie,Rachael,Rachel,Rachelle,Rae,Raegan,Rafaela,Rahsaan,Raina,"
-  "Ramona,Raphaelle,Raquel,Reanna,Reba,Rebeca,Rebecca,Rebeka,Rebekah,Reina,"
-  "Renee,Ressie,Reta,Retha,Retta,Reva,Reyna,Rhea,Rhianna,Rhoda,Rita,River,"
-  "Roberta,Robyn,Roma,Romaine,Rosa,Rosalee,Rosalia,Rosalind,Rosalinda,Rosalyn"
-  ",Rosamond,Rosanna,Rose,Rosella,Roselyn,Rosemarie,Rosemary,Rosetta,Rosie,"
-  "Rosina,Roslyn,Rossie,Rowena,Roxane,Roxanne,Rozella,Rubie,Ruby,Rubye,Ruth,"
-  "Ruthe,Ruthie,Rylee,Sabina,Sabrina,Sabryna,Sadie,Sadye,Sallie,Sally,Salma,"
-  "Samanta,Samantha,Samara,Sandra,Sandrine,Sandy,Santina,Sarah,Sarai,Sarina,"
-  "Sasha,Savanah,Savanna,Savannah,Scarlett,Selena,Selina,Serena,Serenity,"
-  "Shaina,Shakira,Shana,Shanel,Shanelle,Shania,Shanie,Shaniya,Shanna,Shannon,"
-  "Shanny,Shanon,Shany,Sharon,Shawna,Shaylee,Shayna,Shea,Sheila,Shemar,"
-  "Shirley,Shyann,Shyanne,Sibyl,Sienna,Sierra,Simone,Sincere,Sister,Skyla,"
-  "Sonia,Sonya,Sophia,Sophie,Stacey,Stacy,Stefanie,Stella,Stephania,Stephanie"
-  ",Stephany,Summer,Sunny,Susan,Susana,Susanna,Susie,Suzanne,Syble,Sydnee,"
-  "Sydni,Sydnie,Sylvia,Tabitha,Talia,Tamara,Tamia,Tania,Tanya,Tara,Taryn,"
-  "Tatyana,Taya,Teagan,Telly,Teresa,Tess,Tessie,Thalia,Thea,Thelma,Theodora,"
-  "Theresa,Therese,Theresia,Thora,Tia,Tiana,Tianna,Tiara,Tierra,Tiffany,Tina,"
-  "Tomasa,Tracy,Tressa,Tressie,Treva,Trinity,Trisha,Trudie,Trycia,Twila,Tyra,"
-  "Una,Ursula,Vada,Valentina,Valentine,Valerie,Vallie,Vanessa,Veda,Velda,"
-  "Vella,Velma,Velva,Vena,Verda,Verdie,Vergie,Verla,Verlie,Verna,Vernice,"
-  "Vernie,Verona,Veronica,Vesta,Vicenta,Vickie,Vicky,Victoria,Vida,Vilma,"
-  "Vincenza,Viola,Violet,Violette,Virgie,Virginia,Virginie,Vita,Viva,Vivian,"
-  "Viviane,Vivianne,Vivien,Vivienne,Wanda,Wava,Wendy,Whitney,Wilhelmine,Willa,"
-  "Willie,Willow,Wilma,Winifred,Winnifred,Winona,Yadira,Yasmeen,Yasmin,"
-  "Yasmine,Yazmin,Yesenia,Yessenia,Yolanda,Yoshiko,Yvette,Yvonne,Zaria,Zelda,"
-  "Zella,Zelma,Zena,Zetta,Zita,Zoe,Zoey,Zoie,Zoila,Zola,Zora,Zula"
-};
 
 string Faker::first_name() { 
-  vector<string> suffixes = split(
-    (rand() % 2) ? _first_name_male : _first_name_female, ",");
-
-  return suffixes[rand() % suffixes.size()];
+  static vector<string> female_names = split(_first_name_female, ":");
+  static vector<string> male_names = split(_first_name_male, ":");
+  return rand_el((rand() % 2) ? female_names : male_names);
 }
 
-constexpr string_view _last_name[] { 
-  "Abbott,Abernathy,Abshire,Adams,Altenwerth,Anderson,Ankunding,Armstrong,Auer,"
-  "Aufderhar,Bahringer,Bailey,Balistreri,Barrows,Bartell,Bartoletti,Barton,"
-  "Bashirian,Batz,Bauch,Baumbach,Bayer,Beahan,Beatty,Bechtelar,Becker,"
-  "Bednar,Beer,Beier,Berge,Bergnaum,Bergstrom,Bernhard,Bernier,Bins,Blanda,"
-  "Blick,Block,Bode,Boehm,Bogan,Bogisich,Borer,Bosco,Botsford,Boyer,Boyle,"
-  "Bradtke,Brakus,Braun,Breitenberg,Brekke,Brown,Bruen,Buckridge,Carroll,"
-  "Carter,Cartwright,Casper,Cassin,Champlin,Christiansen,Cole,Collier,"
-  "Collins,Conn,Connelly,Conroy,Considine,Corkery,Cormier,Corwin,Cremin,"
-  "Crist,Crona,Cronin,Crooks,Cruickshank,Cummerata,Cummings,Dach,D\'Amore,"
-  "Daniel,Dare,Daugherty,Davis,Deckow,Denesik,Dibbert,Dickens,Dicki,"
-  "Dickinson,Dietrich,Donnelly,Dooley,Douglas,Doyle,DuBuque,Durgan,Ebert,"
-  "Effertz,Eichmann,Emard,Emmerich,Erdman,Ernser,Fadel,Fahey,Farrell,Fay,"
-  "Feeney,Feest,Feil,Ferry,Fisher,Flatley,Frami,Franecki,Friesen,Fritsch,"
-  "Funk,Gaylord,Gerhold,Gerlach,Gibson,Gislason,Gleason,Gleichner,Glover,"
-  "Goldner,Goodwin,Gorczany,Gottlieb,Goyette,Grady,Graham,Grant,Green,"
-  "Greenfelder,Greenholt,Grimes,Gulgowski,Gusikowski,Gutkowski,Gutmann,Haag"
-  ",Hackett,Hagenes,Hahn,Haley,Halvorson,Hamill,Hammes,Hand,Hane,Hansen,"
-  "Harber,Harris,Hartmann,Harvey,Hauck,Hayes,Heaney,Heathcote,Hegmann,"
-  "Heidenreich,Heller,Herman,Hermann,Hermiston,Herzog,Hessel,Hettinger,"
-  "Hickle,Hill,Hills,Hilpert,Hintz,Hirthe,Hodkiewicz,Hoeger,Homenick,Hoppe,"
-  "Howe,Howell,Hudson,Huel,Huels,Hyatt,Jacobi,Jacobs,Jacobson,Jakubowski,"
-  "Jaskolski,Jast,Jenkins,Jerde,Johns,Johnson,Johnston,Jones,Kassulke,"
-  "Kautzer,Keebler,Keeling,Kemmer,Kerluke,Kertzmann,Kessler,Kiehn,Kihn,"
-  "Kilback,King,Kirlin,Klein,Kling,Klocko,Koch,Koelpin,Koepp,Kohler,"
-  "Konopelski,Koss,Kovacek,Kozey,Krajcik,Kreiger,Kris,Kshlerin,Kub,Kuhic,"
-  "Kuhlman,Kuhn,Kulas,Kunde,Kunze,Kuphal,Kutch,Kuvalis,Labadie,Lakin,Lang,"
-  "Langosh,Langworth,Larkin,Larson,Leannon,Lebsack,Ledner,Leffler,Legros,"
-  "Lehner,Lemke,Lesch,Leuschke,Lind,Lindgren,Littel,Little,Lockman,Lowe,"
-  "Lubowitz,Lueilwitz,Luettgen,Lynch,Macejkovic,Maggio,Mann,Mante,Marks,"
-  "Marquardt,Marvin,Mayer,Mayert,McClure,McCullough,McDermott,McGlynn,"
-  "McKenzie,McLaughlin,Medhurst,Mertz,Metz,Miller,Mills,Mitchell,Moen,Mohr,"
-  "Monahan,Moore,Morar,Morissette,Mosciski,Mraz,Mueller,Muller,Murazik,"
-  "Murphy,Murray,Nader,Nicolas,Nienow,Nikolaus,Nitzsche,Nolan,Oberbrunner,"
-  "O\'Connell,O\'Conner,O\'Hara,O\'Keefe,O\'Kon,Okuneva,Olson,Ondricka,"
-  "O\'Reilly,Orn,Ortiz,Osinski,Pacocha,Padberg,Pagac,Parisian,Parker,Paucek,"
-  "Pfannerstill,Pfeffer,Pollich,Pouros,Powlowski,Predovic,Price,Prohaska,"
-  "Prosacco,Purdy,Quigley,Quitzon,Rath,Ratke,Rau,Raynor,Reichel,Reichert,"
-  "Reilly,Reinger,Rempel,Renner,Reynolds,Rice,Rippin,Ritchie,Robel,Roberts,"
-  "Rodriguez,Rogahn,Rohan,Rolfson,Romaguera,Roob,Rosenbaum,Rowe,Ruecker,"
-  "Runolfsdottir,Runolfsson,Runte,Russel,Rutherford,Ryan,Sanford,"
-  "Satterfield,Sauer,Sawayn,Schaden,Schaefer,Schamberger,Schiller,Schimmel,"
-  "Schinner,Schmeler,Schmidt,Schmitt,Schneider,Schoen,Schowalter,Schroeder,"
-  "Schulist,Schultz,Schumm,Schuppe,Schuster,Senger,Shanahan,Shields,Simonis"
-  ",Sipes,Skiles,Smith,Smitham,Spencer,Spinka,Sporer,Stamm,Stanton,Stark,"
-  "Stehr,Steuber,Stiedemann,Stokes,Stoltenberg,Stracke,Streich,Stroman,"
-  "Strosin,Swaniawski,Swift,Terry,Thiel,Thompson,Tillman,Torp,Torphy,Towne,"
-  "Toy,Trantow,Tremblay,Treutel,Tromp,Turcotte,Turner,Ullrich,Upton,"
-  "Vandervort,Veum,Volkman,Von,VonRueden,Waelchi,Walker,Walsh,Walter,Ward,"
-  "Waters,Watsica,Weber,Wehner,Weimann,Weissnat,Welch,West,White,Wiegand,"
-  "Wilderman,Wilkinson,Will,Williamson,Willms,Windler,Wintheiser,Wisoky,"
-  "Wisozk,Witting,Wiza,Wolf,Wolff,Wuckert,Wunsch,Wyman,Yost,Yundt,Zboncak,"
-  "Zemlak,Ziemann,Zieme,Zulauf" };
-
 string Faker::last_name() { 
-  vector<string> names = split(_last_name, ",");
-  return names[rand() % names.size()];
+  static vector<string> last_names = split(_last_names, ":");
+  return rand_el(last_names);
 }
 

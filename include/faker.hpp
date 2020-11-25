@@ -29,6 +29,8 @@ class Faker {
     std::string phone_number();
     std::string job_title();
 
+    static std::string random_decimal_string(int nLength);
+
   private: 
     template <typename T>
     std::string rand_el(T els) { return els[rand() % els.size()]; }

@@ -48,27 +48,25 @@ class CrmCompany : public Model::Instance<CrmCompany> {
       CRM_COMPANY_COLUMNS
     #undef COLUMN
 
-    inline static const unsigned int auth_token_size = 128;
-
     inline static const Model::Definition Definition {
       "id",
       "crm_companies", 
       Model::ColumnTypes({
-        {"id",                   COL_TYPE(long)},
+        {"id", COL_TYPE(long)},
         #define COLUMN(a, t, _) {#a, COL_TYPE(t)},
-          CRM_COMPANY_COLUMNS
+        CRM_COMPANY_COLUMNS
         #undef COLUMN
       }),
       Model::Validations( {
         /*
         // TODO
-        'common_name' => 'max:1000',
         'company_type_id' => 'exists:company_types,id',
          */
         Model::Validates::Matches("email", 
           prails::utilities::regex_from_string("/.+@.+/")),
         Model::Validates::NotNull("name"),
         Model::Validates::NotNull("common_name"),
+        Model::Validates::MaxLength("common_name", 1000),
         Model::Validates::NotNull("company_type_id"),
         Model::Validates::NotNull("street_prefix_id"),
         Model::Validates::NotNull("city"),

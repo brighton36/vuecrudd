@@ -21,6 +21,12 @@ FUNC_RANDOM_STRING(street_suffix)
 FUNC_RANDOM_STRING(free_email_domain)
 FUNC_RANDOM_STRING(job_title)
 
+string Faker::random_decimal_string(int nLength) {
+	string ret;
+	for(unsigned int i=0; i<nLength; i++) ret.append(to_string((rand() % 10)));
+  return ret; 
+}
+
 string Faker::company() { 
   static vector<string> company_formats = split(_company_formats, ":");
   return fmt::format(rand_el(company_formats),
@@ -117,17 +123,8 @@ string Faker::first_name() {
 
 string Faker::phone_number() {
   static vector<string> phone_number_formats = split(_phone_number_formats, ":");
-
-  char area_code[5];
-  char exchange_code[5];
-  char four_digits[6];
-
-  snprintf((char*) &area_code, 5, "%3d", (rand() % 999)+1);
-  snprintf((char*) &exchange_code, 5, "%3d", (rand() % 999)+1);
-  snprintf((char*) &four_digits, 6, "%4d", (rand() % 9999)+1);
-
   return fmt::format( rand_el(phone_number_formats),
-    fmt::arg("four_digits", string(four_digits)), 
-    fmt::arg("area_code", string(area_code)), 
-    fmt::arg("exchange_code", string(exchange_code)) );
+    fmt::arg("four_digits", Faker::random_decimal_string(4)), 
+    fmt::arg("area_code", Faker::random_decimal_string(3)), 
+    fmt::arg("exchange_code", Faker::random_decimal_string(3)) );
 }

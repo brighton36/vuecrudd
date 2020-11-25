@@ -27,9 +27,9 @@ class CrmPerson : public Model::Instance<CrmPerson> {
       "id",
       "crm_people", 
       Model::ColumnTypes({
-        {"id",                   COL_TYPE(long)},
+        {"id", COL_TYPE(long)},
         #define COLUMN(a, t, _) {#a, COL_TYPE(t)},
-          CRM_PERSON_COLUMNS
+        CRM_PERSON_COLUMNS
         #undef COLUMN
       }),
       Model::Validations( {

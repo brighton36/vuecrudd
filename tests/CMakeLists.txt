@@ -17,3 +17,4 @@ add_definitions(-DPROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}")
 add_definitions(-DTESTS_CONFIG_FILE="${PROJECT_SOURCE_DIR}/config/test-server.yml")
 
 declare_test(auth_controller_test)
+declare_test(faker_test)

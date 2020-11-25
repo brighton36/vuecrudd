@@ -29,9 +29,9 @@ class CrmPosition : public Model::Instance<CrmPosition> {
       "id",
       "crm_positions", 
       Model::ColumnTypes({
-        {"id",                   COL_TYPE(long)},
+        {"id", COL_TYPE(long)},
         #define COLUMN(a, t, _) {#a, COL_TYPE(t)},
-          CRM_POSITION_COLUMNS
+        CRM_POSITION_COLUMNS
         #undef COLUMN
       }),
       Model::Validations( {
@@ -39,13 +39,6 @@ class CrmPosition : public Model::Instance<CrmPosition> {
         // TODO
         'person_id' => 'required|exists:people,id',
         'company_id' => 'required|exists:companies,id',
-        'name' => 'string|max:255|nullable',
-        'phone' => 'string|max:50|nullable',
-        'phone_2' => 'string|max:50|nullable',
-        'phone_3' => 'string|max:50|nullable',
-        'email' => 'string|max:255|nullable',
-        'email_2' => 'string|max:255|nullable',
-        'comment' => 'string|max:500|nullable',
          */
         Model::Validates::NotNull("person_id"),
         Model::Validates::NotNull("company_id"),
@@ -53,6 +46,13 @@ class CrmPosition : public Model::Instance<CrmPosition> {
           prails::utilities::regex_from_string("/.+@.+/")),
         Model::Validates::Matches("email2", 
           prails::utilities::regex_from_string("/.+@.+/")),
+        Model::Validates::MaxLength("name", 255),
+        Model::Validates::MaxLength("phone", 50),
+        Model::Validates::MaxLength("phone_2", 50),
+        Model::Validates::MaxLength("phone_3", 50),
+        Model::Validates::MaxLength("email", 255),
+        Model::Validates::MaxLength("email_2", 255),
+        Model::Validates::MaxLength("comment", 500),
         Model::Validates::IsBoolean("active"),
         Model::Validates::NotNull("created_at"),
         Model::Validates::NotNull("updated_at")

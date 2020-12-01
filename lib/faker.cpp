@@ -1,16 +1,14 @@
 #include "faker.hpp"
 #include "fmt/fmt.h"
-#include "utilities.hpp"
 
 #include "faker.en_us.hpp"
 
 #define FUNC_RANDOM_STRING(m) \
-  string Faker::m() { static vector<string> p = split(_##m, ":"); return rand_el(p); }
+  string Faker::m() { static auto p = sv_to_vector(_##m); return rand_el(p); }
 
 using namespace std;
-using namespace prails::utilities;
 
-string Faker::locale() { return {_locale->data(), _locale->size()}; }
+string Faker::locale() { return {_locale.data(), _locale.size()}; }
 
 FUNC_RANDOM_STRING(last_name)
 FUNC_RANDOM_STRING(suffix)
@@ -28,14 +26,14 @@ string Faker::random_decimal_string(int nLength) {
 }
 
 string Faker::company() { 
-  static vector<string> company_formats = split(_company_formats, ":");
+  static vector<string> company_formats = sv_to_vector(_company_formats);
   return fmt::format(rand_el(company_formats),
     fmt::arg("last_name", last_name()), 
     fmt::arg("company_suffix", company_suffixes()) );
 }
 
 string Faker::city() { 
-  static vector<string> city_formats = split(_city_formats, ":");
+  static vector<string> city_formats = sv_to_vector(_city_formats);
   return fmt::format(rand_el(city_formats),
     fmt::arg("last_name", last_name()), 
     fmt::arg("first_name", first_name()), 
@@ -44,7 +42,7 @@ string Faker::city() {
 }
 
 string Faker::street_name() { 
-  static vector<string> street_formats = split(_street_formats, ":");
+  static vector<string> street_formats = sv_to_vector(_street_formats);
   return fmt::format(rand_el(street_formats),
     fmt::arg("last_name", last_name()), 
     fmt::arg("first_name", first_name()), 
@@ -57,13 +55,13 @@ string Faker::building_number() {
 }
 
 string Faker::secondary_address() { 
-  static vector<string> secondary_address_formats = split(_secondary_address_formats, ":");
+  static vector<string> secondary_address_formats = sv_to_vector(_secondary_address_formats);
   return fmt::format(rand_el(secondary_address_formats),
     fmt::arg("num", building_number()) );
 }
 
 string Faker::street_address() { 
-  static vector<string> street_address_formats = split(_street_address_formats, ":");
+  static vector<string> street_address_formats = sv_to_vector(_street_address_formats);
   return fmt::format(rand_el(street_address_formats),
     fmt::arg("building_number", building_number()), 
     fmt::arg("street_name", street_name()), 
@@ -71,7 +69,7 @@ string Faker::street_address() {
 };
 
 string Faker::domain_name() { 
-  static vector<string> tlds = split(_tlds, ":");
+  static vector<string> tlds = sv_to_vector(_tlds);
   const string legal_chars = "abcdefghijklmnopqrstuvwxyz0123456789-";
 
   string domain = last_name();
@@ -88,7 +86,7 @@ string Faker::domain_name() {
 }
 
 string Faker::user_name() { 
-  static vector<string> user_name_formats = split(_user_name_formats, ":");
+  static vector<string> user_name_formats = sv_to_vector(_user_name_formats);
 
   char letter = 'a';
   letter = char((int)letter + rand() % 26);
@@ -108,7 +106,7 @@ string Faker::user_name() {
 }
 
 string Faker::email() { 
-  static vector<string> email_formats = split(_email_formats, ":");
+  static vector<string> email_formats = sv_to_vector(_email_formats);
   return fmt::format(rand_el(email_formats),
     fmt::arg("user_name", user_name()), 
     fmt::arg("domain_name", domain_name()), 
@@ -116,13 +114,13 @@ string Faker::email() {
 };
 
 string Faker::first_name() { 
-  static vector<string> female_names = split(_firstname_female, ":");
-  static vector<string> male_names = split(_firstname_male, ":");
+  static vector<string> female_names = sv_to_vector(_firstname_female);
+  static vector<string> male_names = sv_to_vector(_firstname_male);
   return rand_el((rand() % 2) ? female_names : male_names);
 }
 
 string Faker::phone_number() {
-  static vector<string> phone_number_formats = split(_phone_number_formats, ":");
+  static vector<string> phone_number_formats = sv_to_vector(_phone_number_formats);
   return fmt::format( rand_el(phone_number_formats),
     fmt::arg("four_digits", Faker::random_decimal_string(4)), 
     fmt::arg("area_code", Faker::random_decimal_string(3)), 

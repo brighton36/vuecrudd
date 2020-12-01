@@ -31,6 +31,14 @@ class Faker {
 
     static std::string random_decimal_string(int nLength);
 
+    template <std::size_t N>
+    static std::vector<std::string> sv_to_vector(const std::string_view (&sv)[N]) {
+      std::vector<std::string> ret;
+      for(unsigned int i = 0; i < N; i++) 
+        ret.push_back(std::string({sv[i].data(), sv[i].size()}));
+      return ret;
+    }
+
   private: 
     template <typename T>
     std::string rand_el(T els) { return els[rand() % els.size()]; }

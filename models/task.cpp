@@ -2,4 +2,4 @@
 // in the libprails source, might as well reuse that here
 #include "rest_controller_test.hpp"
 
-REGISTER_MODEL(Task)
+PSYM_MODEL(Task)

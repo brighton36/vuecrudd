@@ -2,12 +2,12 @@
 #include "model.hpp"
 #include "model_factory.hpp"
 
-#define CRM_PERSON_COLUMNS                                            \
+#define CRM_PERSON_COLUMNS                         \
   COLUMN(firstname,   std::string, "varchar(128)") \
   COLUMN(lastname,    std::string, "varchar(128)") \
   COLUMN(distinction, std::string, "varchar(128)") \
-  COLUMN(sex_id,      int,				 "int") \
-  COLUMN(language_id, int,				 "int") \
+  COLUMN(sex_id,      int,				 "int")          \
+  COLUMN(language_id, int,				 "int")          \
   COLUMN(email,       std::string, "varchar(128)") \
   COLUMN(phone,       std::string, "varchar(128)") \
   COLUMN(active,      int,         "int")          \

@@ -2,7 +2,7 @@
 
 using namespace std;
 
-REGISTER_MODEL(CrmPersonComment);
+PSYM_MODEL(CrmPersonComment);
 
 void CrmPersonComment::Migrate() {
   CreateTable({

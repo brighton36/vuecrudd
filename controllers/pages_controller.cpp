@@ -3,7 +3,7 @@
 using namespace std;
 using namespace Pistache;
 
-REGISTER_CONTROLLER(PagesController)
+PSYM_CONTROLLER(PagesController)
 
 void PagesController::Routes(Rest::Router& r, shared_ptr<Controller::Instance> controller) {
   using namespace Rest;

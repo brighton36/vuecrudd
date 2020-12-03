@@ -3,7 +3,7 @@
 
 using namespace std;
 
-REGISTER_MODEL(CrmPosition);
+PSYM_MODEL(CrmPosition);
 
 void CrmPosition::Migrate() {
   CreateTable({

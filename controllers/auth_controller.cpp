@@ -5,7 +5,7 @@ using namespace std;
 using namespace Pistache;
 using namespace prails::utilities;
 
-REGISTER_CONTROLLER(AuthController)
+PSYM_CONTROLLER(AuthController)
 
 void AuthController::Routes(Rest::Router& r, shared_ptr<Controller::Instance> controller) {
   using namespace Rest;

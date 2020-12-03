@@ -4,4 +4,4 @@
 
 #include "rest_controller_test.hpp"
 
-REGISTER_CONTROLLER(TasksController)
+PSYM_CONTROLLER(TasksController)

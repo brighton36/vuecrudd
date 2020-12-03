@@ -2,7 +2,7 @@
 
 using namespace std;
 
-REGISTER_MODEL(CrmStreetPrefix);
+PSYM_MODEL(CrmStreetPrefix);
 
 void CrmStreetPrefix::Migrate() {
   CreateTable({

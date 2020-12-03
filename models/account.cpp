@@ -8,7 +8,7 @@
 
 using namespace std;
 
-REGISTER_MODEL(Account)
+PSYM_MODEL(Account)
 
 void Account::Migrate() {
   CreateTable({

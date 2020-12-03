@@ -30,9 +30,7 @@ class AuthControllerTest : public PrailsControllerTest {
     }
 };
 
-INIT_MODEL_REGISTRY();
-INIT_CONTROLLER_REGISTRY();
-INIT_PRAILS_TEST_ENVIRONMENT()
+PSYM_TEST_ENVIRONMENT();
 
 TEST_F(AuthControllerTest, fail_post_parse) {
   Account account = jsmith();

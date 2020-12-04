@@ -2,12 +2,12 @@
 #include "model.hpp"
 #include "model_factory.hpp"
 
-#define CRM_POSITION_TASK_COLUMNS                        \
-  COLUMN(position_id,              int,         "int")      \
-  COLUMN(task_id,              int,         "int")      \
-  COLUMN(active,                 int,         "int")      \
-  COLUMN(created_at,             std::tm,     "datetime") \
-  COLUMN(updated_at,             std::tm,     "datetime")
+#define CRM_POSITION_TASK_COLUMNS          \
+  COLUMN(position_id, int,     "int")      \
+  COLUMN(task_id,     int,     "int")      \
+  COLUMN(active,      int,     "int")      \
+  COLUMN(created_at,  std::tm, "datetime") \
+  COLUMN(updated_at,  std::tm, "datetime")
 
 class CrmPositionTask : public Model::Instance<CrmPositionTask> { 
   public:

@@ -1,0 +1,3 @@
+#include "crm_person_comment_types_controller.hpp"
+
+PSYM_CONTROLLER(CrmPersonCommentTypesController)

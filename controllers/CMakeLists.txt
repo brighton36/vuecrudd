@@ -9,7 +9,7 @@ foreach(CONTROLLER_SRC IN LISTS CONTROLLER_SOURCES)
 	get_filename_component(CONTROLLER ${CONTROLLER_SRC} NAME_WE)
 	message("-- Found Controller - " ${CONTROLLER})
   list(APPEND CONTROLLERS ${CONTROLLER})
-	add_library(${CONTROLLER} ${CONTROLLER_SRC})
+  add_library(${CONTROLLER} STATIC ${CONTROLLER_SRC})
 	target_link_libraries(${CONTROLLER} ${SHARED_OBJ_DEP})
 endforeach(CONTROLLER_SRC)
 

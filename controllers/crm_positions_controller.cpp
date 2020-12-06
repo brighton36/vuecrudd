@@ -6,7 +6,7 @@ PSYM_CONTROLLER(CrmPositionsController)
 using namespace std;
 using namespace prails::utilities;
 
-std::vector<CrmPosition> modelSelect(Controller::PostBody &) {
+vector<CrmPosition> CrmPositionsController::modelSelect(Controller::PostBody &) {
 	return CrmPosition::Select( fmt::format(
     "select * from {table_name} {joins} order by {order_by}", 
 		fmt::arg("table_name", CrmPosition::Definition.table_name),

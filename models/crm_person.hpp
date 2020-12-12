@@ -16,7 +16,7 @@
 
 class CrmPerson : public Model::Instance<CrmPerson> { 
   public:
-    MODEL_CONSTRUCTOR(CrmPerson)
+    using Model::Instance<CrmPerson>::Instance;
 
     MODEL_ACCESSOR(id, long)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)

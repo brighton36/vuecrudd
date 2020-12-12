@@ -11,7 +11,7 @@
 
 class CrmLanguage : public Model::Instance<CrmLanguage> { 
   public:
-    MODEL_CONSTRUCTOR(CrmLanguage)
+    using Model::Instance<CrmLanguage>::Instance;
 
     MODEL_ACCESSOR(id, long)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)

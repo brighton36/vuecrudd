@@ -11,7 +11,7 @@
 
 class CrmStreetPrefix : public Model::Instance<CrmStreetPrefix> { 
   public:
-    MODEL_CONSTRUCTOR(CrmStreetPrefix)
+    using Model::Instance<CrmStreetPrefix>::Instance;
 
     MODEL_ACCESSOR(id, long)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)

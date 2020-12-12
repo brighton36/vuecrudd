@@ -11,7 +11,7 @@
 
 class CrmPositionTask : public Model::Instance<CrmPositionTask> { 
   public:
-    MODEL_CONSTRUCTOR(CrmPositionTask)
+    using Model::Instance<CrmPositionTask>::Instance;
 
     MODEL_ACCESSOR(id, long)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)

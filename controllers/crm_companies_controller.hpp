@@ -8,6 +8,9 @@ public Controller::RestInstance<CrmCompanyController, CrmCompany> {
     static constexpr std::string_view rest_prefix = { "/api/crm/companies" };
     using Controller::RestInstance<CrmCompanyController, CrmCompany>::RestInstance;
 
+    Controller::Response index(const Pistache::Rest::Request&);
+
   private:
+    virtual std::vector<CrmCompany> modelSelect(Controller::PostBody &);
     static ControllerRegister<CrmCompanyController> reg;
 };

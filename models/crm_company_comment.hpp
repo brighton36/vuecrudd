@@ -13,7 +13,7 @@
 
 class CrmCompanyComment : public Model::Instance<CrmCompanyComment> { 
   public:
-    MODEL_CONSTRUCTOR(CrmCompanyComment)
+    using Model::Instance<CrmCompanyComment>::Instance;
 
     MODEL_ACCESSOR(id, long)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)

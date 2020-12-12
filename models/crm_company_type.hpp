@@ -11,7 +11,7 @@
 
 class CrmCompanyType : public Model::Instance<CrmCompanyType> { 
   public:
-    MODEL_CONSTRUCTOR(CrmCompanyType)
+    using Model::Instance<CrmCompanyType>::Instance;
 
     MODEL_ACCESSOR(id, long)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)
@@ -31,7 +31,8 @@ class CrmCompanyType : public Model::Instance<CrmCompanyType> {
         Model::Validates::NotNull("name"),
         Model::Validates::MaxLength("name", 200),
         Model::Validates::NotNull("code"),
-        Model::Validates::MaxLength("name", 3),
+        // TODO: What's this supposed to be?
+        //Model::Validates::MaxLength("name", 3),
 
         Model::Validates::IsBoolean("active"),
         Model::Validates::NotNull("created_at"),

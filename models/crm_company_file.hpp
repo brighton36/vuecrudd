@@ -13,7 +13,7 @@
 
 class CrmCompanyFile : public Model::Instance<CrmCompanyFile> { 
   public:
-    MODEL_CONSTRUCTOR(CrmCompanyFile)
+    using Model::Instance<CrmCompanyFile>::Instance;
 
     MODEL_ACCESSOR(id, long)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)

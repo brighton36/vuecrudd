@@ -17,7 +17,7 @@
 
 class Account : public Model::Instance<Account> { 
   public:
-    MODEL_CONSTRUCTOR(Account)
+    using Model::Instance<Account>::Instance;
 
     MODEL_ACCESSOR(id, long)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)

@@ -41,7 +41,7 @@
 
 class CrmCompany : public Model::Instance<CrmCompany> { 
   public:
-    MODEL_CONSTRUCTOR(CrmCompany)
+    using Model::Instance<CrmCompany>::Instance;
 
     MODEL_ACCESSOR(id, long)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)

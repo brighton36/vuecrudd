@@ -63,6 +63,7 @@ class CrmCompaniesControllerEnvironment : public PrailsEnvironment {
       tm now = Model::NowUTC();
 
       cout << "Inside setup, running the pseudo-migration" << endl;
+
       // This is something of a migration:
       CrmCompanyType agag_company_type(agag_company_type_record);
       agag_company_type.updated_at(now);
@@ -77,6 +78,13 @@ class CrmCompaniesControllerEnvironment : public PrailsEnvironment {
       if (!agag_street_prefix.isValid())
         throw runtime_error("Unable to setup agag street_prefix");
       agag_street_prefix.save();
+
+      CrmCompany agag(agag_company_record);
+      agag.updated_at(now);
+      agag.created_at(now);
+      if (!agag.isValid())
+        throw runtime_error("Unable to setup agag");
+      agag.save();
     }
 };
 
@@ -136,10 +144,9 @@ TEST_F(CrmCompanyControllerTest, success) {
 
   ASSERT_EQ(res->status, 200);
 
-  //cout << "Companies: \n" << res->body << endl;
+  cout << "Companies: \n" << res->body << endl;
   // TODO
   auto response = nlohmann::json::parse(res->body);
-  //ASSERT_EQ(response["error"], "Invalid credentials");
   ASSERT_EQ(nlohmann::json::parse(_agag_company), response);
 
 }

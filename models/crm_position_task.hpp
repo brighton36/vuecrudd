@@ -13,16 +13,16 @@ class CrmPositionTask : public Model::Instance<CrmPositionTask> {
   public:
     using Model::Instance<CrmPositionTask>::Instance;
 
-    MODEL_ACCESSOR(id, long)
+    MODEL_ACCESSOR(id, long long int)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)
     CRM_POSITION_TASK_COLUMNS
     #undef COLUMN
 
     inline static const Model::Definition Definition {
       "id",
-      "crm_position_tasks", 
+      "position_tasks", 
       Model::ColumnTypes({
-        {"id", COL_TYPE(long)},
+        {"id", COL_TYPE(long long int)},
         #define COLUMN(a, t, _) {#a, COL_TYPE(t)},
         CRM_POSITION_TASK_COLUMNS
         #undef COLUMN

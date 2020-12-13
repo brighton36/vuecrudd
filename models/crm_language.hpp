@@ -13,16 +13,16 @@ class CrmLanguage : public Model::Instance<CrmLanguage> {
   public:
     using Model::Instance<CrmLanguage>::Instance;
 
-    MODEL_ACCESSOR(id, long)
+    MODEL_ACCESSOR(id, long long int)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)
       CRM_LANGUAGE_COLUMNS
     #undef COLUMN
 
     inline static const Model::Definition Definition {
       "id",
-      "crm_languages", 
+      "languages", 
       Model::ColumnTypes({
-        {"id", COL_TYPE(long)},
+        {"id", COL_TYPE(long long int)},
         #define COLUMN(a, t, _) {#a, COL_TYPE(t)},
         CRM_LANGUAGE_COLUMNS
         #undef COLUMN

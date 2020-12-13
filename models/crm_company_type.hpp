@@ -13,16 +13,16 @@ class CrmCompanyType : public Model::Instance<CrmCompanyType> {
   public:
     using Model::Instance<CrmCompanyType>::Instance;
 
-    MODEL_ACCESSOR(id, long)
+    MODEL_ACCESSOR(id, long long int)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)
       CRM_COMPANY_TYPE_COLUMNS
     #undef COLUMN
 
     inline static const Model::Definition Definition {
       "id",
-      "crm_company_types", 
+      "company_types", 
       Model::ColumnTypes({
-        {"id", COL_TYPE(long)},
+        {"id", COL_TYPE(long long int)},
         #define COLUMN(a, t, _) {#a, COL_TYPE(t)},
         CRM_COMPANY_TYPE_COLUMNS
         #undef COLUMN

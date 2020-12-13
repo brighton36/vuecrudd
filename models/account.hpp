@@ -19,7 +19,7 @@ class Account : public Model::Instance<Account> {
   public:
     using Model::Instance<Account>::Instance;
 
-    MODEL_ACCESSOR(id, long)
+    MODEL_ACCESSOR(id, long long int)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)
       ACCOUNT_COLUMNS
     #undef COLUMN
@@ -30,7 +30,7 @@ class Account : public Model::Instance<Account> {
       "id",
       "accounts", 
       Model::ColumnTypes({
-        {"id",                   COL_TYPE(long)},
+        {"id",                   COL_TYPE(long long int)},
         {"password",             COL_TYPE(std::string)},
         #define COLUMN(a, t, _) {#a, COL_TYPE(t)},
           ACCOUNT_COLUMNS

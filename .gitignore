@@ -2,3 +2,5 @@ TODO.txt
 *.swo
 *.swp
 build
+config/*.yml
+config/*.defaults

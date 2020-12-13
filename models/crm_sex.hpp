@@ -16,16 +16,16 @@ class CrmSex : public Model::Instance<CrmSex> {
   public:
     using Model::Instance<CrmSex>::Instance;
 
-    MODEL_ACCESSOR(id, long)
+    MODEL_ACCESSOR(id, long long int)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)
       CRM_SEX_COLUMNS
     #undef COLUMN
 
     inline static const Model::Definition Definition {
       "id",
-      "crm_sexes", 
+      "sexes", 
       Model::ColumnTypes({
-        {"id", COL_TYPE(long)},
+        {"id", COL_TYPE(long long int)},
         #define COLUMN(a, t, _) {#a, COL_TYPE(t)},
         CRM_SEX_COLUMNS
         #undef COLUMN

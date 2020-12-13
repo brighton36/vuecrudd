@@ -9,7 +9,6 @@
 using namespace std;
 
 class CrmCompanyControllerTest : public PrailsControllerTest {
-
   protected:
     // This output was copy and pasted from a faker seed in the laravel 
     // implementation:
@@ -32,7 +31,6 @@ class CrmCompanyControllerTest : public PrailsControllerTest {
       "street_prefix\":{\"id\":1,\"name\":\"\",\"description\":\"-\",\"active\""
       ":1,\"created_at\":null,\"updated_at\":null}}"
     };
-
 };
 
 class CrmCompaniesControllerEnvironment : public PrailsEnvironment {
@@ -64,6 +62,7 @@ class CrmCompaniesControllerEnvironment : public PrailsEnvironment {
       
       tm now = Model::NowUTC();
 
+      cout << "Inside setup, running the pseudo-migration" << endl;
       // This is something of a migration:
       CrmCompanyType agag_company_type(agag_company_type_record);
       agag_company_type.updated_at(now);
@@ -131,7 +130,6 @@ TEST_F(CrmCompanyControllerTest, test_json_parse) {
 }
 
 TEST_F(CrmCompanyControllerTest, success) {
-  cout << "Hiyah" << endl;
   // TODO: We'll need to authenticate ...
 
   auto res = browser().Get("/api/crm/companies");
@@ -142,5 +140,6 @@ TEST_F(CrmCompanyControllerTest, success) {
   // TODO
   auto response = nlohmann::json::parse(res->body);
   //ASSERT_EQ(response["error"], "Invalid credentials");
+  ASSERT_EQ(nlohmann::json::parse(_agag_company), response);
 
 }

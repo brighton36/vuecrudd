@@ -17,17 +17,6 @@ void Account::Migrate() {
     #undef COLUMN
     {"password", "varchar(100)"},
   });
-
-  tm tm_time = Model::NowUTC();
-  auto first_account = Account({
-    {"first_name",  "Guest"},
-    {"last_name",   "User"},
-    {"email",       "guest@vue-crud.com"},
-    {"created_at",  tm_time},
-    {"updated_at",  tm_time}
-  });
-  first_account.password("demopassword123");
-  first_account.save();
 };
 
 optional<string> Account::full_name() { 

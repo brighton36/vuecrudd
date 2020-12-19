@@ -30,7 +30,6 @@ class CrmStreetPrefix : public Model::Instance<CrmStreetPrefix> {
       Model::Validations( {
         Model::Validates::NotNull("name"),
         Model::Validates::MaxLength("name", 10),
-        Model::Validates::NotNull("description"),
         Model::Validates::MaxLength("description", 100),
         Model::Validates::IsBoolean("active"),
         Model::Validates::NotNull("created_at"),

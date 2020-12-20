@@ -25,7 +25,7 @@ TEST(faker, locale) {
 TEST(faker, sv_to_vector) {
   auto last_names = Faker::sv_to_vector(_last_name);
 
-  EXPECT_EQ( 475, last_names.size() );
+  EXPECT_EQ( 473, last_names.size() );
   EXPECT_EQ( "Abbott", last_names[0] );
-  EXPECT_EQ( "Zulauf", last_names[474] );
+  EXPECT_EQ( "Zulauf", last_names[472] );
 }

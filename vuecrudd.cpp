@@ -12,6 +12,10 @@
 #include "crm_language.hpp"
 #include "crm_person.hpp"
 #include "crm_position.hpp"
+#include "permission.hpp"
+#include "user.hpp"
+#include "user_permission.hpp"
+#include "user_type.hpp"
 
 using namespace std;
 using namespace prails;
@@ -22,67 +26,49 @@ unsigned int mode_seed(ConfigParser &, shared_ptr<spdlog::logger> logger,
   string program_name = filesystem::path(args[0]).filename();
   logger->info("{} seed started", program_name);
 
-  tm tm_time = Model::NowUTC();
+  tm now = Model::NowUTC();
   auto faker = Faker();
 
-  /*
-  // TODO:
-  DB::table('user_types')->insert([ 
-    ['name' => 'Guest',
-    'read' => true,
-    'insert' => false,
-    'update' => false,
-    'delete' => false,
-    'admin' => false,
-    'active' => true],
+  auto uts = vector<Model::Record>({
+    { {"name", "Guest"}, {"read", 1}, {"ins", 0}, {"upd", 0}, {"del", 0}, 
+      {"admin", 0}, {"active", 1}, {"updated_at", now}, {"created_at", now} },
+    { {"name", "User"}, {"read", 1}, {"ins", 1}, {"upd", 1}, {"del", 1}, 
+      {"admin", 0}, {"active", 1}, {"updated_at", now}, {"created_at", now} },
+    { {"name", "Admin"}, {"read", 1}, {"ins", 1}, {"upd", 1}, {"del", 1}, 
+      {"admin", 1}, {"active", 1}, {"updated_at", now}, {"created_at", now} }
+    });
 
-    ['name' => 'User',
-    'read' => true,
-    'insert' => true,
-    'update' => true,
-    'delete' => true,
-    'admin' => false,
-    'active' => true],
-    ['name' => 'Admin',
-    'read' => true,
-    'insert' => true,
-    'update' => true,
-    'delete' => true,
-    'admin' => true,
-    'active' => true]
-  ]);
+  for_each(uts.begin(), uts.end(), [&](const auto &u) { UserType(u).save(); });
 
-  DB::table('users')->insert([[
-    'name' => 'admin',
-    'email' => 'admin@admin.com',
-    'password' => bcrypt('1234'),
-    'user_type_id' => 3
-  ]]);
-
-  DB::table('permissions')->insert([
-    ['name' => 'CRM',
-    'code' => 'CRM',
-    'path' => 'crm'
-    ],
-    ['name' => 'administracja',
-    'code' => 'ADMIN',
-    'path' => 'admin'
-    ]
-  ]);
-
-  DB::table('user_permissions')->insert([
-    ['user_id' => 1,'permission_id' => 1],
-    ['user_id' => 1,'permission_id' => 2]
-  ]);
-  */
-  // Account:
-  auto first_account = Account({
-    {"first_name",  "Admin"},
-    {"last_name",   "User"},
+  // User:
+  auto admin_user = User({
+    {"name",        "Admin"},
     {"email",       "admin@admin.com"},
-    {"created_at",  tm_time},
-    {"updated_at",  tm_time}
+    {"user_type_id", 3},
+    {"created_at",  now},
+    {"updated_at",  now}
   });
+  // TODO: admin_user.password("1234");
+  admin_user.save();
+  
+  // Permissions:
+  Permission({ {"name", "CRM"}, {"code", "CRM"}, {"path", "crm"},
+    {"active", 1}, {"created_at", now}, {"updated_at", now} }).save();
+
+  Permission({ {"name", "administracja"}, {"code", "ADMIN"}, {"path", "admin"},
+    {"active", 1}, {"created_at", now}, {"updated_at", now} }).save();
+
+  // User Permissions:
+  UserPermission({ {"user_id", 1}, {"permission_id", 1},
+    {"active", 1}, {"created_at", now}, {"updated_at", now} }).save();
+
+  UserPermission({ {"user_id", 1}, {"permission_id", 2},
+    {"active", 1}, {"created_at", now}, {"updated_at", now} }).save();
+
+  // Account:
+  // TODO: I think we can remove this in liue of users...
+  auto first_account = Account({ {"first_name", "Admin"}, {"last_name", "User"},
+    {"email", "admin@admin.com"}, {"created_at", now}, {"updated_at", now} });
   first_account.password("1234");
   first_account.save();
 
@@ -91,87 +77,45 @@ unsigned int mode_seed(ConfigParser &, shared_ptr<spdlog::logger> logger,
     {"Sklepy", "SKL"}, {"Organizacje", "ORG"} };
 
   for_each(company_types.begin(), company_types.end(), [&](const auto &p) { 
-    auto company_type = CrmCompanyType({
-      {"name",       p.first},
-      {"code",       p.second},
-      {"active",     1},
-      {"created_at", tm_time},
-      {"updated_at", tm_time}
-    });
-    company_type.save();
+    CrmCompanyType({ {"name", p.first}, {"code", p.second}, {"active", 1}, 
+    {"created_at", now}, {"updated_at", now}}).save();
   });
 
   // Sexes
-  auto sex_dash = CrmSex({ 
-    {"name",       "-"}, 
-    {"code",       "-"}, 
-    {"eng_name",   "-"}, 
-    {"eng_code",   "-"}, 
-    {"priority",   1},
-    {"active",     1},
-    {"created_at", tm_time},
-    {"updated_at", tm_time}
-    });
-  sex_dash.save();
+  CrmSex({ {"name", "-"}, {"code", "-"}, {"eng_name", "-"}, {"eng_code", "-"}, 
+    {"priority", 1}, {"active", 1}, {"created_at", now}, 
+    {"updated_at", now} }).save();
 
-  auto sex_female = CrmSex({ 
-    {"name",       "Kobieta"},
-    {"code",       "K"},
-    {"eng_name",   "Female"}, 
-    {"eng_code",   "F"},
-    {"priority",   2},
-    {"active",     1},
-    {"created_at", tm_time},
-    {"updated_at", tm_time}
-  });
-  sex_female.save();
+  CrmSex({ {"name", "Kobieta"}, {"code", "K"}, {"eng_name", "Female"}, 
+    {"eng_code", "F"}, {"priority", 2}, {"active", 1}, {"created_at", now},
+    {"updated_at", now} }).save();
 
-  auto sex_male = CrmSex({ 
-    {"name",       "Mężczyzna"},
-    {"code",       "M"},
-    {"eng_name",   "Male"}, 
-    {"eng_code",   "M"}, 
-    {"priority",   3},
-    {"active",     1},
-    {"created_at", tm_time},
-    {"updated_at", tm_time}
-  });
-  sex_male.save();
+  CrmSex({ {"name", "Mężczyzna"}, {"code", "M"}, {"eng_name", "Male"}, 
+    {"eng_code", "M"}, {"priority", 3}, {"active", 1}, {"created_at", now},
+    {"updated_at", now} }).save();
 
   // Street Prefixes
   map<string,string> street_prefixes = { {"", "-"}, {"ul", "Ulica"}, 
     {"al", "Aleja"}, {"pl", "Plac"}, {"os.", "Osiedle"} };
 
   for_each(street_prefixes.begin(), street_prefixes.end(), [&](const auto &p) { 
-    auto sp = CrmStreetPrefix({
-      {"name",       p.first},
-      {"code",       p.second},
-      {"active",     1},
-      {"created_at", tm_time},
-      {"updated_at", tm_time}
-    });
-    sp.save();
+    CrmStreetPrefix({ {"name", p.first}, {"code", p.second}, {"active", 1}, 
+      {"created_at", now}, {"updated_at", now} }).save();
   });
 
   // Languages:
   map<string,unsigned int> languages = { {"Polski", 1}, {"Angielski", 2} }; 
 
   for_each(street_prefixes.begin(), street_prefixes.end(), [&](const auto &p) { 
-    auto language = CrmLanguage({
-      {"name",       p.first},
-      {"priority",   p.second},
-      {"active",     1},
-      {"created_at", tm_time},
-      {"updated_at", tm_time}
-    });
-    language.save();
+    CrmLanguage({{"name", p.first}, {"priority", p.second}, {"active", 1},
+      {"created_at", now}, {"updated_at", now} }).save();
   });
 
   // Crm/Company:
   for (unsigned int i = 0; i<1000; i++) {
     string company_name = faker.company();
 
-    auto company = CrmCompany({
+    CrmCompany({
       {"name",             company_name},
       {"common_name",      company_name},
       {"company_type_id",  (rand() % 3)+1},
@@ -180,16 +124,14 @@ unsigned int mode_seed(ConfigParser &, shared_ptr<spdlog::logger> logger,
       {"street",           string(faker.street_address())},
       {"email",            string(faker.email())},
       {"active",           1},
-      {"created_at",       tm_time},
-      {"updated_at",       tm_time}
-    });
-
-    company.save();
+      {"created_at",       now},
+      {"updated_at",       now}
+    }).save();
   }
 
   // Crm/Person:
-  for (unsigned int i = 0; i<3000; i++) {
-    auto person = CrmPerson({
+  for (unsigned int i = 0; i<3000; i++)
+    CrmPerson({
       {"firstname",   faker.first_name()},
       {"lastname",    faker.last_name()},
       {"distinction", faker.suffix()},
@@ -197,28 +139,22 @@ unsigned int mode_seed(ConfigParser &, shared_ptr<spdlog::logger> logger,
       {"language_id", 2},
       {"email",       faker.email()},
       {"phone",       faker.phone_number()},
-      {"active",           1},
-      {"created_at",  tm_time},
-      {"updated_at",  tm_time}
-    });
-
-    person.save();
-  }
+      {"active",      1},
+      {"created_at",  now},
+      {"updated_at",  now}
+    }).save();
 
   // Crm/Position:
-  for (unsigned int i = 0; i<2000; i++) {
-    auto position = CrmPosition({
+  for (unsigned int i = 0; i<2000; i++)
+    CrmPosition({
       {"company_id", ((rand() % 323)+1)},
       {"person_id",  ((rand() % 3002)+1)},
       {"name",       faker.job_title()},
       {"phone",      faker.phone_number()},
-      {"active",           1},
-      {"created_at",  tm_time},
-      {"updated_at",  tm_time}
-    });
-
-    position.save();
-  }
+      {"active",     1},
+      {"created_at", now},
+      {"updated_at", now}
+    }).save();
 
   return 0;
 }

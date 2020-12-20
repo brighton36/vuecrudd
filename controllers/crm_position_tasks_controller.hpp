@@ -5,7 +5,7 @@
 class CrmPositionTasksController : 
 public Controller::RestInstance<CrmPositionTasksController, CrmPositionTask> { 
   public:
-    static constexpr std::string_view rest_prefix = { "/api/crm/position_tasks" };
+    static constexpr std::string_view rest_prefix = { "/api/crm/position-tasks" };
     using Controller::RestInstance<CrmPositionTasksController, CrmPositionTask>::RestInstance;
 
   private:

@@ -5,7 +5,7 @@
 class CrmCompanyCommentsController : 
 public Controller::RestInstance<CrmCompanyCommentsController, CrmCompanyComment> { 
   public:
-    static constexpr std::string_view rest_prefix = { "/api/crm/company_comments" };
+    static constexpr std::string_view rest_prefix = { "/api/crm/company-comments" };
     using Controller::RestInstance<CrmCompanyCommentsController, CrmCompanyComment>::RestInstance;
 
   private:

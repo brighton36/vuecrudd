@@ -11,8 +11,8 @@ vector<CrmPosition> CrmPositionsController::modelSelect(Controller::PostBody &) 
     "select * from {table_name} {joins} order by {order_by}", 
 		fmt::arg("table_name", CrmPosition::Definition.table_name),
 		fmt::arg("joins", join({
-      "join crm_companies on crm_positions.company_id = companies.id", 
-      "join crm_people on positions.person_id = people.id"}, ",")),
+      "join companies on positions.company_id = companies.id", 
+      "join people on positions.person_id = people.id"}, " ")),
 		fmt::arg("order_by", join({ "companies.common_name asc", 
       "people.lastname asc", "people.firstname asc"}, ", "))
     ));

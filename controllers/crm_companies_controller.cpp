@@ -53,16 +53,13 @@ Controller::Response CrmCompanyController::index(const Request& request) {
   string select_company_types = fmt::format(
 		"select * from `{table_name}` where `{table_name}`.`id` in (:1)", 
 		fmt::arg("table_name", "company_types")
-    //fmt::arg("in_params", join(vector<string>(company_type_ids.size(), "?"),", "))
 	);
 
   string select_street_prefixes = fmt::format(
 		"select * from `{table_name}` where `{table_name}`.`id` in (:1)", 
 		fmt::arg("table_name", "street_prefixes")
-    //fmt::arg("in_params", join(vector<string>(street_prefix_ids.size(), "?"),", "))
 	);
 
-  // TODO: These vector selects... don't exist....
   vector<Model::RecordValueOpt> select_args;
   transform(company_type_ids.cbegin(), company_type_ids.cend(), 
     back_inserter(select_args), [](const auto& id) { return Model::RecordValueOpt(id); });
@@ -72,12 +69,6 @@ Controller::Response CrmCompanyController::index(const Request& request) {
 
   for(auto &sp: CrmStreetPrefix::Select(select_street_prefixes, street_prefix_ids))
     street_prefixes[*sp.id()] = Controller::ModelToJson(sp);
-
-/* 
-select * from `companies` order by `common_name` asc []
-select * from `company_types` where `company_types`.`id` in (?, ?, ?, ?) [1, 2, 3, 4]
-select * from `street_prefixes` where `street_prefixes`.`id` in (?) [1]
-*/
 
   for (auto &m: companies) {
     // TODO: Join the company_types and street_prefixes

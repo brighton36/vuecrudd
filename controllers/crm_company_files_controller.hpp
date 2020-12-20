@@ -5,7 +5,7 @@
 class CrmCompanyFilesController : 
 public Controller::RestInstance<CrmCompanyFilesController, CrmCompanyFile> { 
   public:
-    static constexpr std::string_view rest_prefix = { "/api/crm/company_files" };
+    static constexpr std::string_view rest_prefix = { "/api/crm/company-files" };
     using Controller::RestInstance<CrmCompanyFilesController, CrmCompanyFile>::RestInstance;
 
   private:

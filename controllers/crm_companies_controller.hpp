@@ -12,6 +12,5 @@ public Controller::RestInstance<CrmCompanyController, CrmCompany> {
     Controller::Response index(const Pistache::Rest::Request&);
 
   private:
-    virtual std::vector<CrmCompany> modelSelect(Controller::PostBody &);
     static ControllerRegister<CrmCompanyController> reg;
 };

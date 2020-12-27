@@ -9,86 +9,76 @@ using namespace prails::utilities;
 
 PSYM_CONTROLLER(CrmCompanyController)
 
-// TODO: Do we even need this?
-vector<CrmCompany> CrmCompanyController::modelSelect(Controller::PostBody &) {
-  logger->info("TODO: Testing the modelSelect");
+// TODO:
+// This is kind of a temporary idea atm. Probably this should get put into either
+// the controller or the model somewhere... Tests would be good...
+template<typename T, class U, class V>
+std::map<T, U> with(std::vector<V> &records, const std::string & foreign_key_attr) {
 
-  vector<CrmCompany> companies = CrmCompany::Select( 
-    "select * from `companies` order by `common_name` asc");
-  return companies;
+  // Let's first collect a vector of the unique fkey values in the provided recordset
+  std::vector<T> values;
+  for (auto &r: records) {
+    Model::RecordValueOpt val = r.recordGet(foreign_key_attr);
+		if (val.has_value()) {
+      T cast_val = std::get<T>(*val);
+      if (find(values.begin(), values.end(), cast_val) == values.end())
+        values.push_back(cast_val);
+    }
+  }
+
+  // Now we'll construct a query
+  Model::Record params;
+  string in_attr_keys;
+  for (unsigned int i = 0; i < values.size(); i++) {
+    string key = "id"+to_string(i);
+    params[key] = values[i];
+    in_attr_keys.append(((i == 0) ? ":" : ", :")+key);
+  }
+
+  string query = fmt::format(
+		"select * from `{table_name}` where `{table_name}`.`id` in ({in_attr_keys})", 
+		fmt::arg("table_name", U::Definition.table_name),
+		fmt::arg("in_attr_keys", in_attr_keys)
+	);
+
+  std::map<T, U> ret; 
+  for(auto &sr: U::Select(query, params))
+    ret[std::get<T>(*sr.recordGet("id"))] = sr;
+
+  return ret;
 }
 
 Controller::Response CrmCompanyController::index(const Request& request) {
   auto post = Controller::PostBody(request.body());
   auto ret = nlohmann::json::array();
 
+  // TODO: I'm thinking we could support a rowjoin parameter, that took the with()'s as input
+  // with maybe a keyname map<string,T> ("company_type", with<....>(...)
+  // or, perhaps a ModelToJson with a parameter....
   auto companies = modelSelect(post);
-
-  vector<long long int> company_type_ids;
-  vector<long long int> street_prefix_ids;
-  map<long long int, nlohmann::json> company_types;
-  map<long long int, nlohmann::json> street_prefixes;
-
-	auto includes = [](long long int needle, vector<long long int> haystack) {
-    return find(haystack.begin(), haystack.end(), needle) != haystack.end();
-	};
-
-  // Scan the results, to see what other table records we'll be referencing:
-  for (auto &m: companies) {
-		if (m.company_type_id().has_value()) {
-      long long int company_type_id = *m.company_type_id();
-
-      if (!includes(company_type_id, company_type_ids))
-        company_type_ids.push_back(company_type_id);
-		}
-
-		if (m.street_prefix_id().has_value()) {
-      long long int street_prefix_id = *m.street_prefix_id();
-
-      if (!includes(street_prefix_id, street_prefix_ids))
-        street_prefix_ids.push_back(street_prefix_id);
-		}
-  }
   
-  string select_company_types = fmt::format(
-		"select * from `{table_name}` where `{table_name}`.`id` in (:1)", 
-		fmt::arg("table_name", "company_types")
-	);
+  auto company_types = with<long long int, CrmCompanyType>(companies, "company_type_id");
 
-  string select_street_prefixes = fmt::format(
-		"select * from `{table_name}` where `{table_name}`.`id` in (:1)", 
-		fmt::arg("table_name", "street_prefixes")
-	);
-
-  vector<Model::RecordValueOpt> select_args;
-  transform(company_type_ids.cbegin(), company_type_ids.cend(), 
-    back_inserter(select_args), [](const auto& id) { return Model::RecordValueOpt(id); });
-
-  for(auto &ct: CrmCompanyType::Select(select_company_types, company_type_ids))
-    company_types[*ct.id()] = Controller::ModelToJson(ct);
-
-  for(auto &sp: CrmStreetPrefix::Select(select_street_prefixes, street_prefix_ids))
-    street_prefixes[*sp.id()] = Controller::ModelToJson(sp);
+  // TODO: This is going bonkers, check the debug
+  auto street_prefixes = with<long long int, CrmStreetPrefix>(companies, "street_prefix_id");
 
   for (auto &m: companies) {
-    // TODO: Join the company_types and street_prefixes
     auto model_as_json = Controller::ModelToJson(m);
 
     model_as_json["address"] = m.address();
-
     model_as_json["company_type"] = nullptr;
     model_as_json["street_prefix"] = nullptr;
 
     if (m.company_type_id().has_value()) { 
       long long int company_type_id = m.company_type_id().value();
       if (company_types.count(company_type_id))
-        model_as_json["company_type"] = company_types[company_type_id];
+        model_as_json["company_type"] = Controller::ModelToJson(company_types[company_type_id]);
     }
 
     if (m.street_prefix_id().has_value()) { 
       long long int street_prefix_id = m.street_prefix_id().value();
       if (street_prefixes.count(street_prefix_id))
-        model_as_json["street_prefix"] = street_prefixes[street_prefix_id];
+        model_as_json["street_prefix"] = Controller::ModelToJson(street_prefixes[street_prefix_id]);
     }
 
     ret.push_back(model_as_json);

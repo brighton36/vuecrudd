@@ -75,8 +75,8 @@ Controller::Response AuthController::user_show(const Rest::Request& request) {
     {"id", *account.id()},
     {"name", *account.first_name()},
     {"email", *account.email()},
-    {"created_at", tm_to_json(*account.created_at())},
-    {"updated_at", tm_to_json(*account.updated_at())},
+    {"created_at", tm_to_iso8601(*account.created_at())},
+    {"updated_at", tm_to_iso8601(*account.updated_at())},
     // TODO: Do these fields really make sense...:
     {"active", 1},
     {"initial_password", "OTj2IDbS"},

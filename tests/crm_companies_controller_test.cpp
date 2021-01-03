@@ -91,9 +91,9 @@ class CrmCompanyControllerTest : public PrailsControllerTest {
       for (auto& i : agag_json.items()) 
         agag_attrs.push_back(i.key());
 
-      vector<string> expected_null_attrs = { "nip","regon", "krs", "house_number", 
-        "apartment_number", "zip_code", "borough", "county", "voivodship", 
-        "web_page", "fax", "coordinates_lat", "coordinates_lng", 
+      vector<string> expected_null_attrs = { "nip","regon", "phone", "krs", 
+        "house_number", "apartment_number", "zip_code", "borough", "county", 
+        "voivodship", "web_page", "fax", "coordinates_lat", "coordinates_lng", 
         "coordinates_checked", "google_map_place", "parent_company_id", 
         "correspondence_street", "correspondence_house_number", 
         "correspondence_apartment_number", "correspondence_zip_code", 

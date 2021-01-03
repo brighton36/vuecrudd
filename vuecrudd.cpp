@@ -99,7 +99,7 @@ unsigned int mode_seed(ConfigParser &, shared_ptr<spdlog::logger> logger,
     {"al", "Aleja"}, {"pl", "Plac"}, {"os.", "Osiedle"} };
 
   for_each(street_prefixes.begin(), street_prefixes.end(), [&](const auto &p) { 
-    CrmStreetPrefix({ {"name", p.first}, {"code", p.second}, {"active", 1}, 
+    CrmStreetPrefix({ {"name", p.first}, {"description", p.second}, {"active", 1}, 
       {"created_at", now}, {"updated_at", now} }).save();
   });
 

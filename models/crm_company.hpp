@@ -21,6 +21,7 @@
   COLUMN(email,                           std::string,   "varchar(255)")  \
   COLUMN(web_page,                        std::string,   "varchar(255)")  \
   COLUMN(fax,                             std::string,   "varchar(50)")   \
+  COLUMN(phone,                           std::string,   "varchar(50)")   \
   COLUMN(coordinates_lat,                 double,        "double")        \
   COLUMN(coordinates_lng,                 double,        "double")        \
   COLUMN(coordinates_checked,             int,           "int")           \
@@ -45,7 +46,7 @@ class CrmCompany : public Model::Instance<CrmCompany> {
 
     MODEL_ACCESSOR(id, long long int)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)
-      CRM_COMPANY_COLUMNS
+    CRM_COMPANY_COLUMNS
     #undef COLUMN
 
     inline static const Model::Definition Definition {

@@ -60,6 +60,8 @@ Pistache::Rest::Router& r, std::shared_ptr<Instance> controller) {
     &CrmCompanyController::create_or_update, controller));
   Post(r, "/api/crud/crm/companies", bind("create", 
     &CrmCompanyController::create_or_update, controller));
+  Post(r, "/api/crud/crm/companies/multiple-update", 
+    bind("multiple_update", &CrmCompanyController::multiple_update, controller));
 
   if ( !GetConfig().cors_allow().empty() ) {
     Options(r, "/api/crud/crm/companies/*",

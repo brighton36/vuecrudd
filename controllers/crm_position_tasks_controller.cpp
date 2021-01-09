@@ -20,3 +20,11 @@ vector<CrmPositionTask> CrmPositionTasksController::modelSelect(Controller::Post
       "people.firstname asc"}, ", "))
     ));
 }
+
+void CrmPositionTasksController::Routes(
+Pistache::Rest::Router& r, std::shared_ptr<Instance> controller) {
+  using namespace Pistache::Rest::Routes;
+
+  RestInstance<CrmPositionTasksController, CrmPositionTask>::Routes(r,controller);
+  RoutesVuecrudd<CrmPositionTasksController>("/api/crud/crm/position-tasks",r,controller);
+}

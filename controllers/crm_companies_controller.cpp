@@ -54,21 +54,7 @@ Pistache::Rest::Router& r, std::shared_ptr<Instance> controller) {
   using namespace Pistache::Rest::Routes;
 
   RestInstance<CrmCompanyController, CrmCompany>::Routes(r,controller);
-
-  // For some reason, this update action doesnt use the same prefix...
-  Put(r, "/api/crud/crm/companies/:id", bind("update", 
-    &CrmCompanyController::create_or_update, controller));
-  Post(r, "/api/crud/crm/companies", bind("create", 
-    &CrmCompanyController::create_or_update, controller));
-  Post(r, "/api/crud/crm/companies/multiple-update", 
-    bind("multiple_update", &CrmCompanyController::multiple_update, controller));
-
-  if ( !GetConfig().cors_allow().empty() ) {
-    Options(r, "/api/crud/crm/companies/*",
-      bind("api_options_actions", &CrmCompanyController::options, controller));
-    Options(r, "/api/crud/crm/companies",
-      bind("api_options_index", &CrmCompanyController::options, controller));
-  }
+  RoutesVuecrudd<CrmCompanyController>("/api/crud/crm/companies",r,controller);
 }
 
 Response CrmCompanyController::index(const Request& request) {

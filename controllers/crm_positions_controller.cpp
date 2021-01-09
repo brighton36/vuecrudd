@@ -17,3 +17,11 @@ vector<CrmPosition> CrmPositionsController::modelSelect(Controller::PostBody &) 
       "people.lastname asc", "people.firstname asc"}, ", "))
     ));
 }
+
+void CrmPositionsController::Routes(
+Pistache::Rest::Router& r, std::shared_ptr<Instance> controller) {
+  using namespace Pistache::Rest::Routes;
+
+  RestInstance<CrmPositionsController, CrmPosition>::Routes(r,controller);
+  RoutesVuecrudd<CrmPositionsController>("/api/crud/crm/positions",r,controller);
+}

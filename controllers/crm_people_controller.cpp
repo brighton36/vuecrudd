@@ -13,3 +13,11 @@ std::vector<CrmPerson> CrmPeopleController::modelSelect(Controller::PostBody &) 
       "firstname asc", "distinction asc"}, ", "))
     ));
 }
+
+void CrmPeopleController::Routes(
+Pistache::Rest::Router& r, std::shared_ptr<Instance> controller) {
+  using namespace Pistache::Rest::Routes;
+
+  RestInstance<CrmPeopleController, CrmPerson>::Routes(r,controller);
+  RoutesVuecrudd<CrmPeopleController>("/api/crud/crm/people",r,controller);
+}

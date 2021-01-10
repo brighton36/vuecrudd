@@ -1,20 +1,16 @@
 #pragma once
-#include "rest_controller.hpp"
+#include "vuecrud_controller.hpp"
+
 #include "permission.hpp"
-#include "vuecrudd_utilities.hpp"
 
 class PermissionsController : 
-public Controller::RestInstance<PermissionsController, Permission> { 
+public VuecrudController<PermissionsController, Permission> { 
   public:
-    static constexpr std::string_view rest_prefix = { "/api/crud/admin/permissions" };
-    static constexpr std::string_view rest_actions[]= { "index", "read" };
-    using Controller::RestInstance<PermissionsController, Permission>::RestInstance;
-    static void Routes(Pistache::Rest::Router&, std::shared_ptr<Controller::Instance>);
-
+    static constexpr std::string_view basename = { "permissions" };
+    using VuecrudController<PermissionsController, Permission>::VuecrudController;
   private:
     void modelUpdate(Permission &model, Controller::PostBody &post, std::tm tm_time) {
-      modelUpdateVuecrudd(model, post, tm_time);
- 
+      modelUpdateVuecrud(model, post, tm_time);
       #define COLUMN(a, b, _) REST_COLUMN_UPDATE(a, b)
       PERMISSION_COLUMNS
       #undef COLUMN

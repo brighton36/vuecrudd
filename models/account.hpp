@@ -21,7 +21,7 @@ class Account : public Model::Instance<Account> {
 
     MODEL_ACCESSOR(id, long long int)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)
-      ACCOUNT_COLUMNS
+    ACCOUNT_COLUMNS
     #undef COLUMN
 
     inline static const unsigned int auth_token_size = 128;

@@ -2,40 +2,27 @@
 #include "rest_controller.hpp"
 #include "vuecrud_utilities.hpp"
 
+
 template <class U, class T>
 class VuecrudController : public Controller::RestInstance<U,T> {
   public:
-    static constexpr std::string_view rest_actions[]= { "index", "read" };
-    static constexpr std::string_view vuecrud_basename = { "" };
+    static constexpr std::string_view read_prefix = { "/api/crm" };
+    static constexpr std::string_view rest_prefix = { "/api/crud/crm" };
+    static constexpr std::string_view rest_actions[]= { "index", "read", 
+      "create", "update", "multiple_update" };
+    static constexpr std::string_view read_actions[]= {  };
 
     using Controller::RestInstance<U, T>::RestInstance;
-
-    static void Routes(Pistache::Rest::Router &r, std::shared_ptr<Controller::Instance> controller) {
-      using namespace Pistache::Rest::Routes;
-      using namespace Controller;
-
-      RestInstance<U,T>::Routes(r,controller);
-      std::string prefix = "/api/crud/crm/"+basename();
-
-      Put(r, prefix+"/:id", Instance::bind("update", &U::create_or_update, controller));
-      Post(r, prefix, Instance::bind("create", &U::create_or_update, controller));
-      Post(r, prefix+"/multiple-update", 
-        Instance::bind("multiple_update", &U::multiple_update, controller));
-
-      if ( !GetConfig().cors_allow().empty() ) {
-        Options(r, prefix+"/*", 
-          Instance::bind("api_options_actions", &U::options, controller));
-        Options(r, prefix, 
-          Instance::bind("api_options_index", &U::options, controller));
-      }
-    }
 
     static std::string basename() { 
       return {U::basename.data(), U::basename.size()};
     }
 
-    static std::string prefix() { 
-      return "/api/crm/"+basename();
+    static std::optional<std::string> prefix(const std::string &action) {
+      return ( ((action == "read") || (action == "index")) ? 
+        std::string({U::read_prefix.data(), U::read_prefix.size()}) :
+        std::string({U::rest_prefix.data(), U::rest_prefix.size()})
+        )+"/"+basename();
     }
   protected:
     // This is a kind of utility function for vuecrud. It keeys time concerns DRY

@@ -6,6 +6,7 @@
 class CrmCompanyCommentTypesController : 
 public VuecrudController<CrmCompanyCommentTypesController, CrmCompanyCommentType> { 
   public:
+    static constexpr std::string_view read_prefix = { "/api/crud/crm" };
     static constexpr std::string_view basename = { "company-comment-types" };
     using VuecrudController<CrmCompanyCommentTypesController, CrmCompanyCommentType>::VuecrudController;
   private:

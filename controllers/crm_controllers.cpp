@@ -35,77 +35,28 @@ PSYM_CONTROLLER(CrmPositionTasksController)
 PSYM_CONTROLLER(CrmSexesController)
 PSYM_CONTROLLER(CrmStreetPrefixesController)
 
-// TODO: dry out the with's in these indexes
-//       I'm thinking we could support a rowjoin parameter, that took the with()'s as input
-//       with maybe a keyname map<string,T> ("company_type", with<....>(...)
+
 Response CrmCompanyController::index(const Request& request) {
   auto post = PostBody(request.body());
-  auto ret = nlohmann::json::array();
-
   auto companies = modelSelect(post);
-  auto company_types = with<long long int, CrmCompanyType>(companies, "company_type_id");
-  auto street_prefixes = with<long long int, CrmStreetPrefix>(companies, "street_prefix_id");
 
-  for (auto &m: companies) {
-    auto model_as_json = ModelToJson(m);
-
-    model_as_json["address"] = m.address();
-    model_as_json["company_type"] = nullptr;
-    model_as_json["street_prefix"] = nullptr;
-
-    if (m.company_type_id().has_value()) { 
-      long long int company_type_id = m.company_type_id().value();
-      if (company_types.count(company_type_id))
-        model_as_json["company_type"] = ModelToJson(company_types[company_type_id]);
-    }
-
-    if (m.street_prefix_id().has_value()) { 
-      long long int street_prefix_id = m.street_prefix_id().value();
-      if (street_prefixes.count(street_prefix_id))
-        model_as_json["street_prefix"] = ModelToJson(street_prefixes[street_prefix_id]);
-    }
-
-    ret.push_back(model_as_json);
-  }
-
-  return Response(ret);
+  return Response(ModelToJson(companies, std::vector<JsonDecorator<CrmCompany>>({
+    with<long long int, CrmCompanyType>(companies, "company_type", "company_type_id"),
+    with<long long int, CrmStreetPrefix>(companies, "street_prefix", "street_prefix_id"),
+    [](CrmCompany &m, nlohmann::json &json) { json["address"] = m.address(); }
+    })));
 }
 
-// TODO: dry out the with's in these indexes
 Response CrmCompanyCommentsController::index(const Request& request) {
   auto post = PostBody(request.body());
-  auto ret = nlohmann::json::array();
 
   auto comments = modelSelect(post);
-  auto companies = with<long long int, CrmCompany>(comments, "company_id");
-  auto comment_types = with<long long int, CrmCompanyCommentType>(
-    comments, "company_comment_type_id");
-
   // TODO: Get the user id working:
   // select * from `users` where `users`.`id` in (?) [1]
-  //
-  for (auto &m: comments) {
-    auto model_as_json = ModelToJson(m);
-
-    model_as_json["company"] = nullptr;
-    model_as_json["company_comment_type"] = nullptr;
-
-    if (m.company_id().has_value()) { 
-      long long int company_id = m.company_id().value();
-      if (companies.count(company_id))
-        model_as_json["company"] = ModelToJson(companies[company_id]);
-    }
-
-    if (m.company_comment_type_id().has_value()) { 
-      long long int company_comment_type_id = m.company_comment_type_id().value();
-      if (comment_types.count(company_comment_type_id))
-        model_as_json["company_comment_type"] = ModelToJson(comment_types[company_comment_type_id]);
-    }
-
-    ret.push_back(model_as_json);
-  }
-
-  return Response(ret);
+  return Response(ModelToJson(comments, std::vector<JsonDecorator<CrmCompanyComment>>({
+    with<long long int, CrmCompany>(comments, "company", "company_id"),
+    with<long long int, CrmCompanyCommentType>(
+      comments, "company_comment_type", "company_comment_type_id")})));
 }
 
 std::vector<CrmPerson> CrmPeopleController::modelSelect(Controller::PostBody &) {
@@ -255,9 +206,8 @@ mode: paginate
     fmt::arg("limit", per_page),
     fmt::arg("offset", offset)
     ));
-  
-  auto languages = with<long long int, CrmLanguage>(people, "language_id");
-  auto sexes = with<long long int, CrmSex>(people, "sex_id");
+
+  // TODO: why is it that the id is duplicated constantly here...
 
   // TODO: nix this debug stuff:
   logger->info("base: {} page: {}", base_path, page);
@@ -279,27 +229,10 @@ mode: paginate
   if (page > 1)
     ret["prev_page_url"] = fmt::format("{}?page={}", base_path, page - 1);
 
-  // TODO: can we do a transform back_inserter...
-  // TODO: I think we need to offer ModelToJson a parameter to do the with merge stuff
-  for (auto &m: people) {
-    auto model_as_json = ModelToJson(m);
-
-    if (m.language_id().has_value()) { 
-      long long int language_id = m.language_id().value();
-      if (languages.count(language_id))
-        model_as_json["language"] = ModelToJson(languages[language_id]);
-    }
-
-    if (m.sex_id().has_value()) { 
-      long long int sex_id = m.sex_id().value();
-      if (sexes.count(sex_id))
-        model_as_json["sex"] = ModelToJson(sexes[sex_id]);
-    }
-
-    ret["data"].push_back(model_as_json);
-  }
-/*
-*/
+  ret["data"] = ModelToJson(people, std::vector<JsonDecorator<CrmPerson>>({
+    with<long long int, CrmLanguage>(people, "language", "language_id"),
+    with<long long int, CrmSex>(people, "sex", "sex_id")
+    }));
 
   return Controller::Response(ret);
 }

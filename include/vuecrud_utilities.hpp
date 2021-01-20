@@ -3,12 +3,12 @@
 
 using namespace prails::utilities;
 
-// TODO:
-// This is kind of a temporary idea atm. Probably this should get put into either
-// the controller or the model somewhere... Tests would be good...
-template<typename T, class U, class V>
-std::map<T, U> with(std::vector<V> &records, const std::string & foreign_key_attr) {
+template <class T>
+using JsonDecorator = std::function<void(T &, nlohmann::json &)>;
 
+template<typename T, class U, class V>
+JsonDecorator<V> with(
+std::vector<V> &records, const std::string json_key, const std::string foreign_key_attr) {
   // Let's first collect a vector of the unique fkey values in the provided recordset
   std::vector<T> values;
   for (auto &r: records) {
@@ -35,9 +35,33 @@ std::map<T, U> with(std::vector<V> &records, const std::string & foreign_key_att
 		fmt::arg("in_attr_keys", in_attr_keys)
 	);
 
-  std::map<T, U> ret; 
+  std::map<T, U> id_to_foreign_model; 
   for(auto &sr: U::Select(query, params))
-    ret[std::get<T>(*sr.recordGet("id"))] = sr;
+    id_to_foreign_model[std::get<T>(*sr.recordGet("id"))] = sr;
+
+  // TODO: I guess the idea would be to supply these functions to the ModelToJson
+  return [=](V &m, nlohmann::json &obj) mutable { 
+    obj[json_key] = nullptr;
+    if (m.recordGet(foreign_key_attr).has_value()) { 
+      T foreign_id = std::get<T>(m.recordGet(foreign_key_attr).value());
+      if (id_to_foreign_model.count(foreign_id))
+        obj[json_key] = Controller::ModelToJson(id_to_foreign_model[foreign_id]);
+    }
+  };
+}
+
+template <class T, class V>
+nlohmann::json ModelToJson(std::vector<T> &models, std::vector<JsonDecorator<V>> decorators) {
+  auto ret = nlohmann::json::array();
+
+  std::transform(models.begin(), models.end(), back_inserter(ret), 
+    [&decorators](auto& model) { 
+      auto js = Controller::ModelToJson(model);
+
+      std::for_each(decorators.begin(), decorators.end(), 
+        [&model, &js](const auto &decorator) { decorator(model, js); } );
+      return js;
+    });
 
   return ret;
 }

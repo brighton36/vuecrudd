@@ -18,7 +18,7 @@ class CrmSex : public Model::Instance<CrmSex> {
 
     MODEL_ACCESSOR(id, long long int)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)
-      CRM_SEX_COLUMNS
+    CRM_SEX_COLUMNS
     #undef COLUMN
 
     inline static const Model::Definition Definition {

@@ -15,7 +15,7 @@ class CrmLanguage : public Model::Instance<CrmLanguage> {
 
     MODEL_ACCESSOR(id, long long int)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)
-      CRM_LANGUAGE_COLUMNS
+    CRM_LANGUAGE_COLUMNS
     #undef COLUMN
 
     inline static const Model::Definition Definition {

@@ -17,6 +17,8 @@
 #include "crm_company_type.hpp"
 #include "crm_street_prefix.hpp"
 
+#include <iostream> // todo
+
 using namespace std;
 using namespace Pistache::Rest;
 using namespace prails::utilities;
@@ -40,7 +42,7 @@ Response CrmCompanyController::index(const Request& request) {
   auto post = PostBody(request.body());
   auto companies = modelSelect(post);
 
-  return Response(ModelToJson(companies, std::vector<JsonDecorator<CrmCompany>>({
+  return Response(ModelToJson(companies, vector<JsonDecorator<CrmCompany>>({
     with<long long int, CrmCompanyType>(companies, "company_type", "company_type_id"),
     with<long long int, CrmStreetPrefix>(companies, "street_prefix", "street_prefix_id"),
     [](CrmCompany &m, nlohmann::json &json) { json["address"] = m.address(); }
@@ -53,13 +55,13 @@ Response CrmCompanyCommentsController::index(const Request& request) {
   auto comments = modelSelect(post);
   // TODO: Get the user id working:
   // select * from `users` where `users`.`id` in (?) [1]
-  return Response(ModelToJson(comments, std::vector<JsonDecorator<CrmCompanyComment>>({
+  return Response(ModelToJson(comments, vector<JsonDecorator<CrmCompanyComment>>({
     with<long long int, CrmCompany>(comments, "company", "company_id"),
     with<long long int, CrmCompanyCommentType>(
       comments, "company_comment_type", "company_comment_type_id")})));
 }
 
-std::vector<CrmPerson> CrmPeopleController::modelSelect(Controller::PostBody &) {
+vector<CrmPerson> CrmPeopleController::modelSelect(Controller::PostBody &) {
   return CrmPerson::Select( fmt::format(
     "select * from {table_name} order by {order_by}", 
     fmt::arg("table_name", CrmPerson::Definition.table_name),
@@ -96,9 +98,11 @@ vector<CrmPositionTask> CrmPositionTasksController::modelSelect(Controller::Post
 }
 
 void CrmPeopleController::Routes(
-Pistache::Rest::Router& r, std::shared_ptr<Controller::Instance> controller) {
+Pistache::Rest::Router& r, shared_ptr<Controller::Instance> controller) {
   using namespace Pistache::Rest::Routes;
   using namespace Controller;
+
+  VuecrudController<CrmPeopleController, CrmPerson>::Routes(r, controller);
 
   Post(r, "/api/crm/people/search",
     bind("search", &CrmPeopleController::search, controller));
@@ -108,60 +112,23 @@ Pistache::Rest::Router& r, std::shared_ptr<Controller::Instance> controller) {
 }
 
 Controller::Response CrmPeopleController::search(const Pistache::Rest::Request& request) {
+
+  map<string,string> filter_columns = {
+    {"id",        "`people`.id"}, 
+    {"firstname", "`people`.firstname"},
+    {"lastname",  "`people`.lastname"},
+    {"email",     "`people`.email"},
+    {"phone",     "`people`.phone"},
+    {"sex",       "`sexes`.name"},
+    {"language",  "`languages`.name"}};
+
+  vector<string> joins({
+    "left join `sexes` on `sexes`.`id` = `people`.`sex_id`",
+    "left join `languages` on `languages`.`id` = `people`.`language_id`"});
+
   ensure_content_type(request, MIME(Application, FormUrlEncoded));
 
   auto post = Controller::PostBody(request.body());
-
-  // TODO:
-/*
-rowsPerPage: 20
-page: 1
-search: 
-filterColumns[0][mode]: like
-filterColumns[0][text]: Id
-filterColumns[0][name]: id
-filterColumns[0][column]: undefined
-filterColumns[0][value]: 
-filterColumns[1][mode]: like
-filterColumns[1][text]: Lastname
-filterColumns[1][name]: lastname
-filterColumns[1][column]: lastname
-filterColumns[1][value]: 
-filterColumns[2][mode]: like
-filterColumns[2][text]: Firstname
-filterColumns[2][name]: firstname
-filterColumns[2][column]: firstname
-filterColumns[2][value]: 
-filterColumns[3][mode]: like
-filterColumns[3][text]: Distinction
-filterColumns[3][name]: distinction
-filterColumns[3][column]: distinction
-filterColumns[3][value]: 
-filterColumns[4][mode]: like
-filterColumns[4][text]: Language
-filterColumns[4][name]: language
-filterColumns[4][column]: language_id
-filterColumns[4][value]: 
-filterColumns[5][mode]: like
-filterColumns[5][text]: Sex
-filterColumns[5][name]: sex
-filterColumns[5][column]: sex_id
-filterColumns[5][value]: 
-filterColumns[6][mode]: like
-filterColumns[6][text]: E-mail
-filterColumns[6][name]: email
-filterColumns[6][column]: email
-filterColumns[6][value]: 
-filterColumns[7][mode]: like
-filterColumns[7][text]: Phone
-filterColumns[7][name]: phone
-filterColumns[7][column]: phone
-filterColumns[7][value]: 
-selectedStatuses[]: 1
-deleteMode: soft
-activeColumnName: active
-mode: paginate
-*/
 
   // NOTE: We assume proto here. I'm not sure how/if we'll want to support SSL
   auto host = request.headers().get<Pistache::Http::Header::Host>();
@@ -171,7 +138,7 @@ mode: paginate
   unsigned long page = 1;
   if (auto param_page = request.query().get("page"); !param_page.isEmpty()) {
     if (!regex_match(param_page.get(), regex("^[\\d]+$")))
-      throw std::invalid_argument("invalid page parameter passed to CrmPeopleController::search");
+      throw invalid_argument("invalid page parameter passed to search");
 
     page = stoul(param_page.get());
   } else if (post.has_scalar("page"))
@@ -182,57 +149,136 @@ mode: paginate
 
   unsigned long offset = (page-1) * per_page;
 
-  vector<string> joins({
-    "left join `sexes` on `sexes`.`id` = `people`.`sex_id`",
-    "left join `languages` on `languages`.`id` = `people`.`language_id`"});
+  Model::Record select_params;
+  vector<string> where;
+
+  if (post.has_collection("selectedStatuses")) {
+    vector<string> status_keys;
+
+    for (int i = 0; i < post.size("selectedStatuses"); i++) {
+      string key = fmt::format("selected_status{}", i);
+      status_keys.push_back(":"+key);
+      select_params[key] = stoul(*post("selectedStatuses", i));
+    }
+
+    if (status_keys.size() > 0)
+      where.push_back( (status_keys.size() == 1) ?
+        fmt::format("`people`.active = {}", status_keys[0]) : 
+        fmt::format("`people`.active in ({})", join(status_keys, ", ")));
+  }
+
+  for (const string &n : post.keys("filterColumns")) {
+    auto mode = post("filterColumns", n, "mode");
+    auto name = post("filterColumns", n, "name");
+    auto value = post("filterColumns", n, "value");
+    
+    if ( mode.has_value() && name.has_value() && value.has_value() && 
+      (!(*mode).empty()) && (!(*name).empty()) && (!(*value).empty()) &&
+      (filter_columns.count(*name) > 0) ) {
+
+      if (!regex_match(*name, regex("^[a-z]+$")))
+        throw invalid_argument(
+            "invalid filterColumns[][name] parameter passed to search");
+      if (!regex_match(*mode, regex("^(?:like|equals|list)$")))
+        throw invalid_argument(
+            "invalid filterColumns[][mode] parameter passed to search");
+
+      if (*mode == "like") {
+        string key = fmt::format("filter_{}",*name);
+        where.push_back(fmt::format("{} like {}", filter_columns[*name], ":"+key));
+        select_params[key] = "%"+*value+"%";
+      } else if (*mode == "equals") {
+        string key = fmt::format("filter_{}",*name);
+        where.push_back(fmt::format("{} = {}", filter_columns[*name], ":"+key));
+        select_params[key] = *value;
+      } else if (*mode == "list") {
+        // NOTE: Possibly someone will need (backslash?) escaped ,'s. But, I 
+        // don't feel like writng that now. Maybe a chomping of spaces around
+        // the comma's...
+        vector<string> values = split(*value, ",");
+        vector<string> keys;
+        for (unsigned int i = 0; i<values.size(); i++) {
+          string key = fmt::format("filter_{}{}",*name,i);
+          select_params[key] = values[i]; 
+          keys.push_back(":"+key);
+        }
+        where.push_back(
+          fmt::format("{} in ({})", filter_columns[*name], join(keys, ", ")));
+      }
+    }
+  }
+
+  if (post.has_scalar("search") && (!(*post["search"]).empty())) {
+    vector<string> search_where_pairs;
+    transform(filter_columns.begin(), filter_columns.end(), 
+      back_inserter(search_where_pairs), 
+      [](auto col) { return fmt::format("{} like :search", col.second); } );
+
+    select_params["search"] = *post["search"]; 
+    where.push_back(fmt::format("({})", join(search_where_pairs, " or ")));
+  }
+/*
+  // TODO: order by ...
+  /*
+  sortBy[]: id
+  sortBy[]: firstname
+  sortDesc[]: false
+  sortDesc[]: false
+   */
+/*
+
+deleteMode: soft
+activeColumnName: active
+mode: paginate
+*/
+
+  string sqlWhere = (where.size() > 0) ? 
+    fmt::format("where {}", join(where, " and ")) : "";
 
   long count_people = CrmPerson::Count( fmt::format(
-    "select count(*) from {table_name} {joins} where {where}", 
+    "select count(*) from {table_name} {joins} {where}", 
     fmt::arg("table_name", CrmPerson::Definition.table_name),
     fmt::arg("joins", join(joins, " ")),
-    fmt::arg("where", "`people`.active = 1") ));
+    fmt::arg("where", sqlWhere)),
+    select_params );
 
   unsigned long last_page = (unsigned long) ceil(
     (float) count_people / (float) per_page);
 
-  // TODO: Why is the id's all weird in here...
   vector<CrmPerson> people = CrmPerson::Select(fmt::format(
-    "select * from {table_name} {joins} where {where} order by {order_by}"
+    "select {columns} from {table_name} {joins} {where} order by {order_by}"
     " limit {limit} offset {offset}", 
+    // TODO: This should be a parameter..
+    fmt::arg("columns", join({"people.*", "sexes.name", "languages.name"}, ", ")),
     fmt::arg("table_name", CrmPerson::Definition.table_name),
     fmt::arg("joins", join(joins, " ")),
-    fmt::arg("where", "`people`.active = 1"),
+    fmt::arg("where", sqlWhere),
     fmt::arg("order_by", "`people`.`lastname` asc"),
     fmt::arg("limit", per_page),
-    fmt::arg("offset", offset)
-    ));
-
-  // TODO: why is it that the id is duplicated constantly here...
-
-  // TODO: nix this debug stuff:
-  logger->info("base: {} page: {}", base_path, page);
-  logger->info("body: {}", request.body());
-  logger->info("count: {}", count_people);
-  logger->info("per_page: {}", per_page);
-  logger->info("last_page: {}", last_page);
+    fmt::arg("offset", offset)),
+    select_params );
 
   nlohmann::json ret({
-    {"current_page", page}, {"last_page", last_page},
-    {"from", offset+1}, {"to", page*per_page},
-    {"total", count_people}, {"per_page", per_page},
-    {"path", base_path}, {"next_page_url", nullptr},
-    {"prev_page_url", nullptr}, {"data", nlohmann::json::array()},
+    {"current_page", page}, 
+    {"last_page", last_page},
+    {"from", offset+1},
+    {"to", page*per_page},
+    {"total", count_people},
+    {"per_page", per_page},
+    {"path", base_path},
+    {"next_page_url", nullptr},
+    {"prev_page_url", nullptr},
+    // TODO: Decorators should be a parameter...
+    {"data", ModelToJson(people, vector<JsonDecorator<CrmPerson>>({
+      with<long long int, CrmLanguage>(people, "language", "language_id"),
+      with<long long int, CrmSex>(people, "sex", "sex_id")
+      }))},
     });
 
   if (page < last_page)
     ret["next_page_url"] = fmt::format("{}?page={}", base_path, page + 1);
   if (page > 1)
     ret["prev_page_url"] = fmt::format("{}?page={}", base_path, page - 1);
-
-  ret["data"] = ModelToJson(people, std::vector<JsonDecorator<CrmPerson>>({
-    with<long long int, CrmLanguage>(people, "language", "language_id"),
-    with<long long int, CrmSex>(people, "sex", "sex_id")
-    }));
 
   return Controller::Response(ret);
 }

@@ -104,11 +104,18 @@ Pistache::Rest::Router& r, shared_ptr<Controller::Instance> controller) {
 
   VuecrudController<CrmPeopleController, CrmPerson>::Routes(r, controller);
 
+  // This search is used by the GUI:
   Post(r, "/api/crm/people/search",
     bind("search", &CrmPeopleController::search, controller));
-
   Options(r, "/api/crm/people/search", 
     bind("options_search", &CrmPeopleController::options, controller));
+
+  // TODO: 
+  // This address is used by the 'export to excel' function
+  Post(r, "/api/crud/crm/people/search",
+    bind("put_search", &CrmPeopleController::search, controller));
+  Options(r, "/api/crud/crm/people/search", 
+    bind("options_put_search", &CrmPeopleController::options, controller));
 }
 
 Controller::Response CrmPeopleController::search(const Pistache::Rest::Request& request) {
@@ -167,6 +174,7 @@ Controller::Response CrmPeopleController::search(const Pistache::Rest::Request& 
         fmt::format("`people`.active in ({})", join(status_keys, ", ")));
   }
 
+  // Column-specific Search
   for (const string &n : post.keys("filterColumns")) {
     auto mode = post("filterColumns", n, "mode");
     auto name = post("filterColumns", n, "name");
@@ -208,25 +216,34 @@ Controller::Response CrmPeopleController::search(const Pistache::Rest::Request& 
     }
   }
 
+  // All-columns Search:
   if (post.has_scalar("search") && (!(*post["search"]).empty())) {
     vector<string> search_where_pairs;
     transform(filter_columns.begin(), filter_columns.end(), 
       back_inserter(search_where_pairs), 
       [](auto col) { return fmt::format("{} like :search", col.second); } );
 
-    select_params["search"] = *post["search"]; 
+    select_params["search"] = "%"+*post["search"]+"%"; 
     where.push_back(fmt::format("({})", join(search_where_pairs, " or ")));
   }
-/*
-  // TODO: order by ...
-  /*
-  sortBy[]: id
-  sortBy[]: firstname
-  sortDesc[]: false
-  sortDesc[]: false
-   */
-/*
 
+  // Sorting:
+  vector<string> order_by;
+  if ( post.has_collection("sortBy") && post.has_collection("sortDesc") && 
+    (post.size("sortBy") == post.size("sortDesc") ) ) {
+
+    for (int i = 0; i < post.size("sortBy"); i++) {
+      auto col = post("sortBy", i);
+      auto dir = post("sortDesc", i);
+      if ( col.has_value() && !(*col).empty() && filter_columns.count(*col) &&
+        dir.has_value() && ( ((*dir) == "true") || ((*dir) == "false") ) )
+        order_by.push_back(fmt::format("{} {}", filter_columns[*col], 
+          ((*dir) == "true") ? "desc" : "asc"));
+    }
+  }
+
+/*
+TODO: wtf do these do:
 deleteMode: soft
 activeColumnName: active
 mode: paginate
@@ -246,14 +263,15 @@ mode: paginate
     (float) count_people / (float) per_page);
 
   vector<CrmPerson> people = CrmPerson::Select(fmt::format(
-    "select {columns} from {table_name} {joins} {where} order by {order_by}"
+    "select {columns} from {table_name} {joins} {where}{order_by}"
     " limit {limit} offset {offset}", 
     // TODO: This should be a parameter..
     fmt::arg("columns", join({"people.*", "sexes.name", "languages.name"}, ", ")),
     fmt::arg("table_name", CrmPerson::Definition.table_name),
     fmt::arg("joins", join(joins, " ")),
     fmt::arg("where", sqlWhere),
-    fmt::arg("order_by", "`people`.`lastname` asc"),
+    fmt::arg("order_by", ((order_by.size() > 0)) ? 
+      fmt::format(" order by {}", join(order_by, ", ")) : ""),
     fmt::arg("limit", per_page),
     fmt::arg("offset", offset)),
     select_params );

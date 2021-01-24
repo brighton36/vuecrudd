@@ -1,7 +1,5 @@
 #include "utilities.hpp"
 
-#include "crm_language.hpp"
-
 #include "crm_company_comments_controller.hpp"
 #include "crm_company_comment_types_controller.hpp"
 #include "crm_company_files_controller.hpp"
@@ -14,10 +12,7 @@
 #include "crm_sexes_controller.hpp"
 #include "crm_street_prefixes_controller.hpp"
 #include "crm_companies_controller.hpp"
-#include "crm_company_type.hpp"
-#include "crm_street_prefix.hpp"
-
-#include <iostream> // todo
+#include "crm_languages_controller.hpp"
 
 using namespace std;
 using namespace Pistache::Rest;
@@ -36,7 +31,7 @@ PSYM_CONTROLLER(CrmPositionsController)
 PSYM_CONTROLLER(CrmPositionTasksController)
 PSYM_CONTROLLER(CrmSexesController)
 PSYM_CONTROLLER(CrmStreetPrefixesController)
-
+PSYM_CONTROLLER(CrmLanguagesController)
 
 Response CrmCompanyController::index(const Request& request) {
   auto post = PostBody(request.body());
@@ -59,6 +54,34 @@ Response CrmCompanyCommentsController::index(const Request& request) {
     with<long long int, CrmCompany>(comments, "company", "company_id"),
     with<long long int, CrmCompanyCommentType>(
       comments, "company_comment_type", "company_comment_type_id")})));
+}
+
+Response CrmPeopleController::index(const Request& request) {
+  auto post = PostBody(request.body());
+  auto people = modelSelect(post);
+
+  return Response(ModelToJson(people, vector<JsonDecorator<CrmPerson>>({
+    with<long long int, CrmLanguage>(people, "language", "language_id"),
+    with<long long int, CrmSex>(people, "sex", "sex_id"),
+    [](CrmPerson &m, nlohmann::json &json) { json["fullname"] = m.fullname(); }
+    })));
+}
+
+Response CrmPersonCommentsController::index(const Request& request) {
+  auto post = PostBody(request.body());
+  auto person_comments = modelSelect(post);
+  // TODO: Get the user id decoration working for author
+
+  /* TODO: 
+   * We need to shoehorn fullname into the person here... maybe a model::to_json method is needed after all...
+  [{"id":1,"content":"aoeu","user_id":1,"person_id":1697,"person_comment_type_id":1,"active":1,"created_at":"2021-01-24 23:36:44","updated_at":"2021-01-24 23:36:44","person":{"id":1697,"firstname":"Aidan","lastname":"Abbott","distinction":"III","sex_id":2,"language_id":2,"email":"shanie31@hayes.biz","phone":"1-267-481-4127","active":1,"created_at":null,"updated_at":null,"fullname":"Abbott Aidan"},"user":{"id":1,"name":"admin","email":"admin@admin.com","active":1,"created_at":null,"updated_at":null,"initial_password":null,"user_type_id":3},"person_comment_type":{"id":1,"name":"aoeu","active":1,"created_at":"2021-01-24 23:36:36","updated_at":"2021-01-24 23:36:36"}}]
+  */
+  return Response(ModelToJson(person_comments, 
+    vector<JsonDecorator<CrmPersonComment>>({
+      with<long long int, CrmPerson>(person_comments, "person", "person_id"),
+      with<long long int, CrmPersonCommentType>(
+        person_comments, "person_comment_type", "person_comment_type_id")
+    })));
 }
 
 vector<CrmPerson> CrmPeopleController::modelSelect(Controller::PostBody &) {
@@ -110,12 +133,9 @@ Pistache::Rest::Router& r, shared_ptr<Controller::Instance> controller) {
   Options(r, "/api/crm/people/search", 
     bind("options_search", &CrmPeopleController::options, controller));
 
-  // TODO: 
-  // This address is used by the 'export to excel' function
-  Post(r, "/api/crud/crm/people/search",
-    bind("put_search", &CrmPeopleController::search, controller));
-  Options(r, "/api/crud/crm/people/search", 
-    bind("options_put_search", &CrmPeopleController::options, controller));
+  // NOTE: "/api/crud/crm/people/search" is called by the "export to excel"
+  // function on the people search. But, seemingly the laravel implementation
+  // didn't implement this function for people. So, neither did I.
 }
 
 Controller::Response CrmPeopleController::search(const Pistache::Rest::Request& request) {

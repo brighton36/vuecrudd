@@ -20,7 +20,7 @@ class CrmPerson : public Model::Instance<CrmPerson> {
 
     MODEL_ACCESSOR(id, long long int)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)
-      CRM_PERSON_COLUMNS
+    CRM_PERSON_COLUMNS
     #undef COLUMN
 
     inline static const Model::Definition Definition {
@@ -51,6 +51,7 @@ class CrmPerson : public Model::Instance<CrmPerson> {
     };
 
     static void Migrate();
+    std::string fullname();
 
   private:
     static ModelRegister<CrmPerson> reg;

@@ -7,6 +7,7 @@ class CrmPositionsController :
 public VuecrudController<CrmPositionsController, CrmPosition> { 
   public:
     static constexpr std::string_view basename = { "positions" };
+    static constexpr std::string_view rest_prefix = { "/api/crm" };
     using VuecrudController<CrmPositionsController, CrmPosition>::VuecrudController;
 		// TODO: what's up with:
 		// https://github.com/what-crud/laravel-crud-api/blob/master/templates/crm/app/Http/Controllers/Crm/PositionsController.php

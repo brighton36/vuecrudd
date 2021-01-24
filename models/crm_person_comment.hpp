@@ -2,14 +2,14 @@
 #include "model.hpp"
 #include "model_factory.hpp"
 
-#define CRM_PERSON_COMMENT_COLUMNS                        \
-  COLUMN(content,                std::string, "text")     \
-  COLUMN(user_id,                int,         "int")      \
-  COLUMN(person_id,              int,         "int")      \
-  COLUMN(person_comment_type_id, int,         "int")      \
-  COLUMN(active,                 int,         "int")      \
-  COLUMN(created_at,             std::tm,     "datetime") \
-  COLUMN(updated_at,             std::tm,     "datetime")
+#define CRM_PERSON_COMMENT_COLUMNS                          \
+  COLUMN(content,                std::string,   "text")     \
+  COLUMN(user_id,                long long int, "int")      \
+  COLUMN(person_id,              long long int, "int")      \
+  COLUMN(person_comment_type_id, long long int, "int")      \
+  COLUMN(active,                 int,           "int")      \
+  COLUMN(created_at,             std::tm,       "datetime") \
+  COLUMN(updated_at,             std::tm,       "datetime")
 
 class CrmPersonComment : public Model::Instance<CrmPersonComment> { 
   public:

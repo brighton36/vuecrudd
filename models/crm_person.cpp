@@ -1,4 +1,5 @@
 #include "crm_person.hpp"
+#include "utilities.hpp"
 
 using namespace std;
 
@@ -11,3 +12,10 @@ void CrmPerson::Migrate() {
     #undef COLUMN
   });
 };
+
+string CrmPerson::fullname() {
+  vector<string> fullname;
+  if (firstname().has_value()) fullname.push_back(*firstname());
+  if (lastname().has_value()) fullname.push_back(*lastname());
+  return prails::utilities::join(fullname, " ");
+}

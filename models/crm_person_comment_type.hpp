@@ -2,11 +2,11 @@
 #include "model.hpp"
 #include "model_factory.hpp"
 
-#define CRM_PERSON_COMMENT_TYPE_COLUMNS                       \
-  COLUMN(content,                std::string, "varchar(200)") \
-  COLUMN(active,                 int,         "int")          \
-  COLUMN(created_at,             std::tm,     "datetime")     \
-  COLUMN(updated_at,             std::tm,     "datetime")
+#define CRM_PERSON_COMMENT_TYPE_COLUMNS           \
+  COLUMN(name,       std::string, "varchar(200)") \
+  COLUMN(active,     int,         "int")          \
+  COLUMN(created_at, std::tm,     "datetime")     \
+  COLUMN(updated_at, std::tm,     "datetime")
 
 class CrmPersonCommentType : public Model::Instance<CrmPersonCommentType> { 
   public:

@@ -2,19 +2,19 @@
 #include "model.hpp"
 #include "model_factory.hpp"
 
-#define CRM_POSITION_COLUMNS                                            \
-  COLUMN(person_id,   int,				 "int") \
-  COLUMN(company_id,  int,				 "int") \
-  COLUMN(name,        std::string, "varchar(255)") \
-  COLUMN(phone,       std::string, "varchar(50)") \
-  COLUMN(phone_2,     std::string, "varchar(50)") \
-  COLUMN(phone_3,     std::string, "varchar(50)") \
-  COLUMN(email,       std::string, "varchar(255)") \
-  COLUMN(email_2,     std::string, "varchar(255)") \
-  COLUMN(comment,     std::string, "varchar(500)") \
-  COLUMN(active,      int,         "int")          \
-  COLUMN(created_at,  std::tm,     "datetime")     \
-  COLUMN(updated_at,  std::tm,     "datetime")
+#define CRM_POSITION_COLUMNS                         \
+  COLUMN(person_id,   long long int, "int")          \
+  COLUMN(company_id,  long long int, "int")          \
+  COLUMN(name,        std::string,   "varchar(255)") \
+  COLUMN(phone,       std::string,   "varchar(50)")  \
+  COLUMN(phone_2,     std::string,   "varchar(50)")  \
+  COLUMN(phone_3,     std::string,   "varchar(50)")  \
+  COLUMN(email,       std::string,   "varchar(255)") \
+  COLUMN(email_2,     std::string,   "varchar(255)") \
+  COLUMN(comment,     std::string,   "varchar(500)") \
+  COLUMN(active,      int,           "int")          \
+  COLUMN(created_at,  std::tm,       "datetime")     \
+  COLUMN(updated_at,  std::tm,       "datetime")
 
 class CrmPosition : public Model::Instance<CrmPosition> { 
   public:

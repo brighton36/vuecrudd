@@ -15,6 +15,5 @@ public VuecrudController<CrmPositionTasksController, CrmPositionTask> {
       CRM_POSITION_TASK_COLUMNS
       #undef COLUMN
     }
-		std::vector<CrmPositionTask> modelSelect(Controller::PostBody &);
     static ControllerRegister<CrmPositionTasksController> reg;
 };

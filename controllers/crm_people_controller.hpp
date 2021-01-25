@@ -20,7 +20,6 @@ public VuecrudController<CrmPeopleController, CrmPerson> {
       CRM_PERSON_COLUMNS
       #undef COLUMN
     }
-		std::vector<CrmPerson> modelSelect(Controller::PostBody &);
 
     static ControllerRegister<CrmPeopleController> reg;
 };

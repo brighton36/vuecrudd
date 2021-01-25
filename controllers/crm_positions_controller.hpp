@@ -12,6 +12,7 @@ public VuecrudController<CrmPositionsController, CrmPosition> {
 		// TODO: what's up with:
 		// https://github.com/what-crud/laravel-crud-api/blob/master/templates/crm/app/Http/Controllers/Crm/PositionsController.php
     //	public function positionTasks(Request $request, $id)
+    Controller::Response index(const Pistache::Rest::Request&);
 
   private:
     void modelUpdate(CrmPosition &model, Controller::PostBody &post, std::tm tm_time) {
@@ -20,6 +21,5 @@ public VuecrudController<CrmPositionsController, CrmPosition> {
       CRM_POSITION_COLUMNS
       #undef COLUMN
     }
-		std::vector<CrmPosition> modelSelect(Controller::PostBody &);
     static ControllerRegister<CrmPositionsController> reg;
 };

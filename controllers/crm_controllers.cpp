@@ -40,7 +40,6 @@ Response CrmCompanyController::index(const Request& request) {
   return Response(ModelToJson(companies, vector<JsonDecorator<CrmCompany>>({
     with<long long int, CrmCompanyType>(companies, "company_type", "company_type_id"),
     with<long long int, CrmStreetPrefix>(companies, "street_prefix", "street_prefix_id"),
-    [](CrmCompany &m, nlohmann::json &json) { json["address"] = m.address(); }
     })));
 }
 
@@ -62,8 +61,7 @@ Response CrmPeopleController::index(const Request& request) {
 
   return Response(ModelToJson(people, vector<JsonDecorator<CrmPerson>>({
     with<long long int, CrmLanguage>(people, "language", "language_id"),
-    with<long long int, CrmSex>(people, "sex", "sex_id"),
-    [](CrmPerson &m, nlohmann::json &json) { json["fullname"] = m.fullname(); }
+    with<long long int, CrmSex>(people, "sex", "sex_id")
     })));
 }
 
@@ -72,42 +70,34 @@ Response CrmPersonCommentsController::index(const Request& request) {
   auto person_comments = modelSelect(post);
   // TODO: Get the user id decoration working for author
 
-  auto person_decorator= with<long long int, CrmPerson>( person_comments, 
-    "person", "person_id");
-
   return Response(ModelToJson(person_comments, 
     vector<JsonDecorator<CrmPersonComment>>({
-      [=](CrmPersonComment &m, nlohmann::json &json) { 
-        // This is a little weird, because we needed to add a fullname attribute
-        // into the person object. Probably a model::to_json would be more
-        // appropriate...
-        person_decorator(m, json);
-        json["person"]["fullname"] = string(json["person"]["firstname"])+" "+
-          string(json["person"]["lastname"]); 
-      },
+      with<long long int, CrmPerson>(person_comments, "person", "person_id"),
       with<long long int, CrmPersonCommentType>(
         person_comments, "person_comment_type", "person_comment_type_id")
     })));
 }
 
+// TODO: The only reason this is here is because the modelSelect isn't being called
+// in the base class... We should fix that...
 Response CrmPositionsController::index(const Request& request) {
   auto post = PostBody(request.body());
   auto positions = modelSelect(post);
 
-  return Response(ModelToJson(positions, vector<JsonDecorator<CrmPosition>>({
-    // TODO: Note that we have an inordinately large select here. Maybe we want a join ...
-    with<long long int, CrmCompany>(positions, "company", "company_id"),
-    // TODO: I think we need that fullname hack here too...
-    with<long long int, CrmPerson>(positions, "person", "person_id")
-    // TODO: PositionTask
-    })));
+  return Response(ModelToJson(positions, std::vector<JsonDecorator<CrmPosition>>()));
 }
 
-/*
-TODO: 
 vector<CrmPosition> CrmPositionsController::modelSelect(Controller::PostBody &) {
+  vector<string> columns({ "positions.*", 
+    "companies.id as company_id", 
+    "companies.name as company_name", 
+    "people.id as person_id", 
+    // TODO: We need a mysql version of this:
+    "(people.firstname || ' ' || people.lastname) as person_fullname"});
+
   return CrmPosition::Select( fmt::format(
-    "select * from {table_name} {joins} order by {order_by}", 
+    "select {columns} from {table_name} {joins} order by {order_by}", 
+    fmt::arg("columns", join(columns, ", ")),
     fmt::arg("table_name", CrmPosition::Definition.table_name),
     fmt::arg("joins", join({
       "join companies on positions.company_id = companies.id", 
@@ -115,7 +105,7 @@ vector<CrmPosition> CrmPositionsController::modelSelect(Controller::PostBody &) 
     fmt::arg("order_by", join({ "companies.common_name asc", 
       "people.lastname asc", "people.firstname asc"}, ", "))
     ));
-}*/
+}
 
 void CrmPeopleController::Routes(
 Pistache::Rest::Router& r, shared_ptr<Controller::Instance> controller) {

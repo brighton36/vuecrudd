@@ -1,4 +1,5 @@
 #pragma once
+#include <nlohmann/json.hpp>
 #include "model.hpp"
 #include "model_factory.hpp"
 
@@ -41,6 +42,7 @@ class CrmPositionTask : public Model::Instance<CrmPositionTask> {
       })
     };
 
+    nlohmann::json to_json();
     static void Migrate();
 
   private:

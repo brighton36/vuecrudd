@@ -6,6 +6,18 @@ using namespace prails::utilities;
 template <class T>
 using JsonDecorator = std::function<void(T &, nlohmann::json &)>;
 
+template <class T>
+nlohmann::json ColumnValueToJson(std::optional<T> col) {
+  if (col.has_value()) {
+    if constexpr(std::is_same_v<T, std::tm>)
+      return prails::utilities::tm_to_iso8601(col.value());
+    else
+      return col.value();
+  }
+
+  return  nullptr;
+}
+
 // TODO: Can we replace T with https://stackoverflow.com/questions/30930350/why-member-functions-cant-be-used-as-template-arguments
 template<typename T, class U, class V>
 JsonDecorator<V> with(
@@ -40,13 +52,12 @@ std::vector<V> &records, const std::string json_key, const std::string foreign_k
   for(auto &sr: U::Select(query, params))
     id_to_foreign_model[std::get<T>(*sr.recordGet("id"))] = sr;
 
-  // TODO: I guess the idea would be to supply these functions to the ModelToJson
   return [=](V &m, nlohmann::json &obj) mutable { 
     obj[json_key] = nullptr;
     if (m.recordGet(foreign_key_attr).has_value()) { 
       T foreign_id = std::get<T>(m.recordGet(foreign_key_attr).value());
       if (id_to_foreign_model.count(foreign_id))
-        obj[json_key] = Controller::ModelToJson(id_to_foreign_model[foreign_id]);
+        obj[json_key] = id_to_foreign_model[foreign_id].to_json();
     }
   };
 }
@@ -57,7 +68,7 @@ nlohmann::json ModelToJson(std::vector<T> &models, std::vector<JsonDecorator<V>>
 
   std::transform(models.begin(), models.end(), back_inserter(ret), 
     [&decorators](auto& model) { 
-      auto js = Controller::ModelToJson(model);
+      auto js = model.to_json();
 
       std::for_each(decorators.begin(), decorators.end(), 
         [&model, &js](const auto &decorator) { decorator(model, js); } );

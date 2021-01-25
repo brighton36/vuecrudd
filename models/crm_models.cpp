@@ -1,3 +1,8 @@
+#include <variant>
+#include <nlohmann/json.hpp>
+
+#include "vuecrud_utilities.hpp"
+
 #include "crm_company.hpp"
 #include "crm_company_comment.hpp"
 #include "crm_company_comment_type.hpp"
@@ -30,8 +35,9 @@ PSYM_MODEL(CrmPositionTask);
 PSYM_MODEL(CrmSex);
 PSYM_MODEL(CrmStreetPrefix);
 
-#define MODEL_MIGRATE(m, columns) void m::Migrate() {CreateTable({ columns });};
+// Migrate()
 #define COLUMN(a, _, t) {#a, t}, 
+#define MODEL_MIGRATE(m, columns) void m::Migrate() {CreateTable({ columns });}
 MODEL_MIGRATE(CrmCompany, CRM_COMPANY_COLUMNS);
 MODEL_MIGRATE(CrmCompanyComment, CRM_COMPANY_COMMENT_COLUMNS);
 MODEL_MIGRATE(CrmCompanyCommentType, CRM_COMPANY_COMMENT_TYPE_COLUMNS);
@@ -46,6 +52,58 @@ MODEL_MIGRATE(CrmPersonCommentType, CRM_PERSON_COMMENT_TYPE_COLUMNS);
 MODEL_MIGRATE(CrmPosition, CRM_POSITION_COLUMNS);
 MODEL_MIGRATE(CrmPositionTask, CRM_POSITION_TASK_COLUMNS);
 #undef COLUMN 
+
+// to_json()
+#define COLUMN(a, _1, _2) ret[#a] = ColumnValueToJson(a());
+#define MODEL_TO_JSON(m, columns) nlohmann::json m::to_json() { \
+    nlohmann::json ret({{"id", ColumnValueToJson(id())}});      \
+    columns; return ret; }
+MODEL_TO_JSON(CrmCompanyComment, CRM_COMPANY_COMMENT_COLUMNS);
+MODEL_TO_JSON(CrmCompanyCommentType, CRM_COMPANY_COMMENT_TYPE_COLUMNS);
+MODEL_TO_JSON(CrmCompanyFile, CRM_COMPANY_FILE_COLUMNS);
+MODEL_TO_JSON(CrmCompanyType, CRM_COMPANY_TYPE_COLUMNS);
+MODEL_TO_JSON(CrmLanguage, CRM_LANGUAGE_COLUMNS);
+MODEL_TO_JSON(CrmPersonComment, CRM_PERSON_COMMENT_COLUMNS);
+MODEL_TO_JSON(CrmSex, CRM_SEX_COLUMNS);
+MODEL_TO_JSON(CrmStreetPrefix, CRM_STREET_PREFIX_COLUMNS);
+MODEL_TO_JSON(CrmPersonCommentType, CRM_PERSON_COMMENT_TYPE_COLUMNS);
+MODEL_TO_JSON(CrmPositionTask, CRM_POSITION_TASK_COLUMNS);
+
+nlohmann::json CrmCompany::to_json() { 
+  nlohmann::json ret({{"id", ColumnValueToJson(id())}});
+  CRM_COMPANY_COLUMNS; 
+  ret["address"] = address();
+  return ret; 
+}
+
+nlohmann::json CrmPerson::to_json() { 
+  nlohmann::json ret({{"id", ColumnValueToJson(id())}});
+  CRM_PERSON_COLUMNS; 
+  ret["fullname"] = fullname();
+  return ret; 
+}
+
+nlohmann::json CrmPosition::to_json() { 
+  nlohmann::json ret({{"id", ColumnValueToJson(id())}});
+  CRM_POSITION_COLUMNS; 
+  // The modelSelect() joins these columns for us.  
+  if (auto company_id = recordGet("company_id"); company_id.has_value()) {
+    ret["company"] = nlohmann::json::object({{"common_name", "todo"}});
+    ret["company"]["id"] = get<long long int>(*company_id);
+
+    if (auto company_name = recordGet("company_name"); company_name.has_value())
+      ret["company"]["common_name"] = get<string>(*company_name);
+  }
+  if (auto person_id = recordGet("person_id"); person_id.has_value()) {
+    ret["person"] = nlohmann::json::object({{"fullname", "todo"}});
+    ret["person"]["id"] = get<long long int>(*person_id);
+    if (auto person_fullname = recordGet("person_fullname"); person_fullname.has_value())
+      ret["person"]["fullname"] = get<string>(*person_fullname);
+  }
+  return ret; 
+}
+#undef COLUMN 
+
 
 string CrmPerson::fullname() {
   vector<string> fullname;

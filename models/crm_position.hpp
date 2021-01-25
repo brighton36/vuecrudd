@@ -1,4 +1,5 @@
 #pragma once
+#include <nlohmann/json.hpp>
 #include "model.hpp"
 #include "model_factory.hpp"
 
@@ -22,7 +23,7 @@ class CrmPosition : public Model::Instance<CrmPosition> {
 
     MODEL_ACCESSOR(id, long long int)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)
-      CRM_POSITION_COLUMNS
+    CRM_POSITION_COLUMNS
     #undef COLUMN
 
     inline static const Model::Definition Definition {
@@ -59,6 +60,7 @@ class CrmPosition : public Model::Instance<CrmPosition> {
       })
     };
 
+    nlohmann::json to_json();
     static void Migrate();
 
   private:

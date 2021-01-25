@@ -1,4 +1,5 @@
 #pragma once
+#include <nlohmann/json.hpp>
 #include "model.hpp"
 #include "model_factory.hpp"
 
@@ -36,6 +37,7 @@ class CrmLanguage : public Model::Instance<CrmLanguage> {
       })
     };
 
+    nlohmann::json to_json();
     static void Migrate();
 
   private:

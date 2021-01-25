@@ -1,4 +1,5 @@
 #pragma once
+#include <nlohmann/json.hpp>
 #include "model.hpp"
 #include "model_factory.hpp"
 
@@ -51,7 +52,9 @@ class CrmPerson : public Model::Instance<CrmPerson> {
     };
 
     static void Migrate();
+
     std::string fullname();
+    nlohmann::json to_json();
 
   private:
     static ModelRegister<CrmPerson> reg;

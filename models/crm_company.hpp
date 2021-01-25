@@ -1,4 +1,5 @@
 #pragma once
+#include <nlohmann/json.hpp>
 #include "model.hpp"
 #include "model_factory.hpp"
 
@@ -73,6 +74,7 @@ class CrmCompany : public Model::Instance<CrmCompany> {
     };
 
     std::string address();
+    nlohmann::json to_json();
 
     static void Migrate();
 

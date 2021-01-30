@@ -2,14 +2,14 @@
 #include "model.hpp"
 #include "model_factory.hpp"
 
-#define USER_COLUMNS                                    \
-  COLUMN(name,             std::string, "varchar(255)") \
-  COLUMN(email,            std::string, "varchar(255)") \
-  COLUMN(initial_password, std::string, "varchar(255)") \
-  COLUMN(user_type_id,     int,         "int")          \
-  COLUMN(active,           int,         "int")          \
-  COLUMN(created_at,       std::tm,     "datetime")     \
-  COLUMN(updated_at,       std::tm,     "datetime")
+#define USER_COLUMNS                                      \
+  COLUMN(name,             std::string,   "varchar(255)") \
+  COLUMN(email,            std::string,   "varchar(255)") \
+  COLUMN(initial_password, std::string,   "varchar(255)") \
+  COLUMN(user_type_id,     long long int, "int")          \
+  COLUMN(active,           int,           "int")          \
+  COLUMN(created_at,       std::tm,       "datetime")     \
+  COLUMN(updated_at,       std::tm,       "datetime")
 
 class User : public Model::Instance<User> { 
   public:

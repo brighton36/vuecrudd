@@ -2,10 +2,10 @@
 #include "model.hpp"
 #include "model_factory.hpp"
 
-#define USER_PERMISSION_COLUMNS              \
-  COLUMN(user_id,       int,     "int")      \
-  COLUMN(permission_id, int,     "int")      \
-  COLUMN(active,        int,     "int")      \
+#define USER_PERMISSION_COLUMNS               \
+  COLUMN(user_id,       long long int, "int") \
+  COLUMN(permission_id, long long int, "int") \
+  COLUMN(active,        int,           "int") \
   COLUMN(created_at,    std::tm, "datetime") \
   COLUMN(updated_at,    std::tm, "datetime")
 

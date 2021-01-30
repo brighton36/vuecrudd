@@ -88,14 +88,14 @@ nlohmann::json CrmPosition::to_json() {
   CRM_POSITION_COLUMNS; 
   // The modelSelect() joins these columns for us.  
   if (auto company_id = recordGet("company_id"); company_id.has_value()) {
-    ret["company"] = nlohmann::json::object({{"common_name", "todo"}});
+    ret["company"] = nlohmann::json::object({{"common_name", nullptr}});
     ret["company"]["id"] = get<long long int>(*company_id);
 
     if (auto company_name = recordGet("company_name"); company_name.has_value())
       ret["company"]["common_name"] = get<string>(*company_name);
   }
   if (auto person_id = recordGet("person_id"); person_id.has_value()) {
-    ret["person"] = nlohmann::json::object({{"fullname", "todo"}});
+    ret["person"] = nlohmann::json::object({{"fullname", nullptr}});
     ret["person"]["id"] = get<long long int>(*person_id);
     if (auto person_fullname = recordGet("person_fullname"); person_fullname.has_value())
       ret["person"]["fullname"] = get<string>(*person_fullname);

@@ -57,7 +57,7 @@ std::vector<V> &records, const std::string json_key, const std::string foreign_k
     if (m.recordGet(foreign_key_attr).has_value()) { 
       T foreign_id = std::get<T>(m.recordGet(foreign_key_attr).value());
       if (id_to_foreign_model.count(foreign_id))
-        obj[json_key] = id_to_foreign_model[foreign_id].to_json();
+        obj[json_key] = Controller::ModelToJson(id_to_foreign_model[foreign_id]);
     }
   };
 }
@@ -68,7 +68,7 @@ nlohmann::json ModelToJson(std::vector<T> &models, std::vector<JsonDecorator<V>>
 
   std::transform(models.begin(), models.end(), back_inserter(ret), 
     [&decorators](auto& model) { 
-      auto js = model.to_json();
+      auto js = Controller::ModelToJson(model);
 
       std::for_each(decorators.begin(), decorators.end(), 
         [&model, &js](const auto &decorator) { decorator(model, js); } );

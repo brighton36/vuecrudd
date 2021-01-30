@@ -7,7 +7,9 @@ class CrmPositionTasksController :
 public VuecrudController<CrmPositionTasksController, CrmPositionTask> { 
   public:
     static constexpr std::string_view basename = { "position-tasks" };
+    static constexpr std::string_view rest_prefix = { "/api/crm" };
     using VuecrudController<CrmPositionTasksController, CrmPositionTask>::VuecrudController;
+    Controller::Response index(const Pistache::Rest::Request&);
   private:
     void modelUpdate(CrmPositionTask &model, Controller::PostBody &post, std::tm tm_time) {
       modelUpdateVuecrud(model, post, tm_time);

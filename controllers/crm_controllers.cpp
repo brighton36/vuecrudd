@@ -13,6 +13,7 @@
 #include "crm_street_prefixes_controller.hpp"
 #include "crm_companies_controller.hpp"
 #include "crm_languages_controller.hpp"
+#include "crm_tasks_controller.hpp"
 
 using namespace std;
 using namespace Pistache::Rest;
@@ -32,6 +33,7 @@ PSYM_CONTROLLER(CrmPositionTasksController)
 PSYM_CONTROLLER(CrmSexesController)
 PSYM_CONTROLLER(CrmStreetPrefixesController)
 PSYM_CONTROLLER(CrmLanguagesController)
+PSYM_CONTROLLER(TasksController)
 
 Response CrmCompanyController::index(const Request& request) {
   auto post = PostBody(request.body());
@@ -78,13 +80,16 @@ Response CrmPersonCommentsController::index(const Request& request) {
     })));
 }
 
-// TODO: The only reason this is here is because the modelSelect isn't being called
-// in the base class... We should fix that...
-Response CrmPositionsController::index(const Request& request) {
+Response CrmPositionTasksController::index(const Request& request) {
   auto post = PostBody(request.body());
-  auto positions = modelSelect(post);
+  auto position_tasks = modelSelect(post);
+  // TODO: Company? Person? Maybe we should join here instead... look at the reference?
 
-  return Response(ModelToJson(positions, std::vector<JsonDecorator<CrmPosition>>()));
+  return Response(ModelToJson(position_tasks, 
+    vector<JsonDecorator<CrmPositionTask>>({
+      with<long long int, CrmPosition>(position_tasks, "position", "position_id"),
+      with<long long int, Task>(position_tasks, "task", "task_id")
+      })));
 }
 
 vector<CrmPosition> CrmPositionsController::modelSelect(Controller::PostBody &) {

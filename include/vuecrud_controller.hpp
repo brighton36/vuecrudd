@@ -2,6 +2,9 @@
 #include "rest_controller.hpp"
 #include "vuecrud_utilities.hpp"
 
+#define CONTROLLER_UPDATE(c, m, columns) void c::modelUpdate( m &model, \
+    Controller::PostBody &post, std::tm tm_time) { \
+    modelUpdateVuecrud(model, post, tm_time); columns }
 
 template <class U, class T>
 class VuecrudController : public Controller::RestInstance<U,T> {

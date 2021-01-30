@@ -10,12 +10,7 @@ public VuecrudController<CrmPersonCommentTypesController, CrmPersonCommentType> 
     static constexpr std::string_view rest_prefix = { "/api/crm" };
     using VuecrudController<CrmPersonCommentTypesController, CrmPersonCommentType>::VuecrudController;
   private:
-    void modelUpdate(CrmPersonCommentType &model, Controller::PostBody &post, std::tm tm_time) {
-      modelUpdateVuecrud(model, post, tm_time);
-      #define COLUMN(a, b, _) REST_COLUMN_UPDATE(a, b)
-      CRM_PERSON_COMMENT_TYPE_COLUMNS
-      #undef COLUMN
-    }
+    void modelUpdate(CrmPersonCommentType &, Controller::PostBody &, std::tm);
 
     static ControllerRegister<CrmPersonCommentTypesController> reg;
 };

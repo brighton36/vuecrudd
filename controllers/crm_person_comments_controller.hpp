@@ -20,12 +20,7 @@ public VuecrudController<CrmPersonCommentsController, CrmPersonComment> {
       return VuecrudController<CrmPersonCommentsController, CrmPersonComment>::prefix(action);
     }
   private:
-    void modelUpdate(CrmPersonComment &model, Controller::PostBody &post, std::tm tm_time) {
-      modelUpdateVuecrud(model, post, tm_time);
-      #define COLUMN(a, b, _) REST_COLUMN_UPDATE(a, b)
-      CRM_PERSON_COMMENT_COLUMNS
-      #undef COLUMN
-    }
+    void modelUpdate(CrmPersonComment &, Controller::PostBody &, std::tm);
 
     static ControllerRegister<CrmPersonCommentsController> reg;
 };

@@ -9,12 +9,7 @@ public VuecrudController<CrmSexesController, CrmSex> {
     static constexpr std::string_view basename = { "sexes" };
     using VuecrudController<CrmSexesController, CrmSex>::VuecrudController;
   private:
-    void modelUpdate(CrmSex &model, Controller::PostBody &post, std::tm tm_time) {
-      modelUpdateVuecrud(model, post, tm_time);
- 
-      #define COLUMN(a, b, _) REST_COLUMN_UPDATE(a, b)
-      CRM_SEX_COLUMNS
-      #undef COLUMN
-    }
+    void modelUpdate(CrmSex &, Controller::PostBody &, std::tm);
+
     static ControllerRegister<CrmSexesController> reg;
 };

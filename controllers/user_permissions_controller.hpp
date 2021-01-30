@@ -7,13 +7,10 @@ class UserPermissionsController :
 public VuecrudController<UserPermissionsController, UserPermission> { 
   public:
     static constexpr std::string_view basename = { "user-permissions" };
+    static constexpr std::string_view read_prefix = { "/api/admin" };
+    static constexpr std::string_view rest_prefix = { "/api/crud/admin" };
     using VuecrudController<UserPermissionsController, UserPermission>::VuecrudController;
   private:
-    void modelUpdate(UserPermission &model, Controller::PostBody &post, std::tm tm_time) {
-      modelUpdateVuecrud(model, post, tm_time);
-      #define COLUMN(a, b, _) REST_COLUMN_UPDATE(a, b)
-      USER_PERMISSION_COLUMNS
-      #undef COLUMN
-    }
+    void modelUpdate(UserPermission &, Controller::PostBody &, std::tm);
     static ControllerRegister<UserPermissionsController> reg;
 };

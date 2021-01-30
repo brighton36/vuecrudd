@@ -10,12 +10,7 @@ public VuecrudController<CrmCompanyTypeController, CrmCompanyType> {
     static constexpr std::string_view basename = { "company-types" };
     using VuecrudController<CrmCompanyTypeController, CrmCompanyType>::VuecrudController;
   private:
-    void modelUpdate(CrmCompanyType &model, Controller::PostBody &post, std::tm tm_time) {
-      modelUpdateVuecrud(model, post, tm_time);
-      #define COLUMN(a, b, _) REST_COLUMN_UPDATE(a, b)
-      CRM_COMPANY_TYPE_COLUMNS
-      #undef COLUMN
-    }
+    void modelUpdate(CrmCompanyType &, Controller::PostBody &, std::tm);
 
     static ControllerRegister<CrmCompanyTypeController> reg;
 };

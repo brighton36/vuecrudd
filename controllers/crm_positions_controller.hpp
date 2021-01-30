@@ -15,12 +15,7 @@ public VuecrudController<CrmPositionsController, CrmPosition> {
 
   protected:
     std::vector<CrmPosition> modelSelect(Controller::PostBody &);
-    // TODO: Probably this should go in the crm_models...
-    void modelUpdate(CrmPosition &model, Controller::PostBody &post, std::tm tm_time) {
-      modelUpdateVuecrud(model, post, tm_time);
-      #define COLUMN(a, b, _) REST_COLUMN_UPDATE(a, b)
-      CRM_POSITION_COLUMNS
-      #undef COLUMN
-    }
+    void modelUpdate(CrmPosition &, Controller::PostBody &, std::tm);
+
     static ControllerRegister<CrmPositionsController> reg;
 };

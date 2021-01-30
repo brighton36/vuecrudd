@@ -11,12 +11,7 @@ public VuecrudController<CrmLanguagesController, CrmLanguage> {
 
     using VuecrudController<CrmLanguagesController, CrmLanguage>::VuecrudController;
   private:
-    void modelUpdate(CrmLanguage &model, Controller::PostBody &post, std::tm tm_time) {
-      modelUpdateVuecrud(model, post, tm_time);
-      #define COLUMN(a, b, _) REST_COLUMN_UPDATE(a, b)
-      CRM_LANGUAGE_COLUMNS
-      #undef COLUMN
-    }
+    void modelUpdate(CrmLanguage &, Controller::PostBody &, std::tm);
 
     static ControllerRegister<CrmLanguagesController> reg;
 };

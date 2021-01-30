@@ -11,11 +11,7 @@ public VuecrudController<CrmPositionTasksController, CrmPositionTask> {
     using VuecrudController<CrmPositionTasksController, CrmPositionTask>::VuecrudController;
     Controller::Response index(const Pistache::Rest::Request&);
   private:
-    void modelUpdate(CrmPositionTask &model, Controller::PostBody &post, std::tm tm_time) {
-      modelUpdateVuecrud(model, post, tm_time);
-      #define COLUMN(a, b, _) REST_COLUMN_UPDATE(a, b)
-      CRM_POSITION_TASK_COLUMNS
-      #undef COLUMN
-    }
+    void modelUpdate(CrmPositionTask &, Controller::PostBody &, std::tm);
+
     static ControllerRegister<CrmPositionTasksController> reg;
 };

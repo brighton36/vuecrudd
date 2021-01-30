@@ -13,13 +13,7 @@ public VuecrudController<CrmPeopleController, CrmPerson> {
     static void Routes(Pistache::Rest::Router&, std::shared_ptr<Controller::Instance>);
     Controller::Response index(const Pistache::Rest::Request&);
   private:
-    void modelUpdate(CrmPerson &model, Controller::PostBody &post, std::tm tm_time) {
-      modelUpdateVuecrud(model, post, tm_time);
- 
-      #define COLUMN(a, b, _) REST_COLUMN_UPDATE(a, b)
-      CRM_PERSON_COLUMNS
-      #undef COLUMN
-    }
+    void modelUpdate(CrmPerson &, Controller::PostBody &, std::tm);
 
     static ControllerRegister<CrmPeopleController> reg;
 };

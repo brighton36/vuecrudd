@@ -35,6 +35,22 @@ PSYM_CONTROLLER(CrmStreetPrefixesController)
 PSYM_CONTROLLER(CrmLanguagesController)
 PSYM_CONTROLLER(TasksController)
 
+#define COLUMN(a, b, _) REST_COLUMN_UPDATE(a, b)
+CONTROLLER_UPDATE(CrmCompanyController, CrmCompany, CRM_COMPANY_COLUMNS)
+CONTROLLER_UPDATE(CrmCompanyCommentsController, CrmCompanyComment, CRM_COMPANY_COMMENT_COLUMNS)
+CONTROLLER_UPDATE(CrmCompanyCommentTypesController, CrmCompanyCommentType, CRM_COMPANY_COMMENT_TYPE_COLUMNS)
+CONTROLLER_UPDATE(CrmCompanyFilesController, CrmCompanyFile, CRM_COMPANY_FILE_COLUMNS)
+CONTROLLER_UPDATE(CrmCompanyTypeController, CrmCompanyType, CRM_COMPANY_TYPE_COLUMNS)
+CONTROLLER_UPDATE(CrmLanguagesController, CrmLanguage, CRM_LANGUAGE_COLUMNS)
+CONTROLLER_UPDATE(CrmPeopleController, CrmPerson, CRM_PERSON_COLUMNS)
+CONTROLLER_UPDATE(CrmPersonCommentsController, CrmPersonComment, CRM_PERSON_COMMENT_COLUMNS)
+CONTROLLER_UPDATE(CrmPersonCommentTypesController, CrmPersonCommentType, CRM_PERSON_COMMENT_TYPE_COLUMNS)
+CONTROLLER_UPDATE(CrmPositionsController, CrmPosition, CRM_POSITION_COLUMNS)
+CONTROLLER_UPDATE(CrmPositionTasksController, CrmPositionTask, CRM_POSITION_TASK_COLUMNS)
+CONTROLLER_UPDATE(CrmSexesController, CrmSex, CRM_SEX_COLUMNS)
+CONTROLLER_UPDATE(CrmStreetPrefixesController, CrmStreetPrefix, CRM_STREET_PREFIX_COLUMNS)
+#undef COLUMN
+
 Response CrmCompanyController::index(const Request& request) {
   auto post = PostBody(request.body());
   auto companies = modelSelect(post);

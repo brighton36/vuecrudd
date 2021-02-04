@@ -1,6 +1,6 @@
 #include "prails_gtest.hpp"
 
-#include "account.hpp"
+#include "user.hpp"
 
 using namespace std;
 
@@ -13,15 +13,14 @@ class AuthControllerTest : public PrailsControllerTest {
 
   protected:
     Model::Record jsmith_record = {
-      {"first_name", "John"},
-      {"last_name",  "Smith"},
-      {"email",      "jsmith@google.com"}
+      {"name",  "John Smith"},
+      {"email", "jsmith@google.com"}
     };
 
-    Account jsmith() {
+    User jsmith() {
       std::tm now = Model::NowUTC();
 
-      Account account(jsmith_record);
+      User account(jsmith_record);
       account.password("SuperSecret");
       account.updated_at(now);
       account.created_at(now);
@@ -33,7 +32,7 @@ class AuthControllerTest : public PrailsControllerTest {
 PSYM_TEST_ENVIRONMENT();
 
 TEST_F(AuthControllerTest, fail_post_parse) {
-  Account account = jsmith();
+  User account = jsmith();
   EXPECT_TRUE(account.isValid());
   ASSERT_NO_THROW(account.save());
 
@@ -53,7 +52,7 @@ TEST_F(AuthControllerTest, fail_login) {
   nlohmann::json response;
   std::shared_ptr<httplib::Response> res;
 
-  Account account = jsmith();
+  User account = jsmith();
   EXPECT_TRUE(account.isValid());
   ASSERT_NO_THROW(account.save());
 
@@ -81,7 +80,7 @@ TEST_F(AuthControllerTest, fail_login) {
 }
 
 TEST_F(AuthControllerTest, success_login) {
-  Account account = jsmith();
+  User account = jsmith();
   EXPECT_TRUE(account.isValid());
   ASSERT_NO_THROW(account.save());
 
@@ -93,7 +92,7 @@ TEST_F(AuthControllerTest, success_login) {
 
   auto response = nlohmann::json::parse(res->body);
 
-  Account retrieved_account = *Account::Find(account.id().value());
+  User retrieved_account = *User::Find(account.id().value());
 
   ASSERT_EQ(response["permissions"].get<vector<string>>(), 
     vector<string>({"CRM","ADMIN","MODELAND"}));

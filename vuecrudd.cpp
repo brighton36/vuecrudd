@@ -4,7 +4,6 @@
 #include "faker.hpp"
 
 // Included here for mode_seed:
-#include "account.hpp"
 #include "crm_company.hpp"
 #include "crm_company_type.hpp"
 #include "crm_sex.hpp"
@@ -48,7 +47,7 @@ unsigned int mode_seed(ConfigParser &, shared_ptr<spdlog::logger> logger,
     {"created_at",  now},
     {"updated_at",  now}
   });
-  // TODO: admin_user.password("1234");
+  admin_user.password("1234");
   admin_user.save();
   
   // Permissions:
@@ -64,13 +63,6 @@ unsigned int mode_seed(ConfigParser &, shared_ptr<spdlog::logger> logger,
 
   UserPermission({ {"user_id", 1}, {"permission_id", 2},
     {"active", 1}, {"created_at", now}, {"updated_at", now} }).save();
-
-  // Account:
-  // TODO: I think we can remove this in liue of users...
-  auto first_account = Account({ {"first_name", "Admin"}, {"last_name", "User"},
-    {"email", "admin@admin.com"}, {"created_at", now}, {"updated_at", now} });
-  first_account.password("1234");
-  first_account.save();
 
   // Company Types
   map<string,string> company_types = { {"Media", "MED"}, {"Firmy IT", "FIT"},

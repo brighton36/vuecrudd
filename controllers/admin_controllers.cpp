@@ -20,7 +20,7 @@ CONTROLLER_UPDATE(UserPermissionsController, UserPermission, USER_PERMISSION_COL
 #undef COLUMN
 
 Response UsersController::index(const Request& request) {
-	User user = ensure_authorization(request, "index");
+	User user = ensure_authorization<User>(request, "index");
   auto post = PostBody(request.body());
   auto users = model_index(user);
 
@@ -30,7 +30,7 @@ Response UsersController::index(const Request& request) {
 }
 
 Response UserPermissionsController::index(const Request& request) {
-	User user = ensure_authorization(request, "index");
+	User user = ensure_authorization<User>(request, "index");
   auto post = PostBody(request.body());
   auto user_permissions = model_index(user);
 

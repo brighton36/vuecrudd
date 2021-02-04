@@ -1,5 +1,5 @@
 #include "auth_controller.hpp"
-#include "account.hpp"
+#include "user.hpp"
 
 using namespace std;
 using namespace Pistache;
@@ -36,10 +36,10 @@ Controller::Response AuthController::login(const Rest::Request& request) {
   ensure_content_type(request, MIME(Application, FormUrlEncoded));
 
   auto post = Controller::PostBody(request.body());
-  std::optional<Account> account = nullopt;
+  std::optional<User> account = nullopt;
 
   if (post["email"] && post["password"])
-    account = Account::FromLogin(*post["email"], *post["password"]);
+    account = User::FromLogin(*post["email"], *post["password"]);
 
   if (!account.has_value()) {
     spdlog::error("Invalid login attempted for user \"{}\" from {}.", 
@@ -60,7 +60,7 @@ Controller::Response AuthController::login(const Rest::Request& request) {
   return Controller::Response(nlohmann::json::object({
     {"token", *(*account).auth_token()},
     {"user", {
-      {"name", *(*account).first_name() }, 
+      {"name", *(*account).name() }, 
       {"email", *(*account).email()}, 
       {"active", 1}
     } }, 
@@ -69,7 +69,10 @@ Controller::Response AuthController::login(const Rest::Request& request) {
 }
 
 Controller::Response AuthController::user_show(const Rest::Request& request) {
-  Account account = ensure_authorization<Account>(request);
+  auto user = nlohmann::json::object();
+  /*
+  // TODO:
+  User account = ensure_authorization<User>(request);
  
   auto user = nlohmann::json::object({
     {"id", *account.id()},
@@ -120,24 +123,25 @@ Controller::Response AuthController::user_show(const Rest::Request& request) {
     }
   });
 
+  */
   return Controller::Response(user);
 }
 
 Controller::Response AuthController::user_update(const Rest::Request& request) {
-  Account account = ensure_authorization<Account>(request);
+  User account = ensure_authorization<User>(request, "user_update");
   ensure_content_type(request, MIME(Application, FormUrlEncoded));
 
   auto post = Controller::PostBody(request.body());
 
-  if (post["name"]) account.first_name(*post["name"]);
+  if (post["name"]) account.name(*post["name"]);
   if (post["email"]) account.email(*post["email"]);
   account.updated_at(Model::NowUTC());
 
-  return render_model_save_js<Account>(account);
+  return render_model_save_js<User>(account);
 }
 
 Controller::Response AuthController::user_password(const Rest::Request& request) {
-  Account account = ensure_authorization<Account>(request);
+  User account = ensure_authorization<User>(request, "user_password");
   ensure_content_type(request, MIME(Application, FormUrlEncoded));
 
   auto post = Controller::PostBody(request.body());
@@ -152,7 +156,7 @@ Controller::Response AuthController::user_password(const Rest::Request& request)
       nlohmann::json({{"status", -1}, {"msg", {{"repeat", "doesnt match new password"}} }})
     );
 
-  if (*account.password() != Account::Hash(*post["old"]))
+  if (*account.password() != User::Hash(*post["old"]))
     return Controller::Response(
       nlohmann::json({{"status", -1}, {"msg", {{"old", "password invalid"}} }})
     );
@@ -160,11 +164,11 @@ Controller::Response AuthController::user_password(const Rest::Request& request)
   account.password(*post["new"]);
   account.updated_at(Model::NowUTC());
 
-  return render_model_save_js<Account>(account, 1, -1);
+  return render_model_save_js<User>(account, 1, -1);
 }
 
 Controller::Response AuthController::logout(const Rest::Request& request) {
-  Account account = ensure_authorization<Account>(request);
+  User account = ensure_authorization<User>(request, "logout");
   
   spdlog::info("User \"{}\" logged out {}.", *account.email(), request.address().host());
 

@@ -2,18 +2,26 @@
 #include "model.hpp"
 #include "model_factory.hpp"
 
+// The auth_token is a bit sloppy, I should probably calculate the exact size. 
+// But, roughly, 128 characters of randomness is 172 characters of base64
+// Note that we omit password, since the accessor logic isn't as simple as the
+// other columns
 #define USER_COLUMNS                                      \
   COLUMN(name,             std::string,   "varchar(255)") \
   COLUMN(email,            std::string,   "varchar(255)") \
   COLUMN(initial_password, std::string,   "varchar(255)") \
   COLUMN(user_type_id,     long long int, "int")          \
   COLUMN(active,           int,           "int")          \
+  COLUMN(auth_token,       std::string,   fmt::format("varchar({})",auth_token_size*2)) \
+  COLUMN(auth_token_issued_at, std::tm,   "datetime")     \
   COLUMN(created_at,       std::tm,       "datetime")     \
   COLUMN(updated_at,       std::tm,       "datetime")
 
 class User : public Model::Instance<User> { 
   public:
     using Model::Instance<User>::Instance;
+
+    inline static const unsigned int auth_token_size = 128;
 
     MODEL_ACCESSOR(id, long long int)
     #define COLUMN(a, t, _) MODEL_ACCESSOR(a, t)
@@ -42,21 +50,19 @@ class User : public Model::Instance<User> {
       })
     };
 
+    void generate_new_auth_token();
+    void clear_auth_token();
+
+    void password(const std::optional<Model::RecordValue> &val);
+    std::optional<std::string> password();
+
+    bool is_authorized(const std::string &, const std::string &);
+    std::string authorizer_instance_label();
+    static std::string Hash(const std::string &);
+
+    static std::optional<User> FromLogin(const std::string &, const std::string &);
+    static std::optional<User> FromHeader(std::optional<std::string>);
     static void Migrate();
-
-    bool is_authorized(const std::string &, const std::string &) {
-      // TODO: 
-			return true;
-    }
-
-    std::string authorizer_instance_label() { 
-      return fmt::format("{}:{}", *id(), *name()); 
-    }
-
-    static std::optional<User> FromHeader(std::optional<std::string> token) {
-      // TODO: 
-      return std::nullopt;
-    }
 
   private:
     static ModelRegister<User> reg;

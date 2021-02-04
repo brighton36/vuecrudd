@@ -14,8 +14,8 @@ public VuecrudController<CrmPositionsController, CrmPosition> {
     //	public function positionTasks(Request $request, $id)
 
   protected:
-    std::vector<CrmPosition> modelSelect(Controller::PostBody &);
-    void modelUpdate(CrmPosition &, Controller::PostBody &, std::tm);
+    std::vector<CrmPosition> model_index(User &);
+    void model_update(CrmPosition &, Controller::PostBody &, std::tm);
 
     static ControllerRegister<CrmPositionsController> reg;
 };

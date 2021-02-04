@@ -10,7 +10,7 @@ public VuecrudController<CrmPersonCommentTypesController, CrmPersonCommentType> 
     static constexpr std::string_view rest_prefix = { "/api/crm" };
     using VuecrudController<CrmPersonCommentTypesController, CrmPersonCommentType>::VuecrudController;
   private:
-    void modelUpdate(CrmPersonCommentType &, Controller::PostBody &, std::tm);
+    void model_update(CrmPersonCommentType &, Controller::PostBody &, std::tm);
 
     static ControllerRegister<CrmPersonCommentTypesController> reg;
 };

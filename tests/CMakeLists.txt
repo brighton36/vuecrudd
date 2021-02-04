@@ -17,6 +17,7 @@ add_definitions(-DPROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}")
 add_definitions(-DTESTS_CONFIG_FILE="${PROJECT_SOURCE_DIR}/config/test-server.yml")
 
 declare_prails_test(auth_controller_test)
+declare_prails_test(authentication_access_test)
 declare_prails_test(crm_companies_controller_test)
 
 # This isn't really a prails test, so much as its a standalone lib:

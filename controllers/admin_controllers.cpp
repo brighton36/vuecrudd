@@ -20,8 +20,9 @@ CONTROLLER_UPDATE(UserPermissionsController, UserPermission, USER_PERMISSION_COL
 #undef COLUMN
 
 Response UsersController::index(const Request& request) {
+	User user = ensure_authorization(request, "index");
   auto post = PostBody(request.body());
-  auto users = modelSelect(post);
+  auto users = model_index(user);
 
   return Response(ModelToJson(users, vector<JsonDecorator<User>>({
     with<long long int, UserType>(users, "user_type", "user_type_id")
@@ -29,8 +30,9 @@ Response UsersController::index(const Request& request) {
 }
 
 Response UserPermissionsController::index(const Request& request) {
+	User user = ensure_authorization(request, "index");
   auto post = PostBody(request.body());
-  auto user_permissions = modelSelect(post);
+  auto user_permissions = model_index(user);
 
   return Response(ModelToJson(user_permissions, vector<JsonDecorator<UserPermission>>({
     with<long long int, User>(user_permissions, "user", "user_id"),

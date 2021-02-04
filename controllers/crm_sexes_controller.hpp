@@ -9,7 +9,7 @@ public VuecrudController<CrmSexesController, CrmSex> {
     static constexpr std::string_view basename = { "sexes" };
     using VuecrudController<CrmSexesController, CrmSex>::VuecrudController;
   private:
-    void modelUpdate(CrmSex &, Controller::PostBody &, std::tm);
+    void model_update(CrmSex &, Controller::PostBody &, std::tm);
 
     static ControllerRegister<CrmSexesController> reg;
 };

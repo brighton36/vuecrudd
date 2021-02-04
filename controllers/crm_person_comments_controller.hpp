@@ -20,7 +20,7 @@ public VuecrudController<CrmPersonCommentsController, CrmPersonComment> {
       return VuecrudController<CrmPersonCommentsController, CrmPersonComment>::prefix(action);
     }
   private:
-    void modelUpdate(CrmPersonComment &, Controller::PostBody &, std::tm);
+    void model_update(CrmPersonComment &, Controller::PostBody &, std::tm);
 
     static ControllerRegister<CrmPersonCommentsController> reg;
 };

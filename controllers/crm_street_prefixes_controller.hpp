@@ -9,7 +9,7 @@ public VuecrudController<CrmStreetPrefixesController, CrmStreetPrefix> {
     static constexpr std::string_view basename = { "street-prefixes" };
     using VuecrudController<CrmStreetPrefixesController, CrmStreetPrefix>::VuecrudController;
   private:
-    void modelUpdate(CrmStreetPrefix &, Controller::PostBody &, std::tm);
+    void model_update(CrmStreetPrefix &, Controller::PostBody &, std::tm);
     static ControllerRegister<CrmStreetPrefixesController> reg;
 };
 

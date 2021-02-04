@@ -10,7 +10,7 @@ public VuecrudController<CrmCompanyController, CrmCompany> {
     using VuecrudController<CrmCompanyController, CrmCompany>::VuecrudController;
     Controller::Response index(const Pistache::Rest::Request&);
   private:
-    void modelUpdate(CrmCompany &, Controller::PostBody &, std::tm);
+    void model_update(CrmCompany &, Controller::PostBody &, std::tm);
 
     static ControllerRegister<CrmCompanyController> reg;
 };

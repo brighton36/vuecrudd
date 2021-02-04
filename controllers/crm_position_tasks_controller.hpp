@@ -11,7 +11,7 @@ public VuecrudController<CrmPositionTasksController, CrmPositionTask> {
     using VuecrudController<CrmPositionTasksController, CrmPositionTask>::VuecrudController;
     Controller::Response index(const Pistache::Rest::Request&);
   private:
-    void modelUpdate(CrmPositionTask &, Controller::PostBody &, std::tm);
+    void model_update(CrmPositionTask &, Controller::PostBody &, std::tm);
 
     static ControllerRegister<CrmPositionTasksController> reg;
 };

@@ -9,7 +9,7 @@ public VuecrudController<CrmCompanyFilesController, CrmCompanyFile> {
     static constexpr std::string_view basename = { "company-files" };
     using VuecrudController<CrmCompanyFilesController, CrmCompanyFile>::VuecrudController;
   private:
-    void modelUpdate(CrmCompanyFile &, Controller::PostBody &, std::tm);
+    void model_update(CrmCompanyFile &, Controller::PostBody &, std::tm);
 
     static ControllerRegister<CrmCompanyFilesController> reg;
 };

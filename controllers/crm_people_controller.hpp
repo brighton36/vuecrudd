@@ -13,7 +13,7 @@ public VuecrudController<CrmPeopleController, CrmPerson> {
     static void Routes(Pistache::Rest::Router&, std::shared_ptr<Controller::Instance>);
     Controller::Response index(const Pistache::Rest::Request&);
   private:
-    void modelUpdate(CrmPerson &, Controller::PostBody &, std::tm);
+    void model_update(CrmPerson &, Controller::PostBody &, std::tm);
 
     static ControllerRegister<CrmPeopleController> reg;
 };

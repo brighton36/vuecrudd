@@ -10,7 +10,7 @@ public VuecrudController<CrmCompanyCommentTypesController, CrmCompanyCommentType
     static constexpr std::string_view basename = { "company-comment-types" };
     using VuecrudController<CrmCompanyCommentTypesController, CrmCompanyCommentType>::VuecrudController;
   private:
-    void modelUpdate(CrmCompanyCommentType &, Controller::PostBody &, std::tm);
+    void model_update(CrmCompanyCommentType &, Controller::PostBody &, std::tm);
 
     static ControllerRegister<CrmCompanyCommentTypesController> reg;
 };

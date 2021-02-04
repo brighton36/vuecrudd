@@ -21,6 +21,6 @@ public VuecrudController<UserPermissionsController, UserPermission> {
       return VuecrudController<UserPermissionsController, UserPermission>::prefix(action);
     }
   private:
-    void modelUpdate(UserPermission &, Controller::PostBody &, std::tm);
+    void model_update(UserPermission &, Controller::PostBody &, std::tm);
     static ControllerRegister<UserPermissionsController> reg;
 };

@@ -2,12 +2,14 @@
 #include "rest_controller.hpp"
 #include "vuecrud_utilities.hpp"
 
-#define CONTROLLER_UPDATE(c, m, columns) void c::modelUpdate( m &model, \
+#include "user.hpp"
+
+#define CONTROLLER_UPDATE(c, m, columns) void c::model_update( m &model, \
     Controller::PostBody &post, std::tm tm_time) { \
-    modelUpdateVuecrud(model, post, tm_time); columns }
+    model_update_vuecrud(model, post, tm_time); columns }
 
 template <class U, class T>
-class VuecrudController : public Controller::RestInstance<U,T> {
+class VuecrudController : public Controller::RestInstance<U,T, User> {
   public:
     static constexpr std::string_view read_prefix = { "/api/crm" };
     static constexpr std::string_view rest_prefix = { "/api/crud/crm" };
@@ -15,7 +17,7 @@ class VuecrudController : public Controller::RestInstance<U,T> {
       "create", "update", "multiple_update" };
     static constexpr std::string_view read_actions[]= {  };
 
-    using Controller::RestInstance<U, T>::RestInstance;
+    using Controller::RestInstance<U, T, User>::RestInstance;
 
     static std::string basename() { 
       return {U::basename.data(), U::basename.size()};
@@ -30,7 +32,7 @@ class VuecrudController : public Controller::RestInstance<U,T> {
   protected:
     // This is a kind of utility function for vuecrud. It keeys time concerns DRY
     // across the models
-    void modelUpdateVuecrud(T &model, Controller::PostBody &post, std::tm &tm_time) {
+    void model_update_vuecrud(T &model, Controller::PostBody &post, std::tm &tm_time) {
       if (post.has_scalar("created_at"))
         throw std::invalid_argument(
           "request attempted to update \"created_at\", which is forbidden");

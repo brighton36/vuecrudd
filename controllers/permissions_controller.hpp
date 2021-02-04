@@ -11,6 +11,6 @@ public VuecrudController<PermissionsController, Permission> {
     static constexpr std::string_view rest_prefix = { "/api/crud/admin" };
     using VuecrudController<PermissionsController, Permission>::VuecrudController;
   private:
-    void modelUpdate(Permission &, Controller::PostBody &, std::tm);
+    void model_update(Permission &, Controller::PostBody &, std::tm);
     static ControllerRegister<PermissionsController> reg;
 };

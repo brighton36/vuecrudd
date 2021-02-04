@@ -19,6 +19,6 @@ class UsersController : public VuecrudController<UsersController, User> {
       return VuecrudController<UsersController, User>::prefix(action);
     }
   private:
-    void modelUpdate(User &, Controller::PostBody &, std::tm);
+    void model_update(User &, Controller::PostBody &, std::tm);
     static ControllerRegister<UsersController> reg;
 };

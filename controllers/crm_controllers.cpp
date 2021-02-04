@@ -1,5 +1,3 @@
-#include "utilities.hpp"
-
 #include "crm_company_comments_controller.hpp"
 #include "crm_company_comment_types_controller.hpp"
 #include "crm_company_files_controller.hpp"
@@ -52,8 +50,9 @@ CONTROLLER_UPDATE(CrmStreetPrefixesController, CrmStreetPrefix, CRM_STREET_PREFI
 #undef COLUMN
 
 Response CrmCompanyController::index(const Request& request) {
+	User user = ensure_authorization(request, "index");
   auto post = PostBody(request.body());
-  auto companies = modelSelect(post);
+  auto companies = model_index(user);
 
   return Response(ModelToJson(companies, vector<JsonDecorator<CrmCompany>>({
     with<long long int, CrmCompanyType>(companies, "company_type", "company_type_id"),
@@ -62,9 +61,10 @@ Response CrmCompanyController::index(const Request& request) {
 }
 
 Response CrmCompanyCommentsController::index(const Request& request) {
+	User user = ensure_authorization(request, "index");
   auto post = PostBody(request.body());
 
-  auto comments = modelSelect(post);
+  auto comments = model_index(user);
   // TODO: Get the user id working:
   // select * from `users` where `users`.`id` in (?) [1]
   return Response(ModelToJson(comments, vector<JsonDecorator<CrmCompanyComment>>({
@@ -74,8 +74,9 @@ Response CrmCompanyCommentsController::index(const Request& request) {
 }
 
 Response CrmPeopleController::index(const Request& request) {
+	User user = ensure_authorization(request, "index");
   auto post = PostBody(request.body());
-  auto people = modelSelect(post);
+  auto people = model_index(user);
 
   return Response(ModelToJson(people, vector<JsonDecorator<CrmPerson>>({
     with<long long int, CrmLanguage>(people, "language", "language_id"),
@@ -84,8 +85,9 @@ Response CrmPeopleController::index(const Request& request) {
 }
 
 Response CrmPersonCommentsController::index(const Request& request) {
+	User user = ensure_authorization(request, "index");
   auto post = PostBody(request.body());
-  auto person_comments = modelSelect(post);
+  auto person_comments = model_index(user);
   // TODO: Get the user id decoration working for author
 
   return Response(ModelToJson(person_comments, 
@@ -97,8 +99,9 @@ Response CrmPersonCommentsController::index(const Request& request) {
 }
 
 Response CrmPositionTasksController::index(const Request& request) {
+	User user = ensure_authorization(request, "index");
   auto post = PostBody(request.body());
-  auto position_tasks = modelSelect(post);
+  auto position_tasks = model_index(user);
   // TODO: Company? Person? Maybe we should join here instead... look at the reference?
 
   return Response(ModelToJson(position_tasks, 
@@ -108,7 +111,7 @@ Response CrmPositionTasksController::index(const Request& request) {
       })));
 }
 
-vector<CrmPosition> CrmPositionsController::modelSelect(Controller::PostBody &) {
+vector<CrmPosition> CrmPositionsController::model_index(User &) {
   vector<string> columns({ "positions.*", 
     "companies.id as company_id", 
     "companies.name as company_name", 

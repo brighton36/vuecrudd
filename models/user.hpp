@@ -44,6 +44,20 @@ class User : public Model::Instance<User> {
 
     static void Migrate();
 
+    bool is_authorized(const std::string &, const std::string &) {
+      // TODO: 
+			return true;
+    }
+
+    std::string authorizer_instance_label() { 
+      return fmt::format("{}:{}", *id(), *name()); 
+    }
+
+    static std::optional<User> FromHeader(std::optional<std::string> token) {
+      // TODO: 
+      return std::nullopt;
+    }
+
   private:
     static ModelRegister<User> reg;
 };

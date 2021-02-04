@@ -11,7 +11,7 @@ public VuecrudController<CrmLanguagesController, CrmLanguage> {
 
     using VuecrudController<CrmLanguagesController, CrmLanguage>::VuecrudController;
   private:
-    void modelUpdate(CrmLanguage &, Controller::PostBody &, std::tm);
+    void model_update(CrmLanguage &, Controller::PostBody &, std::tm);
 
     static ControllerRegister<CrmLanguagesController> reg;
 };

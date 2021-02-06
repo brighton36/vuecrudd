@@ -50,6 +50,7 @@ class User : public Model::Instance<User> {
       })
     };
 
+    // TODO: to_json
     void generate_new_auth_token();
     void clear_auth_token();
 

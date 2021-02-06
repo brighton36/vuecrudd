@@ -50,7 +50,7 @@ CONTROLLER_UPDATE(CrmStreetPrefixesController, CrmStreetPrefix, CRM_STREET_PREFI
 #undef COLUMN
 
 Response CrmCompanyController::index(const Request& request) {
-	User user = ensure_authorization<User>(request, "index");
+  User user = ensure_authorization<User>(request, "index");
   auto post = PostBody(request.body());
   auto companies = model_index(user);
 
@@ -61,7 +61,7 @@ Response CrmCompanyController::index(const Request& request) {
 }
 
 Response CrmCompanyCommentsController::index(const Request& request) {
-	User user = ensure_authorization<User>(request, "index");
+  User user = ensure_authorization<User>(request, "index");
   auto post = PostBody(request.body());
 
   auto comments = model_index(user);
@@ -74,7 +74,7 @@ Response CrmCompanyCommentsController::index(const Request& request) {
 }
 
 Response CrmPeopleController::index(const Request& request) {
-	User user = ensure_authorization<User>(request, "index");
+  User user = ensure_authorization<User>(request, "index");
   auto post = PostBody(request.body());
   auto people = model_index(user);
 
@@ -85,7 +85,7 @@ Response CrmPeopleController::index(const Request& request) {
 }
 
 Response CrmPersonCommentsController::index(const Request& request) {
-	User user = ensure_authorization<User>(request, "index");
+  User user = ensure_authorization<User>(request, "index");
   auto post = PostBody(request.body());
   auto person_comments = model_index(user);
   // TODO: Get the user id decoration working for author
@@ -99,7 +99,7 @@ Response CrmPersonCommentsController::index(const Request& request) {
 }
 
 Response CrmPositionTasksController::index(const Request& request) {
-	User user = ensure_authorization<User>(request, "index");
+  User user = ensure_authorization<User>(request, "index");
   auto post = PostBody(request.body());
   auto position_tasks = model_index(user);
   // TODO: Company? Person? Maybe we should join here instead... look at the reference?
@@ -149,8 +149,9 @@ Pistache::Rest::Router& r, shared_ptr<Controller::Instance> controller) {
   // didn't implement this function for people. So, neither did I.
 }
 
+// TODO: Let's put most of this in the vuecrud...
 Controller::Response CrmPeopleController::search(const Pistache::Rest::Request& request) {
-	User user = ensure_authorization<User>(request, "index");
+  User user = ensure_authorization<User>(request, "index");
 
   map<string,string> filter_columns = {
     {"id",        "`people`.id"}, 

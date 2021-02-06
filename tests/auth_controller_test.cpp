@@ -1,60 +1,26 @@
-#include "prails_gtest.hpp"
+#include "vuecrud_gtest.hpp"
 
 #include "user.hpp"
 
 using namespace std;
 
-class AuthControllerTest : public PrailsControllerTest {
-  public:
-    // TODO: We probably don't need this
-    void SetUp() override {
-      PrailsControllerTest::SetUp();
-    }
-
-  protected:
-    Model::Record jsmith_record = {
-      {"name",  "John Smith"},
-      {"email", "jsmith@google.com"}
-    };
-
-    User jsmith() {
-      std::tm now = Model::NowUTC();
-
-      User account(jsmith_record);
-      account.password("SuperSecret");
-      account.updated_at(now);
-      account.created_at(now);
-
-      return account;
-    }
-};
+class AuthControllerTest : public VuecrudControllerTest {};
 
 PSYM_TEST_ENVIRONMENT();
 
 TEST_F(AuthControllerTest, fail_post_parse) {
-  User account = jsmith();
-  EXPECT_TRUE(account.isValid());
-  ASSERT_NO_THROW(account.save());
-
-  auto res = browser().Post("/api/auth/login", 
-    "unparseablemuck", 
+  auto res = browser().Post("/api/auth/login", "unparseablemuck", 
     "application/x-www-form-urlencoded");
 
   ASSERT_EQ(res->status, 401);
 
   auto response = nlohmann::json::parse(res->body);
   ASSERT_EQ(response["error"], "Invalid credentials");
-
-  account.remove();
 }
 
 TEST_F(AuthControllerTest, fail_login) {
   nlohmann::json response;
   std::shared_ptr<httplib::Response> res;
-
-  User account = jsmith();
-  EXPECT_TRUE(account.isValid());
-  ASSERT_NO_THROW(account.save());
 
   // First, let's try a valid username, and invalid password:
   res = browser().Post("/api/auth/login", 
@@ -75,15 +41,9 @@ TEST_F(AuthControllerTest, fail_login) {
 
   response = nlohmann::json::parse(res->body);
   ASSERT_EQ(response["error"], "Invalid credentials");
-
-  account.remove();
 }
 
 TEST_F(AuthControllerTest, success_login) {
-  User account = jsmith();
-  EXPECT_TRUE(account.isValid());
-  ASSERT_NO_THROW(account.save());
-
   auto res = browser().Post("/api/auth/login", 
     "email=jsmith%40google.com&password=SuperSecret", 
     "application/x-www-form-urlencoded");
@@ -92,14 +52,10 @@ TEST_F(AuthControllerTest, success_login) {
 
   auto response = nlohmann::json::parse(res->body);
 
-  User retrieved_account = *User::Find(account.id().value());
-
   ASSERT_EQ(response["permissions"].get<vector<string>>(), 
     vector<string>({"CRM","ADMIN","MODELAND"}));
-  ASSERT_EQ(response["token"], *retrieved_account.auth_token());
+  ASSERT_TRUE(response["token"].get<string>().length() > 0);
   ASSERT_EQ(response["user"]["active"], 1);
   ASSERT_EQ(response["user"]["email"], "jsmith@google.com");
-  ASSERT_EQ(response["user"]["name"], "John"); // TODO?
-
-  retrieved_account.remove();
+  ASSERT_EQ(response["user"]["name"], "John Smith");
 }

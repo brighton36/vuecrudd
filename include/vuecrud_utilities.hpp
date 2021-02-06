@@ -19,6 +19,7 @@ nlohmann::json ColumnValueToJson(std::optional<T> col) {
 }
 
 // TODO: Can we replace T with https://stackoverflow.com/questions/30930350/why-member-functions-cant-be-used-as-template-arguments
+// TODO: Remove the typename T (long long int)
 template<typename T, class U, class V>
 JsonDecorator<V> with(
 std::vector<V> &records, const std::string json_key, const std::string foreign_key_attr) {

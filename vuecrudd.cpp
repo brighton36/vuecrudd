@@ -44,6 +44,7 @@ unsigned int mode_seed(ConfigParser &, shared_ptr<spdlog::logger> logger,
     {"name",        "Admin"},
     {"email",       "admin@admin.com"},
     {"user_type_id", 3},
+    {"active",       1},
     {"created_at",  now},
     {"updated_at",  now}
   });

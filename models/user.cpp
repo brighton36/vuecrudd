@@ -45,6 +45,8 @@ void User::clear_auth_token() {
   auth_token_issued_at(nullopt);
 }
 
+// TODO: a to_json that doesn't leak the temp password and sensitive info
+
 bool User::is_authorized(const string &, const string &) {
   // TODO: 
   return true;
@@ -68,7 +70,7 @@ string User::Hash(const string &unsalted_phrase) {
 optional<User> User::FromLogin(const string &email, const string &password) {
   string hashed_password = User::Hash(password);
   return User::Find("email = :email and password = :password", 
-    Model::Record({{"email", email}, {"password", hashed_password}}));
+    {{"email", email}, {"password", hashed_password}});
 }
 
 optional<User> User::FromHeader(optional<string> token) {

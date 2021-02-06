@@ -1,4 +1,4 @@
-#include "prails_gtest.hpp"
+#include "vuecrud_gtest.hpp"
 
 #include "crm_company.hpp"
 #include "crm_company_type.hpp"
@@ -59,7 +59,7 @@ class CrmCompaniesControllerEnvironment : public PrailsEnvironment {
     }
 };
 
-class CrmCompanyControllerTest : public PrailsControllerTest {
+class CrmCompanyControllerTest : public VuecrudControllerTest {
   protected:
     // This output was copy and pasted from a faker seed in the laravel 
     // implementation:
@@ -194,14 +194,19 @@ PSYM_TEST_ENVIRONMENT_WITH(CrmCompaniesControllerEnvironment);
 TEST_F(CrmCompanyControllerTest, test_json_parse) {
   { 
     SCOPED_TRACE("Laravel-reference implementation output");
-    assert_agag(nlohmann::json::parse(_agag_company)); 
+    auto json_agag = nlohmann::json::parse(_agag_company);
+    // We ended up catching a bug in the reference implementation, that caused
+    // phone not to populate. So, I just kept the reference as-is, and manually
+    // set this field here:
+    json_agag["phone"] = nullptr;
+    assert_agag(json_agag); 
   }
 }
 
 TEST_F(CrmCompanyControllerTest, success) {
-  // TODO: We'll need to authenticate ...
+  string token = login_user();
 
-  auto res = browser().Get("/api/crm/companies");
+  auto res = GetWithToken("/api/crm/companies", token);
 
   ASSERT_EQ(res->status, 200);
 

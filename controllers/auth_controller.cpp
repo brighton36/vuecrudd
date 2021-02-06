@@ -69,17 +69,15 @@ Controller::Response AuthController::login(const Rest::Request& request) {
 }
 
 Controller::Response AuthController::user_show(const Rest::Request& request) {
-  auto user = nlohmann::json::object();
-  /*
-  // TODO:
-  User account = ensure_authorization<User>(request);
+  User user = ensure_authorization<User>(request, "user_show");
  
-  auto user = nlohmann::json::object({
-    {"id", *account.id()},
-    {"name", *account.first_name()},
-    {"email", *account.email()},
-    {"created_at", tm_to_iso8601(*account.created_at())},
-    {"updated_at", tm_to_iso8601(*account.updated_at())},
+  // TODO:
+  auto ret = nlohmann::json::object({
+    {"id", *user.id()},
+    {"name", *user.name()},
+    {"email", *user.email()},
+    {"created_at", tm_to_iso8601(*user.created_at())},
+    {"updated_at", tm_to_iso8601(*user.updated_at())},
     // TODO: Do these fields really make sense...:
     {"active", 1},
     {"initial_password", "OTj2IDbS"},
@@ -87,7 +85,7 @@ Controller::Response AuthController::user_show(const Rest::Request& request) {
     {"user_permissions",  nlohmann::json::array({
       { nlohmann::json::object({ 
         {"id", 15},
-        {"user_id", *account.id()},
+        {"user_id", *user.id()},
         {"permission_id", 1},
         {"active", 1},
         {"created_at", "2020-03-20 21:59:07"},
@@ -104,7 +102,7 @@ Controller::Response AuthController::user_show(const Rest::Request& request) {
       },
       { nlohmann::json::object({ 
         {"id", 16},
-        {"user_id", *account.id()},
+        {"user_id", *user.id()},
         {"permission_id", 2},
         {"active", 1},
         {"created_at", "2020-03-20 21:59:07"},
@@ -123,8 +121,7 @@ Controller::Response AuthController::user_show(const Rest::Request& request) {
     }
   });
 
-  */
-  return Controller::Response(user);
+  return Controller::Response(ret);
 }
 
 Controller::Response AuthController::user_update(const Rest::Request& request) {

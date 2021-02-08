@@ -1,10 +1,12 @@
 #include <random>
 #include <climits>
 
-#include "user.hpp"
-
 #include "picosha2.h"
 #include "base64.hpp"
+
+#include "user.hpp"
+#include "vuecrud_utilities.hpp"
+
 
 using namespace std;
 
@@ -46,6 +48,17 @@ void User::clear_auth_token() {
 }
 
 // TODO: a to_json that doesn't leak the temp password and sensitive info
+nlohmann::json User::to_json() {
+  return nlohmann::json({
+    {"id", ColumnValueToJson(id())},
+    {"name", ColumnValueToJson(name())},
+    {"email", ColumnValueToJson(email())},
+    {"user_type_id", ColumnValueToJson(user_type_id())},
+    {"active", ColumnValueToJson(active())},
+    {"created_at", ColumnValueToJson(created_at())},
+    {"updated_at", ColumnValueToJson(updated_at())}
+  });
+}
 
 bool User::is_authorized(const string &, const string &) {
   // TODO: 

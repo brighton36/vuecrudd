@@ -54,12 +54,24 @@ class VuecrudControllerTest : public PrailsControllerTest {
       return response["token"].get<std::string>();
     }
 
-    std::shared_ptr<httplib::Response> GetWithToken(std::string url, std::string token = "") {
-      httplib::Headers headers({{"Content-Type", "application/json; charset=utf8"}});
+    std::shared_ptr<httplib::Response> 
+    GetWithToken(std::string url, std::string token = "") {
+      auto headers = user_headers("application/json; charset=utf8", token);
+      return browser().Get(url.c_str(), headers);
+    }
+
+    std::shared_ptr<httplib::Response> 
+    PostWithToken(std::string url, std::string body = "", std::string token = "") {
+      auto headers = user_headers("application/x-www-form-urlencoded", token);
+      return browser().Post(url.c_str(), headers, {});
+    }
+  private:
+    httplib::Headers user_headers(std::string content_type, std::string token) {
+      httplib::Headers headers({{"Content-Type", content_type}});
 
       if (!token.empty())
         headers.insert({"Authorization", fmt::format("Bearer {}", token)});
 
-      return browser().Get(url.c_str(), headers);
+      return headers;
     }
 };

@@ -151,7 +151,7 @@ Pistache::Rest::Router& r, shared_ptr<Controller::Instance> controller) {
 
 // TODO: Let's put most of this in the vuecrud...
 Controller::Response CrmPeopleController::search(const Pistache::Rest::Request& request) {
-  User user = ensure_authorization<User>(request, "index");
+  ensure_authorization<User>(request, "search");
 
   map<string,string> filter_columns = {
     {"id",        "`people`.id"}, 

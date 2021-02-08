@@ -2,6 +2,8 @@
 #include "model.hpp"
 #include "model_factory.hpp"
 
+#include "nlohmann/json.hpp"
+
 // The auth_token is a bit sloppy, I should probably calculate the exact size. 
 // But, roughly, 128 characters of randomness is 172 characters of base64
 // Note that we omit password, since the accessor logic isn't as simple as the
@@ -50,7 +52,7 @@ class User : public Model::Instance<User> {
       })
     };
 
-    // TODO: to_json
+    nlohmann::json to_json();
     void generate_new_auth_token();
     void clear_auth_token();
 

@@ -21,6 +21,20 @@ void User::Migrate() {
   });
 };
 
+vector<Permission> User::permissions(bool reload_cache = false) {
+  // TODO: return permissions, via a join..
+  /*
+
+  if (reload_cache || (!_permissions.has_value()))
+    _permissions = (user_id().has_value()) ? 
+      make_optional<vector<Permission>>(Permission::Select(fmt::format(
+        "select * from {table_name} where active = :active and user_id = :user_id",
+        fmt::arg("table_name", Permission::Definition.table_name)), {
+        {"active", 1}, {"user_id", *user_id()} }) : nullopt;
+  */
+  
+  return _permissions.value();
+}
 void User::password(const optional<Model::RecordValue> &val) { 
   recordSet("password", User::Hash(get<string>(*val))); 
 };
@@ -47,7 +61,6 @@ void User::clear_auth_token() {
   auth_token_issued_at(nullopt);
 }
 
-// TODO: a to_json that doesn't leak the temp password and sensitive info
 nlohmann::json User::to_json() {
   return nlohmann::json({
     {"id", ColumnValueToJson(id())},
@@ -60,7 +73,8 @@ nlohmann::json User::to_json() {
   });
 }
 
-bool User::is_authorized(const string &, const string &) {
+bool User::is_authorized(const string &controller, const string &action) {
+  
   // TODO: 
   return true;
 }

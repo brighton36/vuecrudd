@@ -176,11 +176,11 @@ Controller::Response CrmPeopleController::search(const Pistache::Rest::Request& 
     host->host(), host->port(), request.resource());
 
   unsigned long page = 1;
-  if (auto param_page = request.query().get("page"); !param_page.isEmpty()) {
-    if (!regex_match(param_page.get(), regex("^[\\d]+$")))
+  if (auto param_page = request.query().get("page"); param_page.has_value()) {
+    if (!regex_match(param_page.value(), regex("^[\\d]+$")))
       throw invalid_argument("invalid page parameter passed to search");
 
-    page = stoul(param_page.get());
+    page = stoul(param_page.value());
   } else if (post.has_scalar("page"))
     page = post.operator[]<unsigned long>("page").value();
 

@@ -3,12 +3,12 @@
 
 #include "user_type.hpp"
 
-class UserTypesController : public VuecrudController<UserTypesController, UserType> { 
+class AdminUserTypesController : public VuecrudController<AdminUserTypesController, UserType> { 
   public:
     static constexpr std::string_view basename = { "user-types" };
     static constexpr std::string_view read_prefix = { "/api/crud/admin" };
     static constexpr std::string_view rest_actions[]= { "index", "read" };
-    using VuecrudController<UserTypesController, UserType>::VuecrudController;
+    using VuecrudController<AdminUserTypesController, UserType>::VuecrudController;
   private:
-    static ControllerRegister<UserTypesController> reg;
+    static ControllerRegister<AdminUserTypesController> reg;
 };

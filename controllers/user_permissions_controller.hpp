@@ -3,14 +3,14 @@
 
 #include "user_permission.hpp"
 
-class UserPermissionsController : 
-public VuecrudController<UserPermissionsController, UserPermission> { 
+class AdminUserPermissionsController : 
+public VuecrudController<AdminUserPermissionsController, UserPermission> { 
   public:
     static constexpr std::string_view basename = { "user-permissions" };
     static constexpr std::string_view read_prefix = { "/api/admin" };
     static constexpr std::string_view rest_prefix = { "/api/crud/admin" };
 
-    using VuecrudController<UserPermissionsController, UserPermission>::VuecrudController;
+    using VuecrudController<AdminUserPermissionsController, UserPermission>::VuecrudController;
 
     Controller::Response index(const Pistache::Rest::Request&);
 
@@ -18,9 +18,9 @@ public VuecrudController<UserPermissionsController, UserPermission> {
       // TODO: I'm not sure we're done yet. Keep testing...
       // This is just some odd exception to the routing patterns...
       if ((action == "read")) return "/api/crud/admin/user-permissions";
-      return VuecrudController<UserPermissionsController, UserPermission>::prefix(action);
+      return VuecrudController<AdminUserPermissionsController, UserPermission>::prefix(action);
     }
   private:
     void model_update(UserPermission &, Controller::PostBody &, std::tm);
-    static ControllerRegister<UserPermissionsController> reg;
+    static ControllerRegister<AdminUserPermissionsController> reg;
 };

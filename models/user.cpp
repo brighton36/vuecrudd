@@ -7,6 +7,7 @@
 #include "user.hpp"
 #include "vuecrud_utilities.hpp"
 
+#include <iostream> // TODO: remove
 
 using namespace std;
 
@@ -22,6 +23,8 @@ void User::Migrate() {
 };
 
 vector<Permission> User::permissions(bool reload_cache = false) {
+  cout << "Inside permissions" << endl;
+  
   // TODO: return permissions, via a join..
   /*
 
@@ -74,6 +77,8 @@ nlohmann::json User::to_json() {
 }
 
 bool User::is_authorized(const string &controller, const string &action) {
+
+  cout << "Inside is_authorized: " << controller << " # " << action << endl;
   
   // TODO: 
   return true;

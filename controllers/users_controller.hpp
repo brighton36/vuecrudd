@@ -3,12 +3,12 @@
 
 #include "user.hpp"
 
-class UsersController : public VuecrudController<UsersController, User> { 
+class AdminUsersController : public VuecrudController<AdminUsersController, User> { 
   public:
     static constexpr std::string_view basename = { "users" };
     static constexpr std::string_view rest_prefix = { "/api/admin" };
     static constexpr std::string_view read_prefix = { "/api/admin" };
-    using VuecrudController<UsersController, User>::VuecrudController;
+    using VuecrudController<AdminUsersController, User>::VuecrudController;
     Controller::Response index(const Pistache::Rest::Request&);
 
     static std::optional<std::string> prefix(const std::string &action) {
@@ -16,9 +16,9 @@ class UsersController : public VuecrudController<UsersController, User> {
       // This is just some odd exception to the routing patterns...
       if ((action == "read") || (action == "update") || (action == "multiple_update"))
         return "/api/crud/admin/users";
-      return VuecrudController<UsersController, User>::prefix(action);
+      return VuecrudController<AdminUsersController, User>::prefix(action);
     }
   private:
     void model_update(User &, Controller::PostBody &, std::tm);
-    static ControllerRegister<UsersController> reg;
+    static ControllerRegister<AdminUsersController> reg;
 };

@@ -8,18 +8,18 @@ using namespace Pistache::Rest;
 using namespace prails::utilities;
 using namespace Controller;
 
-PSYM_CONTROLLER(UsersController)
-PSYM_CONTROLLER(UserTypesController)
-PSYM_CONTROLLER(PermissionsController)
-PSYM_CONTROLLER(UserPermissionsController)
+PSYM_CONTROLLER(AdminUsersController)
+PSYM_CONTROLLER(AdminUserTypesController)
+PSYM_CONTROLLER(AdminPermissionsController)
+PSYM_CONTROLLER(AdminUserPermissionsController)
 
 #define COLUMN(a, b, _) REST_COLUMN_UPDATE(a, b)
-CONTROLLER_UPDATE(UsersController, User, USER_COLUMNS)
-CONTROLLER_UPDATE(PermissionsController, Permission, PERMISSION_COLUMNS)
-CONTROLLER_UPDATE(UserPermissionsController, UserPermission, USER_PERMISSION_COLUMNS)
+CONTROLLER_UPDATE(AdminUsersController, User, USER_COLUMNS)
+CONTROLLER_UPDATE(AdminPermissionsController, Permission, PERMISSION_COLUMNS)
+CONTROLLER_UPDATE(AdminUserPermissionsController, UserPermission, USER_PERMISSION_COLUMNS)
 #undef COLUMN
 
-Response UsersController::index(const Request& request) {
+Response AdminUsersController::index(const Request& request) {
   User user = ensure_authorization<User>(request, "index");
   auto post = PostBody(request.body());
   auto users = model_index(user);
@@ -29,7 +29,7 @@ Response UsersController::index(const Request& request) {
     })));
 }
 
-Response UserPermissionsController::index(const Request& request) {
+Response AdminUserPermissionsController::index(const Request& request) {
   User user = ensure_authorization<User>(request, "index");
   auto post = PostBody(request.body());
   auto user_permissions = model_index(user);

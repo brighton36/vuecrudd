@@ -1,7 +1,7 @@
 #include "vuecrud_gtest.hpp"
 
 #include "user.hpp"
-#include <iostream>
+#include <iostream> // TODO
 
 using namespace std;
 
@@ -42,7 +42,6 @@ TEST_F(AuthenticationAccess, test_user_index_access) {
   string crm_token = login_user("crm");
   string admin_token = login_user("admin");
 
-  // These should all succeed:
   for_each(crm_indexes.begin(), crm_indexes.end(), [&] (auto p) {
     res = GetWithToken(p, crm_token);
     { SCOPED_TRACE(fmt::format("Authenticated Get crm \"{}\"", p));
@@ -51,6 +50,12 @@ TEST_F(AuthenticationAccess, test_user_index_access) {
     res = GetWithToken(p, admin_token);
     { SCOPED_TRACE(fmt::format("Authenticated Get admin \"{}\"", p));
       EXPECT_EQ(res->status, 200); }
+
+    // This should fail:
+    res = GetWithToken(p);
+    { SCOPED_TRACE(fmt::format("Un-Authenticated Get \"{}\"", p));
+      EXPECT_EQ(res->status, 400);
+      EXPECT_EQ(res->body, "{\"error\":\"token_not_provided\"}"); }
   });
 
   for_each(admin_indexes.begin(), admin_indexes.end(), [&] (auto p) {
@@ -59,8 +64,12 @@ TEST_F(AuthenticationAccess, test_user_index_access) {
     { SCOPED_TRACE(fmt::format("Authenticated Get admin \"{}\"", p));
       EXPECT_EQ(res->status, 200); }
 
-    // This should fail:
     res = GetWithToken(p, crm_token);
+    { SCOPED_TRACE(fmt::format("Authenticated Get crm \"{}\"", p));
+      EXPECT_EQ(res->status, 400); }
+
+    // This should fail:
+    res = GetWithToken(p);
     { SCOPED_TRACE(fmt::format("Un-Authenticated Get \"{}\"", p));
       EXPECT_EQ(res->status, 400);
       EXPECT_EQ(res->body, "{\"error\":\"token_not_provided\"}"); }

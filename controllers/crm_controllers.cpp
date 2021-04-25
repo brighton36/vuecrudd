@@ -31,7 +31,7 @@ PSYM_CONTROLLER(CrmPositionTasksController)
 PSYM_CONTROLLER(CrmSexesController)
 PSYM_CONTROLLER(CrmStreetPrefixesController)
 PSYM_CONTROLLER(CrmLanguagesController)
-PSYM_CONTROLLER(TasksController)
+PSYM_CONTROLLER(CrmTasksController)
 
 #define COLUMN(a, b, _) REST_COLUMN_UPDATE(a, b)
 CONTROLLER_UPDATE(CrmCompanyController, CrmCompany, CRM_COMPANY_COLUMNS)

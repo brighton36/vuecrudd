@@ -74,6 +74,6 @@ class User : public Model::Instance<User> {
 
   private:
     // We cache permissions() in the instance
-    std::optional<std::vector<Permission>> _permissions;
+    std::optional<std::vector<Permission>> _permissions = std::nullopt;
     static ModelRegister<User> reg;
 };

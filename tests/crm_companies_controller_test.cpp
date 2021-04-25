@@ -204,7 +204,7 @@ TEST_F(CrmCompanyControllerTest, test_json_parse) {
 }
 
 TEST_F(CrmCompanyControllerTest, success) {
-  string token = login_user();
+  string token = login_user("crm");
 
   auto res = GetWithToken("/api/crm/companies", token);
 

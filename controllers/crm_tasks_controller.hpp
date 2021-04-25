@@ -3,7 +3,7 @@
 #include "user.hpp"
 
 #define TASKS_REST_PREFIX "/api/crud/crm/tasks"
-#define TASKS_CLASS_NAME TasksController
+#define TASKS_CLASS_NAME CrmTasksController
 #define AUTHORIZER_CLASS_NAME User
 
 #include "rest_controller_test.hpp"

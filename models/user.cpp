@@ -5,9 +5,8 @@
 #include "base64.hpp"
 
 #include "user.hpp"
+#include "permission.hpp"
 #include "vuecrud_utilities.hpp"
-
-#include <iostream> // TODO: remove
 
 using namespace std;
 
@@ -23,20 +22,21 @@ void User::Migrate() {
 };
 
 vector<Permission> User::permissions(bool reload_cache = false) {
-  cout << "Inside permissions" << endl;
-  
-  // TODO: return permissions, via a join..
-  /*
+  if ((reload_cache || (!_permissions.has_value())) && (id().has_value())) {
+    std::string query = fmt::format(
+      "select distinct p.* from {table_name} as p {join} where {where}",
+      fmt::arg("table_name", Permission::Definition.table_name), 
+      fmt::arg("join", 
+        "join user_permissions as u_p on "
+        "u_p.permission_id = p.id and u_p.user_id = :user_id and u_p.active = :active"),
+      fmt::arg("where", "p.active = :active") );
 
-  if (reload_cache || (!_permissions.has_value()))
-    _permissions = (user_id().has_value()) ? 
-      make_optional<vector<Permission>>(Permission::Select(fmt::format(
-        "select * from {table_name} where active = :active and user_id = :user_id",
-        fmt::arg("table_name", Permission::Definition.table_name)), {
-        {"active", 1}, {"user_id", *user_id()} }) : nullopt;
-  */
+    Model::Record query_params({{"active", 1}, {"user_id", id().value()} });
+
+    _permissions = make_optional<vector<Permission>>(Permission::Select(query, query_params));
+  }
   
-  return _permissions.value();
+  return (_permissions.has_value()) ? _permissions.value() : vector<Permission>();
 }
 void User::password(const optional<Model::RecordValue> &val) { 
   recordSet("password", User::Hash(get<string>(*val))); 
@@ -48,10 +48,12 @@ optional<string> User::password() {
 }
 
 void User::generate_new_auth_token() { 
+  random_device rd;
   using random_bytes_engine = independent_bits_engine<
     default_random_engine, CHAR_BIT, unsigned char>;
 
-  random_bytes_engine rbe;
+  random_bytes_engine rbe(rd());
+
   vector<base64::byte> source(auth_token_size);
   generate(begin(source), end(source), ref(rbe));
 
@@ -77,11 +79,24 @@ nlohmann::json User::to_json() {
 }
 
 bool User::is_authorized(const string &controller, const string &action) {
+  // We kind of take advantage of camel case here to take the first word, and
+  // compare that to the path
+  smatch matches;
 
-  cout << "Inside is_authorized: " << controller << " # " << action << endl;
+  // I don't actually think this regex should ever fail....
+  if (!regex_search(controller, matches, regex("^(.[^A-Z]*)"))) return false;
+
+  string controller_prefix = matches[1];
+
+  // Lowercase it:
+  transform(controller_prefix.begin(), controller_prefix.end(), 
+    controller_prefix.begin(), [](unsigned char c){ return tolower(c); });
+
+  for(auto &perm : permissions())
+    if (perm.path().has_value() && (perm.path().value() == controller_prefix))
+      return true;
   
-  // TODO: 
-  return true;
+  return false;
 }
 
 string User::authorizer_instance_label() { 

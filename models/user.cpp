@@ -28,7 +28,7 @@ vector<Permission> User::permissions(bool reload_cache = false) {
       fmt::arg("table_name", Permission::Definition.table_name), 
       fmt::arg("join", 
         "join user_permissions as u_p on "
-        "u_p.permission_id = p.id and u_p.user_id = :user_id and u_p.active = :active"),
+        "u_p.permission_id = p.id and u_p.user_id = :user_id"),
       fmt::arg("where", "p.active = :active") );
 
     Model::Record query_params({{"active", 1}, {"user_id", id().value()} });

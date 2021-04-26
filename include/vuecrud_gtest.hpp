@@ -59,7 +59,6 @@ class VuecrudControllerTest : public PrailsControllerTest {
       UserPermission user_permission(up);
       user_permission.updated_at(now);
       user_permission.created_at(now);
-      user_permission.active(1);
 
       if (!user_permission.isValid()) 
         throw std::runtime_error(fmt::format( 

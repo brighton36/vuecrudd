@@ -30,6 +30,12 @@ class VuecrudController : public Controller::RestInstance<U,T, User> {
         )+"/"+basename();
     }
   protected:
+    template <typename W>
+    using active_t = decltype(std::declval<W>().active());
+
+    template <typename W>
+    using has_active = detect<W, active_t>;
+
     // This is a kind of utility function for vuecrud. It keeys time concerns DRY
     // across the models
     void model_update_vuecrud(T &model, Controller::PostBody &post, std::tm &tm_time) {
@@ -46,7 +52,7 @@ class VuecrudController : public Controller::RestInstance<U,T, User> {
       // Seems like we're a new record...
       if (!model.id().has_value()) {
         model.created_at(tm_time);
-        model.active(true);
+        if constexpr (has_active<T>{}) { model.active(true); }
       }
     }
 };

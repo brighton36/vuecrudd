@@ -5,8 +5,7 @@
 #define USER_PERMISSION_COLUMNS               \
   COLUMN(user_id,       long long int, "int") \
   COLUMN(permission_id, long long int, "int") \
-  COLUMN(active,        int,           "int") \
-  COLUMN(created_at,    std::tm, "datetime") \
+  COLUMN(created_at,    std::tm, "datetime")  \
   COLUMN(updated_at,    std::tm, "datetime")
 
 class UserPermission : public Model::Instance<UserPermission> { 
@@ -30,7 +29,6 @@ class UserPermission : public Model::Instance<UserPermission> {
       Model::Validations( {
         Model::Validates::NotNull("user_id"),
         Model::Validates::NotNull("permission_id"),
-        Model::Validates::IsBoolean("active"),
         Model::Validates::NotNull("created_at"),
         Model::Validates::NotNull("updated_at")
       })

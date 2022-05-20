@@ -17,7 +17,7 @@ class UserPermission : public Model::Instance<UserPermission> {
     USER_PERMISSION_COLUMNS
     #undef COLUMN
 
-    inline static const Model::Definition Definition {
+    inline static Model::Definition Definition {
       "id",
       "user_permissions", 
       Model::ColumnTypes({
@@ -34,7 +34,7 @@ class UserPermission : public Model::Instance<UserPermission> {
       })
     };
 
-    static void Migrate();
+    static void Migrate(unsigned int);
 
   private:
     static ModelRegister<UserPermission> reg;

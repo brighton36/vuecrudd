@@ -19,7 +19,7 @@ class CrmPositionTask : public Model::Instance<CrmPositionTask> {
     CRM_POSITION_TASK_COLUMNS
     #undef COLUMN
 
-    inline static const Model::Definition Definition {
+    inline static Model::Definition Definition {
       "id",
       "position_tasks", 
       Model::ColumnTypes({
@@ -43,7 +43,7 @@ class CrmPositionTask : public Model::Instance<CrmPositionTask> {
     };
 
     nlohmann::json to_json();
-    static void Migrate();
+    static void Migrate(unsigned int);
 
   private:
     static ModelRegister<CrmPositionTask> reg;

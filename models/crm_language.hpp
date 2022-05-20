@@ -19,7 +19,7 @@ class CrmLanguage : public Model::Instance<CrmLanguage> {
     CRM_LANGUAGE_COLUMNS
     #undef COLUMN
 
-    inline static const Model::Definition Definition {
+    inline static Model::Definition Definition {
       "id",
       "languages", 
       Model::ColumnTypes({
@@ -38,7 +38,7 @@ class CrmLanguage : public Model::Instance<CrmLanguage> {
     };
 
     nlohmann::json to_json();
-    static void Migrate();
+    static void Migrate(unsigned int);
 
   private:
     static ModelRegister<CrmLanguage> reg;

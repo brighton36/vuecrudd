@@ -12,7 +12,7 @@ using namespace std;
 
 PSYM_MODEL(User)
 
-void User::Migrate() {
+void User::Migrate(unsigned int) {
   CreateTable({
     #define COLUMN(a, _, t) {#a, t},
     USER_COLUMNS
@@ -25,7 +25,7 @@ vector<Permission> User::permissions(bool reload_cache = false) {
   if ((reload_cache || (!_permissions.has_value())) && (id().has_value())) {
     std::string query = fmt::format(
       "select distinct p.* from {table_name} as p {join} where {where}",
-      fmt::arg("table_name", Permission::Definition.table_name), 
+      fmt::arg("table_name", Permission::Definition.table_name()),
       fmt::arg("join", 
         "join user_permissions as u_p on "
         "u_p.permission_id = p.id and u_p.user_id = :user_id"),

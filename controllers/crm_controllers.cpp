@@ -122,7 +122,7 @@ vector<CrmPosition> CrmPositionsController::model_index(User &) {
   return CrmPosition::Select( fmt::format(
     "select {columns} from {table_name} {joins} order by {order_by}", 
     fmt::arg("columns", join(columns, ", ")),
-    fmt::arg("table_name", CrmPosition::Definition.table_name),
+    fmt::arg("table_name", CrmPosition::Definition.table_name()),
     fmt::arg("joins", join({
       "join companies on positions.company_id = companies.id", 
       "join people on positions.person_id = people.id"}, " ")),
@@ -176,11 +176,11 @@ Controller::Response CrmPeopleController::search(const Pistache::Rest::Request& 
     host->host(), host->port(), request.resource());
 
   unsigned long page = 1;
-  if (auto param_page = request.query().get("page"); param_page.has_value()) {
-    if (!regex_match(param_page.value(), regex("^[\\d]+$")))
+  if (auto param_page = request.query().get("page"); !param_page.isEmpty()) {
+    if (!regex_match(param_page.get(), regex("^[\\d]+$")))
       throw invalid_argument("invalid page parameter passed to search");
 
-    page = stoul(param_page.value());
+    page = stoul(param_page.get());
   } else if (post.has_scalar("page"))
     page = post.operator[]<unsigned long>("page").value();
 
@@ -287,7 +287,7 @@ mode: paginate
 
   long count_people = CrmPerson::Count( fmt::format(
     "select count(*) from {table_name} {joins} {where}", 
-    fmt::arg("table_name", CrmPerson::Definition.table_name),
+    fmt::arg("table_name", CrmPerson::Definition.table_name()),
     fmt::arg("joins", join(joins, " ")),
     fmt::arg("where", sqlWhere)),
     select_params );
@@ -300,7 +300,7 @@ mode: paginate
     " limit {limit} offset {offset}", 
     // TODO: This should be a parameter..
     fmt::arg("columns", join({"people.*", "sexes.name", "languages.name"}, ", ")),
-    fmt::arg("table_name", CrmPerson::Definition.table_name),
+    fmt::arg("table_name", CrmPerson::Definition.table_name()),
     fmt::arg("joins", join(joins, " ")),
     fmt::arg("where", sqlWhere),
     fmt::arg("order_by", ((order_by.size() > 0)) ? 

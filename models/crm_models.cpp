@@ -37,7 +37,7 @@ PSYM_MODEL(CrmStreetPrefix);
 
 // Migrate()
 #define COLUMN(a, _, t) {#a, t}, 
-#define MODEL_MIGRATE(m, columns) void m::Migrate() {CreateTable({ columns });}
+#define MODEL_MIGRATE(m, columns) void m::Migrate(unsigned int) {CreateTable({ columns });}
 MODEL_MIGRATE(CrmCompany, CRM_COMPANY_COLUMNS);
 MODEL_MIGRATE(CrmCompanyComment, CRM_COMPANY_COMMENT_COLUMNS);
 MODEL_MIGRATE(CrmCompanyCommentType, CRM_COMPANY_COMMENT_TYPE_COLUMNS);

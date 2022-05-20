@@ -21,7 +21,7 @@ class CrmCompanyFile : public Model::Instance<CrmCompanyFile> {
       CRM_COMPANY_FILE_COLUMNS
     #undef COLUMN
 
-    inline static const Model::Definition Definition {
+    inline static Model::Definition Definition {
       "id",
       "company_files", 
       Model::ColumnTypes({
@@ -45,7 +45,7 @@ class CrmCompanyFile : public Model::Instance<CrmCompanyFile> {
     };
 
     nlohmann::json to_json();
-    static void Migrate();
+    static void Migrate(unsigned int);
 
   private:
     static ModelRegister<CrmCompanyFile> reg;

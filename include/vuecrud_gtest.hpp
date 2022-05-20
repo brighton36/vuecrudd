@@ -75,13 +75,13 @@ class VuecrudControllerTest : public PrailsControllerTest {
     PrailsControllerTest::TearDown();
 
     for (auto &user : User::Select(fmt::format(
-      "select * from {}", User::Definition.table_name))) user.remove();
+      "select * from {}", User::Definition.table_name()))) user.remove();
 
     for (auto &perm : Permission::Select(fmt::format(
-      "select * from {}", Permission::Definition.table_name))) perm.remove();
+      "select * from {}", Permission::Definition.table_name()))) perm.remove();
 
     for (auto &up : UserPermission::Select(fmt::format(
-      "select * from {}", UserPermission::Definition.table_name))) up.remove();
+      "select * from {}", UserPermission::Definition.table_name()))) up.remove();
   }
 
   protected:

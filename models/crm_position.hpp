@@ -26,7 +26,7 @@ class CrmPosition : public Model::Instance<CrmPosition> {
     CRM_POSITION_COLUMNS
     #undef COLUMN
 
-    inline static const Model::Definition Definition {
+    inline static Model::Definition Definition {
       "id",
       "positions", 
       Model::ColumnTypes({
@@ -61,7 +61,7 @@ class CrmPosition : public Model::Instance<CrmPosition> {
     };
 
     nlohmann::json to_json();
-    static void Migrate();
+    static void Migrate(unsigned int);
 
   private:
     static ModelRegister<CrmPosition> reg;

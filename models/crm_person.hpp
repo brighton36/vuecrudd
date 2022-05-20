@@ -24,7 +24,7 @@ class CrmPerson : public Model::Instance<CrmPerson> {
     CRM_PERSON_COLUMNS
     #undef COLUMN
 
-    inline static const Model::Definition Definition {
+    inline static Model::Definition Definition {
       "id",
       "people", 
       Model::ColumnTypes({
@@ -51,7 +51,7 @@ class CrmPerson : public Model::Instance<CrmPerson> {
       })
     };
 
-    static void Migrate();
+    static void Migrate(unsigned int);
 
     std::string fullname();
     nlohmann::json to_json();

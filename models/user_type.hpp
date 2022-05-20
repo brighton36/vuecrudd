@@ -29,7 +29,7 @@ class UserType : public Model::Instance<UserType> {
     USER_TYPE_COLUMNS
     #undef COLUMN
 
-    inline static const Model::Definition Definition {
+    inline static Model::Definition Definition {
       "id",
       "user_types", 
       Model::ColumnTypes({
@@ -50,7 +50,7 @@ class UserType : public Model::Instance<UserType> {
       })
     };
 
-    static void Migrate();
+    static void Migrate(unsigned int);
 
   private:
     static ModelRegister<UserType> reg;

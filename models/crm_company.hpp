@@ -50,7 +50,7 @@ class CrmCompany : public Model::Instance<CrmCompany> {
     CRM_COMPANY_COLUMNS
     #undef COLUMN
 
-    inline static const Model::Definition Definition {
+    inline static Model::Definition Definition {
       "id",
       "companies", 
       Model::ColumnTypes({
@@ -76,7 +76,7 @@ class CrmCompany : public Model::Instance<CrmCompany> {
     std::string address();
     nlohmann::json to_json();
 
-    static void Migrate();
+    static void Migrate(unsigned int);
 
   private:
     static ModelRegister<CrmCompany> reg;

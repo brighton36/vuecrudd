@@ -45,7 +45,7 @@ std::vector<V> &records, const std::string json_key, const std::string foreign_k
 
   std::string query = fmt::format(
 		"select * from `{table_name}` where `{table_name}`.`id` in ({in_attr_keys})", 
-		fmt::arg("table_name", U::Definition.table_name),
+		fmt::arg("table_name", U::Definition.table_name()),
 		fmt::arg("in_attr_keys", in_attr_keys)
 	);
 

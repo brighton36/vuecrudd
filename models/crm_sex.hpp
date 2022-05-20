@@ -22,7 +22,7 @@ class CrmSex : public Model::Instance<CrmSex> {
     CRM_SEX_COLUMNS
     #undef COLUMN
 
-    inline static const Model::Definition Definition {
+    inline static Model::Definition Definition {
       "id",
       "sexes", 
       Model::ColumnTypes({
@@ -43,7 +43,7 @@ class CrmSex : public Model::Instance<CrmSex> {
     };
 
     nlohmann::json to_json();
-    static void Migrate();
+    static void Migrate(unsigned int);
 
   private:
     static ModelRegister<CrmSex> reg;

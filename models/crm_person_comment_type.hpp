@@ -18,7 +18,7 @@ class CrmPersonCommentType : public Model::Instance<CrmPersonCommentType> {
     CRM_PERSON_COMMENT_TYPE_COLUMNS
     #undef COLUMN
 
-    inline static const Model::Definition Definition {
+    inline static Model::Definition Definition {
       "id",
       "person_comment_types", 
       Model::ColumnTypes({
@@ -37,7 +37,7 @@ class CrmPersonCommentType : public Model::Instance<CrmPersonCommentType> {
     };
 
     nlohmann::json to_json();
-    static void Migrate();
+    static void Migrate(unsigned int);
 
   private:
     static ModelRegister<CrmPersonCommentType> reg;

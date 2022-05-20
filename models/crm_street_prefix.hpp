@@ -19,7 +19,7 @@ class CrmStreetPrefix : public Model::Instance<CrmStreetPrefix> {
     CRM_STREET_PREFIX_COLUMNS
     #undef COLUMN
 
-    inline static const Model::Definition Definition {
+    inline static Model::Definition Definition {
       "id",
       "street_prefixes", 
       Model::ColumnTypes({
@@ -39,7 +39,7 @@ class CrmStreetPrefix : public Model::Instance<CrmStreetPrefix> {
     };
 
     nlohmann::json to_json();
-    static void Migrate();
+    static void Migrate(unsigned int);
 
   private:
     static ModelRegister<CrmStreetPrefix> reg;

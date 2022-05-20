@@ -19,7 +19,7 @@ class CrmCompanyType : public Model::Instance<CrmCompanyType> {
       CRM_COMPANY_TYPE_COLUMNS
     #undef COLUMN
 
-    inline static const Model::Definition Definition {
+    inline static Model::Definition Definition {
       "id",
       "company_types", 
       Model::ColumnTypes({
@@ -42,7 +42,7 @@ class CrmCompanyType : public Model::Instance<CrmCompanyType> {
     };
 
     nlohmann::json to_json();
-    static void Migrate();
+    static void Migrate(unsigned int);
 
   private:
     static ModelRegister<CrmCompanyType> reg;

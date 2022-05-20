@@ -34,7 +34,7 @@ class User : public Model::Instance<User> {
     USER_COLUMNS
     #undef COLUMN
 
-    inline static const Model::Definition Definition {
+    inline static Model::Definition Definition {
       "id",
       "users", 
       Model::ColumnTypes({
@@ -70,7 +70,7 @@ class User : public Model::Instance<User> {
 
     static std::optional<User> FromLogin(const std::string &, const std::string &);
     static std::optional<User> FromHeader(std::optional<std::string>);
-    static void Migrate();
+    static void Migrate(unsigned int);
 
   private:
     // We cache permissions() in the instance

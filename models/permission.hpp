@@ -30,11 +30,11 @@ class Permission : public Model::Instance<Permission> {
       }),
       Model::Validations( {
         Model::Validates::NotNull("name"),
-        Model::Validates::IsUnique("name"),
+        Model::Validates::IsUnique<Permission>("name"),
         Model::Validates::NotNull("code"),
-        Model::Validates::IsUnique("code"),
+        Model::Validates::IsUnique<Permission>("code"),
         Model::Validates::MaxLength("code", 10),
-        Model::Validates::IsUnique("path"),
+        Model::Validates::IsUnique<Permission>("path"),
         Model::Validates::NotNull("created_at"),
         Model::Validates::NotNull("updated_at")
       })

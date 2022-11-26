@@ -49,7 +49,7 @@ class User : public Model::Instance<User> {
         Model::Validates::MaxLength("name", 255),
         Model::Validates::NotNull("email"),
         Model::Validates::MaxLength("email", 255),
-        Model::Validates::IsUnique("email"),
+        Model::Validates::IsUnique<User>("email"),
         Model::Validates::NotNull("user_type_id"),
         Model::Validates::NotNull("created_at"),
         Model::Validates::NotNull("updated_at")

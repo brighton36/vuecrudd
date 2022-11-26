@@ -19,6 +19,19 @@ void User::Migrate(unsigned int) {
     #undef COLUMN
     {"password", "varchar(100)"},
   });
+
+  tm now = Model::NowUTC();
+
+  auto admin_user = User({ {"name", "admin"}, {"email", "admin@gmail.com"},
+    {"active", 1}, {"user_type_id", 1} });
+
+  admin_user.password("SuperSecret");
+  admin_user.updated_at(now);
+  admin_user.created_at(now);
+  if (!admin_user.isValid()) throw std::runtime_error(
+    fmt::format("Error creating user account: \"{}\"", "admin@gmail.com"));
+
+  admin_user.save();
 };
 
 vector<Permission> User::permissions(bool reload_cache = false) {
